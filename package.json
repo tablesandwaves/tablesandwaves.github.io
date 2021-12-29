@@ -7,11 +7,16 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack"
   },
-  "keywords": ["Tables & Waves"],
+  "keywords": [
+    "Tables & Waves"
+  ],
   "author": "Stephen Meyer",
   "license": "MIT",
   "devDependencies": {
     "webpack": "^5.33.2",
     "webpack-cli": "^4.6.0"
+  },
+  "dependencies": {
+    "tone": "^14.7.77"
   }
 }
