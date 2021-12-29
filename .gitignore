@@ -1,0 +1,6 @@
+.DS_Store
+*.tgz
+package-lock.json
+dist/main.js*
+node_modules/
+tmp/

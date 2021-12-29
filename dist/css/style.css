@@ -1,0 +1,16 @@
+body {
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  position: relative;
+  tab-size: 2;
+  margin: .5em auto;
+  float: left;
+  width: 100%;
+}
+
+
+#content {
+  position: relative;
+  /* float: left; */
+  width: 1080px;
+  margin: 0 auto;
+}
