@@ -25,9 +25,8 @@ class PianoRoll {
     this._sequence = sequence;
   }
 
-  setNotes(sequence) {
+  setNotes(sequence, playNote) {
     this._sequence = sequence;
-    console.log("this._sequence", this._sequence)
 
     let xScale = d3.scaleLinear().domain([0, 16]).range([PianoRoll.pianoRollPadding, PianoRoll.width]),
         yScale = d3.scaleLinear().domain([12, -12]).range([0, 360]);
@@ -42,7 +41,8 @@ class PianoRoll {
          .attr("height", this.keyHeight)
          .attr("x", (n, i) => xScale(i))
          .attr("y", n => yScale(n) - this.keyHeight)
-         .attr("fill", "red");
+         .attr("fill", "red")
+         .on("click", (event, n) => playNote(n));
   }
 
   render() {
