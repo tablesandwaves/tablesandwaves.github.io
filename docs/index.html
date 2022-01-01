@@ -13,14 +13,26 @@
   Tables &amp; Waves is an electronic music project. This site is intended to document and demonstrate a few of the musical algorithms employed in Tables &amp; Waves music. Presently it is a work in progress...
 </p>
 
-<button type="button" name="button">Start Audio</button>
-
 <div id="infinity-series">
   <h2>Infinity Series</h2>
   <p>
-    The default infinity series is: <span class="default"></span>
+    Infinity series sequence: <span class="sequence"></span>
   </p>
 
+  <p>
+    Center Note:
+    <select id="tonic"></select>
+
+    Seed Distance:
+    <select id="seed-distance">
+      <option>1</option>
+      <option>2</option>
+      <option selected>3</option>
+      <option>4</option>
+    </select>
+
+    <button type="button" name="button">Generate</button>
+  </p>
   <svg class="piano-roll" width="1080" height="360"></svg>
 </div>
 

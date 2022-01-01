@@ -10,10 +10,10 @@ class PianoRoll {
   static pianoRollPadding = 80;
 
   constructor(svgSelector) {
-    this.roll = d3.select(svgSelector).append("g")
-                  .attr("width", PianoRoll.width)
-                  .attr("height", PianoRoll.octaveHeight).attr("stroke", "#aaa");
+    this.svg = d3.select(svgSelector);
     this._sequence = [];
+    this.activeNotes = [];
+    this.extent = [-12, 12];
     this.keyHeight = PianoRoll.octaveHeight / PianoRoll.notesPerOctave;
   }
 
@@ -29,7 +29,7 @@ class PianoRoll {
     this._sequence = sequence;
 
     let xScale = d3.scaleLinear().domain([0, 16]).range([PianoRoll.pianoRollPadding, PianoRoll.width]),
-        yScale = d3.scaleLinear().domain([12, -12]).range([0, 360]);
+        yScale = d3.scaleLinear().domain([this.extent[1] + 1, this.extent[0]]).range([0, this.keyHeight * this.activeNotes.length]);
 
     let noteWidth = (PianoRoll.width - PianoRoll.pianoRollPadding) / this._sequence.length;
     let activeNotes = this.roll.selectAll(".sequence-note")
@@ -45,19 +45,26 @@ class PianoRoll {
          .on("click", (event, n) => playNote(n));
   }
 
-  render() {
+  render(tonic, extent) {
 
-    let steps = 16,
-        rootNote = 36;
+    let steps     = 16;
     let stepWidth = (PianoRoll.width - PianoRoll.pianoRollPadding) / steps;
 
-    let activeNotes = noteData.filter(n => {
-      return n.midi >= rootNote && n.midi < (rootNote + 2 * PianoRoll.notesPerOctave);
-    }).reverse();
-    let octaves = activeNotes.map(n => n.octave).filter(unique);
+    let tonicIndex   = noteData.findIndex(n => n.note_full == tonic);
+    this.extent      = extent;
+    this.activeNotes = noteData.slice((tonicIndex + this.extent[0]), (tonicIndex + this.extent[1] + 1)).reverse();
+    let octaves      = this.activeNotes.map(n => n.octave).filter(unique);
+
+    d3.selectAll(".keys").remove();
+    this.svg.attr("height", this.keyHeight * this.activeNotes.length);
+
+    this.roll = this.svg.append("g")
+                    .attr("class", "keys")
+                    .attr("width", PianoRoll.width)
+                    .attr("height", this.keyHeight * this.activeNotes.length).attr("stroke", "#aaa");
 
     let keys = this.roll.selectAll(".key")
-                   .data(activeNotes)
+                   .data(this.activeNotes)
                  .enter()
                    .append("rect")
                    .attr("class", "key")
@@ -65,10 +72,10 @@ class PianoRoll {
                    .attr("height", this.keyHeight)
                    .attr("x", PianoRoll.pianoRollPadding)
                    .attr("y", (n, i) => i * this.keyHeight)
-                   .attr("fill", n => n.note.charAt(n.note.length - 1) == "#" ? "#bbb" : "#fff");
+                   .attr("fill", n => n.note.charAt(n.note.length - 1) == "#" ? "#ccc" : "#fff");
 
     this.roll.selectAll(".note-label")
-        .data(activeNotes)
+        .data(this.activeNotes)
       .enter()
         .append("text")
         .text(n => n.note)
@@ -77,26 +84,31 @@ class PianoRoll {
         .attr("x", PianoRoll.pianoRollPadding / 2)
         .attr("y", (n, i) => i * this.keyHeight + this.keyHeight - (this.keyHeight / 3));
 
+    let cNotes = this.activeNotes.reduce((matches, note, i, arr) => {
+      if (note.note == "C") matches.push({octave: note.octave, index: i});
+      return matches;
+    }, []);
+
     this.roll.selectAll(".octave-label")
-        .data(octaves)
+        .data(cNotes)
       .enter()
         .append("text")
-        .text(o => o)
+        .text(n => n.octave)
         .attr("fill", "black")
         .attr("font-size", 12)
         .attr("x", 20)
-        .attr("y", (n, i) => i * PianoRoll.octaveHeight + PianoRoll.octaveHeight - (this.keyHeight / 3));
+        .attr("y", (n) => n.index * this.keyHeight + this.keyHeight - (this.keyHeight / 3));
 
     this.roll.selectAll(".key-division")
-        .data(activeNotes)
+        .data(cNotes)
       .enter()
         .append("line")
         .attr("class", "key-division")
-        .attr("x1", n => n.note == "C" ? 0 : PianoRoll.pianoRollPadding)
-        .attr("y1", (n, i) => i * this.keyHeight + this.keyHeight)
+        .attr("x1", 0)
+        .attr("y1", (n) => n.index * this.keyHeight + this.keyHeight)
         .attr("x2", PianoRoll.width)
-        .attr("y2", (n, i) => i * this.keyHeight + this.keyHeight)
-        .attr("stroke", n => n.note == "C" ? "#333" : "#ddd");
+        .attr("y2", (n) => n.index * this.keyHeight + this.keyHeight)
+        .attr("stroke", "#333");
 
     this.roll.selectAll(".step-division")
         .data(new Array(16).fill(0))
