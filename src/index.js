@@ -1,13 +1,23 @@
 import * as Tone from "tone";
 const d3 = require("d3");
+
 const PianoRoll      = require("./piano_roll");
 const infinitySeries = require("./infinity_series");
 const noteData       = require("./note_data");
 
 
-let toneStarted = false,
-    beat = 0,
-    synth, pianoRoll, sequence, midiSequence, noteSequence, toneSequence, seed, tonic, activeBeat;
+const synth     = new Tone.Synth().toDestination();
+const sequencer = new Tone.Sequence((time, note) => {
+  synth.triggerAttackRelease(note, 0.1, time);
+
+  beat = beat == 16 ? 1 : beat += 1;
+  d3.selectAll(".transport .step").attr("fill", "#999");
+  d3.select(`.transport #step-${beat}`).attr("fill", "yellow");
+}, []).start(Tone.now());
+
+
+let toneStarted = false, beat = 0,
+    pianoRoll, sequence, midiSequence, noteSequence, seed, tonic, activeBeat;
 
 
 const renderInfinitySeries = () => {
@@ -37,25 +47,11 @@ const infinitySeriesSequence = () => {
   seed     = parseInt(document.getElementById("seed-distance").value);
   sequence = infinitySeries(16, seed, 0);
 
-  let tonicIndex = noteData.findIndex(n => n.note_full == tonic);
-  midiSequence   = sequence.map(n => n + tonicIndex);
-  noteSequence   = midiSequence.map(midiNum => noteData[midiNum].note_full);
-  if (toneSequence === undefined) {
-    toneSequence = new Tone.Sequence((time, note) => {
-      synth.triggerAttackRelease(note, 0.1, time);
-      beat = beat == 16 ? 1 : beat += 1;
-      d3.selectAll(".transport .step").attr("fill", "#999");
-      d3.select(`.transport #step-${beat}`).attr("fill", "yellow");
-    }, noteSequence).start(Tone.now());
-  } else {
-    toneSequence.events = noteSequence;
-  }
+  let tonicIndex   = noteData.findIndex(n => n.note_full == tonic);
+  midiSequence     = sequence.map(n => n + tonicIndex);
+  noteSequence     = midiSequence.map(midiNum => noteData[midiNum].note_full);
+  sequencer.events = noteSequence;
 }
-
-
-const setupSynth = (result) => {
-  synth = new Tone.Synth().toDestination();
-};
 
 
 const setupUi = (result) => {
@@ -88,19 +84,11 @@ const ready = () => {
   setupUi();
 
   // Due to browser permissions for enabling audio, Tone cannot be initialized fully until a user action
-  // makes it happen. Using a promise to control order for potentially async operations.
+  // makes it happen.
   document.querySelector("button#generate").addEventListener("click", () => {
     if (!toneStarted) {
-      const initializeTone = new Promise( (resolve, reject) => {
-        Tone.start();
-        toneStarted = true;
-        resolve();
-        reject(new Error("Unable to start Tone"));
-      });
-
-      initializeTone
-        .then(setupSynth, setupRejected)
-        .catch(err => console.log(err));
+      Tone.start();
+      toneStarted = true;
     }
     infinitySeriesSequence();
     renderPianoRoll();
