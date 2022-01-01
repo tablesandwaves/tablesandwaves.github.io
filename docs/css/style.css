@@ -13,3 +13,16 @@ body {
   width: 1080px;
   margin: 0 auto;
 }
+
+
+#content #controls, #content #play {
+  position: relative;
+  width: 50%;
+  float: left;
+  margin: 1em 0;
+}
+
+
+#content #play {
+  text-align: right;
+}

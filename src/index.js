@@ -5,7 +5,9 @@ const infinitySeries = require("./infinity_series");
 const noteData       = require("./note_data");
 
 
-let synth, pianoRoll, sequence, seed, tonic;
+let synth, pianoRoll, sequence, seed, tonic, loop,
+    beat = 0,
+    activeBeat;
 
 
 const renderInfinitySeries = () => {
@@ -16,8 +18,29 @@ const renderInfinitySeries = () => {
 }
 
 
+const playPause = () => {
+  if (Tone.Transport.state !== "started") {
+    Tone.Transport.start();
+    beat = 0;
+    loop.start(0);
+    document.getElementById("play-pause").textContent = "Pause";
+  } else {
+    Tone.Transport.stop();
+    loop.stop();
+    document.getElementById("play-pause").textContent = "Play";
+  }
+}
+
+
+const step = (time) => {
+  beat = beat == 16 ? 1 : beat += 1;
+  d3.selectAll(".transport .step").attr("fill", "#999");
+  d3.select(`.transport #step-${beat}`).attr("fill", "yellow");
+}
+
+
 const playNote = (note) => {
-  synth.triggerAttackRelease(noteData[note + 48].note_full, "16n");
+  synth.triggerAttackRelease(noteData[note].note_full, "16n");
 }
 
 
@@ -27,7 +50,10 @@ const infinitySeriesSequence = () => {
 }
 
 
-const setupSynth = (result) => synth = new Tone.Synth().toDestination();
+const setupSynth = (result) => {
+  synth = new Tone.Synth().toDestination();
+  loop  = new Tone.Loop(step, "8n");
+};
 
 
 const setupUi = (result) => {
@@ -59,7 +85,9 @@ const setupRejected = (err) => {
 const ready = () => {
   setupUi();
 
-  document.querySelector("button").addEventListener("click", () => {
+  // Due to browser permissions for enabling audio, Tone cannot be initialized fully until a user action
+  // makes it happen. Using a promise to control order for potentially async operations.
+  document.querySelector("button#generate").addEventListener("click", () => {
     const initializeTone = new Promise( (resolve, reject) => {
       Tone.start();
       resolve();
@@ -72,6 +100,8 @@ const ready = () => {
       .then(renderPianoRoll, setupRejected)
       .catch(err => console.log(err));
   });
+
+  document.querySelector("button#play-pause").addEventListener("click", playPause);
 }
 
 

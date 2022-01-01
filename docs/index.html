@@ -19,7 +19,7 @@
     Infinity series sequence: <span class="sequence"></span>
   </p>
 
-  <p>
+  <div id="controls">
     Center Note:
     <select id="tonic"></select>
 
@@ -31,8 +31,13 @@
       <option>4</option>
     </select>
 
-    <button type="button" name="button">Generate</button>
-  </p>
+    <button type="button" name="generate" id="generate">Generate</button>
+  </div>
+
+  <div id="play">
+    <button type="button" name="play-pause" id="play-pause" disabled>Play</button>
+  </div>
+
   <svg class="piano-roll" width="1080" height="360"></svg>
 </div>
 
