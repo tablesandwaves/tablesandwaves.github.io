@@ -10,12 +10,12 @@ class PianoRoll {
   static pianoRollPadding = 80;
   static transportPadding = 15;
 
-  constructor(svgSelector) {
+  constructor(svgSelector, tonic, extent) {
     this.svg = d3.select(svgSelector);
     this._sequence = [];
+    this._tonicIndex  = noteData.findIndex(n => n.note_full == tonic);
+    this.extent = extent;
     this.activeNotes = [];
-    this.extent = [-12, 12];
-    this.tonicIndex = 60;
     this.keyHeight = PianoRoll.octaveHeight / PianoRoll.notesPerOctave;
   }
 
@@ -27,14 +27,22 @@ class PianoRoll {
     this._sequence = sequence;
   }
 
+  get tonicIndex() {
+    return this._tonicIndex;
+  }
+
+  set tonicIndex(tonicIndex) {
+    this._tonicIndex = tonicIndex;
+  }
+
   setNotes(sequence, playNote) {
-    this._sequence = sequence.map(n => n + this.tonicIndex);
+    this._sequence = sequence;
 
     // Note that the domain reverses the extent values because when the piano roll render()s the note range
     // is reversed so that the lowest notes display on the bottom.
     let xScale = d3.scaleLinear().domain([0, 16]).range([PianoRoll.pianoRollPadding, PianoRoll.width]),
         yScale = d3.scaleLinear()
-                   .domain([this.extent[1] + this.tonicIndex + 1, this.extent[0] + this.tonicIndex])
+                   .domain([this.extent[1] + this._tonicIndex + 1, this.extent[0] + this._tonicIndex])
                    .range([0, this.keyHeight * this.activeNotes.length]);
 
     let noteWidth = (PianoRoll.width - PianoRoll.pianoRollPadding) / this._sequence.length;
@@ -53,14 +61,12 @@ class PianoRoll {
     d3.select("#play-pause").property("disabled", false);
   }
 
-  render(tonic, extent) {
+  render() {
 
     let steps     = 16;
     let stepWidth = (PianoRoll.width - PianoRoll.pianoRollPadding) / steps;
 
-    this.tonicIndex  = noteData.findIndex(n => n.note_full == tonic);
-    this.extent      = extent;
-    this.activeNotes = noteData.slice((this.tonicIndex + this.extent[0]), (this.tonicIndex + this.extent[1] + 1)).reverse();
+    this.activeNotes = noteData.slice((this._tonicIndex + this.extent[0]), (this._tonicIndex + this.extent[1] + 1)).reverse();
     let octaves      = this.activeNotes.map(n => n.octave).filter(unique);
 
     d3.selectAll(".transport").remove();
