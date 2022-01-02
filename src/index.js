@@ -70,6 +70,17 @@ const toggleRhythm = (event) => {
 }
 
 
+const updateBpm = (event) => {
+  document.getElementById("bpm-value").textContent = event.target.value;
+  Tone.Transport.bpm.rampTo(event.target.value, 2);
+}
+
+
+const updateStepRate = (event) => {
+  loop.interval = event.target.value;
+}
+
+
 const setupUi = (result) => {
   d3.select("#tonic")
       .selectAll(".tonic-note")
@@ -114,6 +125,9 @@ const ready = () => {
 
   document.querySelector("button#play-pause").addEventListener("click", playPause);
   document.querySelectorAll("#rhythm button").forEach(b => b.addEventListener("click", toggleRhythm));
+  document.getElementById("bpm").addEventListener("input", updateBpm);
+  document.getElementById("step-rate").addEventListener("input", updateStepRate);
+
 }
 
 

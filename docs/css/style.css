@@ -61,6 +61,18 @@ body {
 }
 
 
+#content #play #bpm-value {
+  display: inline-block;
+  width: 32px;
+}
+
+
+#content #play #bpm {
+  vertical-align: middle;
+  margin: -2px 1em 0 0;
+}
+
+
 #content #rhythm label {
   display: block;
   margin: 5px 0 0 70px;
