@@ -40,8 +40,8 @@ const playPause = () => {
 }
 
 
-const playNote = (midiNote, time) => {
-  synth.triggerAttackRelease(noteData[midiNote].note_full, "16n", time);
+const playNote = (midiNote) => {
+  synth.triggerAttackRelease(noteData[midiNote].note_full, "16n");
 }
 
 
