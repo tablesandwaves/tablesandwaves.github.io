@@ -15,33 +15,62 @@ body {
 }
 
 
-#content #controls, #content #play, #content #rhythm {
+#content #series-details,
+#content #series-details #controls,
+#content #series-details #current-sequence,
+#content #play,
+#content #rhythm {
   position: relative;
   float: left;
-  margin: 1em 0;
+  /* margin: 0 0 1em 0; */
 }
 
 
-#content #controls {
-  width: 25%;
-}
-
-
+#content #series-details,
+#content #play,
 #content #rhythm {
-  width: 60%;
-  text-align: center;
+  margin-bottom: 1em;
+}
+
+
+#content #series-details #controls,
+#content #play {
+  width: 500px;
+}
+
+
+#content #series-details #current-sequence,
+#content #rhythm {
+  width: 580px;
+}
+
+
+#content #series-details #current-sequence {
+  text-align: right;
+  visibility: hidden;
+}
+
+
+#content select, #content input[type="text"] {
+  margin-right: 1em;
 }
 
 
 #content #play {
-  width: 15%;
   text-align: right;
 }
 
 
-#content #rhythm p {
-  text-align: center;
-  margin: 0;
+#content #rhythm label {
+  display: block;
+  margin: 5px 0 0 70px;
+  font-size: .8em;
+}
+
+
+#content #rhythm label input[type="checkbox"] {
+  margin: -2px 0 0;
+  vertical-align: middle;
 }
 
 
@@ -49,8 +78,8 @@ body {
   position: relative;
   width: 100%;
   margin-left: 1px;
-  width: 25px;
-  height: 25px;
+  width: 20px;
+  height: 20px;
   border: 1px solid #09c;
 }
 

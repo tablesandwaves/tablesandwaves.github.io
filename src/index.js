@@ -7,20 +7,20 @@ const infinitySeries = require("./infinity_series");
 const noteData       = require("./note_data");
 
 
-const synth     = new Tone.Synth().toDestination();
-const sequencer = new Tone.Sequence((time, note) => {
-
-  if (note != "REST") synth.triggerAttackRelease(note, 0.1, time);
-
+const synth = new Tone.Synth().toDestination();
+const loop  = new Tone.Loop((time) => {
   beat = beat == midiSequence.length ? 1 : beat += 1;
+
+  currentNote = noteSequence[beat - 1];
+  if (currentNote != "REST") synth.triggerAttackRelease(currentNote, "16n", time);
+
   d3.selectAll(".transport .step").attr("fill", "#999");
   d3.select(`.transport #step-${beat}`).attr("fill", "yellow");
+}, "8n");
 
-}, []).start(Tone.now());
 
-
-let toneStarted = false, beat = 0,
-    pianoRoll, sequence, midiSequence, noteSequence, seed, tonic, activeBeat;
+let toneStarted = false, beat = 0, currentNote,
+    pianoRoll, sequence, midiSequence, noteSequence, seed, tonic, activeBeat, steps;
 
 
 const renderInfinitySeries = () => {
@@ -32,9 +32,13 @@ const renderInfinitySeries = () => {
 
 const playPause = () => {
   if (Tone.Transport.state !== "started") {
+    Tone.Transport.bpm.value = document.getElementById("bpm").value;
+    loop.interval = document.getElementById("step-rate").value;
+    loop.start(0);
     Tone.Transport.start();
   } else {
     Tone.Transport.stop();
+    loop.stop();
     beat = 0;
   }
 }
@@ -47,16 +51,17 @@ const playNote = (midiNote) => {
 
 const infinitySeriesSequence = () => {
   tonic    = document.getElementById("tonic").value;
+  steps    = document.getElementById("step-count").value;
   seed     = parseInt(document.getElementById("seed-distance").value);
   sequence = infinitySeries(16, seed, 0);
 
   let applyRhythm  = document.getElementById("apply-rhythm").checked;
-  let rhythm       = Array.from(document.querySelectorAll("#rhythm button")).map(b => b.classList.contains("active") ? 1 : 0);
+  let rhythm       = Array.from(document.querySelectorAll("#rhythm button"))
+                          .map(b => b.classList.contains("active") ? 1 : 0);
   let tonicIndex   = noteData.findIndex(n => n.note_full == tonic);
   midiSequence     = sequence.map(n => n + tonicIndex);
-  midiSequence     = applyRhythm ? new Weft(midiSequence).rhythm(rhythm, 48, "wrap") : midiSequence;
+  midiSequence     = applyRhythm ? new Weft(midiSequence).rhythm(rhythm, steps, "wrap") : midiSequence;
   noteSequence     = midiSequence.map(midiNum => midiNum == null ? "REST" : noteData[midiNum].note_full);
-  sequencer.events = noteSequence;
 }
 
 
@@ -94,8 +99,8 @@ const setupRejected = (err) => {
 const ready = () => {
   setupUi();
 
-  // Due to browser permissions for enabling audio, Tone cannot be initialized fully until a user action
-  // makes it happen.
+  // Due to browser permissions for enabling audio, Tone cannot be initialized fully
+  // until a user action makes it happen.
   document.querySelector("button#generate").addEventListener("click", () => {
     if (!toneStarted) {
       Tone.start();
@@ -104,6 +109,7 @@ const ready = () => {
     infinitySeriesSequence();
     renderPianoRoll();
     renderInfinitySeries();
+    document.getElementById("current-sequence").style.visibility = "visible";
   });
 
   document.querySelector("button#play-pause").addEventListener("click", playPause);

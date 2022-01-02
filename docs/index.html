@@ -15,44 +15,54 @@
 
 <div id="infinity-series">
   <h2>Infinity Series</h2>
-  <p>
-    Infinity series sequence: <span class="sequence"></span>
-  </p>
 
-  <div id="controls">
-    Center:
-    <select id="tonic"></select>
+  <div id="series-details">
+    <div id="controls">
+      <strong>Center Note:</strong>
+      <select id="tonic"></select>
 
-    Seed:
-    <select id="seed-distance">
-      <option>1</option>
-      <option>2</option>
-      <option selected>3</option>
-      <option>4</option>
-    </select>
+      <strong>Seed:</strong>
+      <select id="seed-distance">
+        <option>1</option>
+        <option>2</option>
+        <option selected>3</option>
+        <option>4</option>
+      </select>
 
-    <button type="button" name="generate" id="generate">Generate</button>
+      <button type="button" name="generate" id="generate">Generate</button>
+    </div>
+    <div id="current-sequence">
+      <strong>Infinity Series:</strong> <span class="sequence"></span>
+    </div>
   </div>
 
   <div id="rhythm">
-    <p>
-      <input type="checkbox" name="apply-rhythm" id="apply-rhythm" checked>
-      <button type="button" class="active"></button>
-      <button type="button" class="active"></button>
-      <button type="button" class="active"></button>
-      <button type="button"></button>
-      <button type="button" class="active"></button>
-      <button type="button" class="active"></button>
-      <button type="button"></button>
-      <button type="button" class="active"></button>
-      <button type="button"></button>
-      <button type="button" class="active"></button>
-      <button type="button" class="active"></button>
-      <button type="button"></button>
-    </p>
+    <strong>Rhythm:</strong>
+    <button type="button" class="active"></button>
+    <button type="button" class="active"></button>
+    <button type="button" class="active"></button>
+    <button type="button"></button>
+    <button type="button" class="active"></button>
+    <button type="button" class="active"></button>
+    <button type="button"></button>
+    <button type="button" class="active"></button>
+    <button type="button"></button>
+    <button type="button" class="active"></button>
+    <button type="button" class="active"></button>
+    <button type="button"></button>
+    Steps: <input type="text" name="step-count" id="step-count" value="24" size="2">
+    <br>
+    <label><input type="checkbox" name="apply-rhythm" id="apply-rhythm" checked> Apply Rhythm</label>
   </div>
 
   <div id="play">
+    BPM: <input type="text" name="bpm" id="bpm" value="128" size="3">
+    Step Rate:
+    <select name="step-rate" id="step-rate">
+      <option>4N</option>
+      <option selected>8N</option>
+      <option>16N</option>
+    </select>
     <button type="button" name="play-pause" id="play-pause" disabled>Play / Pause</button>
   </div>
 
