@@ -29,6 +29,8 @@ const renderInfinitySeries = () => {
   pianoRoll.setNotes(midiSequence, playNote);
 
   d3.select("#play-pause").property("disabled", false);
+  d3.select("#bpm").property("disabled", false);
+  d3.select("#step-rate").property("disabled", false);
 }
 
 
