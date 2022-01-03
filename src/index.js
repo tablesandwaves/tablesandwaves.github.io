@@ -57,18 +57,28 @@ const infinitySeriesSequence = () => {
   seed     = parseInt(document.getElementById("seed-distance").value);
   sequence = infinitySeries(16, seed, 0);
 
-  let applyRhythm  = document.getElementById("apply-rhythm").checked;
-  let rhythm       = Array.from(document.querySelectorAll("#rhythm button"))
-                          .map(b => b.classList.contains("active") ? 1 : 0);
   let tonicIndex   = noteData.findIndex(n => n.note_full == tonic);
   midiSequence     = sequence.map(n => n + tonicIndex);
-  midiSequence     = applyRhythm ? new Weft(midiSequence).rhythm(rhythm, steps, "wrap") : midiSequence;
+
+  if (document.getElementById("apply-rhythm").checked) {
+    let rhythm   = Array.from(document.querySelectorAll("#rhythm button:enabled"))
+                        .map(b => b.classList.contains("active") ? 1 : 0);
+    midiSequence = new Weft(midiSequence).rhythm(rhythm, steps, "wrap");
+  }
+
   noteSequence     = midiSequence.map(midiNum => midiNum == null ? "REST" : noteData[midiNum].note_full);
 }
 
 
 const toggleRhythm = (event) => {
   event.target.classList.toggle("active");
+}
+
+
+const toggleRhythmDisplay = (event) => {
+  let checked = document.getElementById("apply-rhythm").checked;
+  document.querySelectorAll("#rhythm button").forEach(b => b.disabled = !checked);
+  document.querySelectorAll("#rhythm input[type=number]").forEach(b => b.disabled = !checked);
 }
 
 
@@ -83,14 +93,14 @@ const updateStepRate = (event) => {
 }
 
 
-// const enableDisableRhythmSteps = (event) => {
-//   document.querySelectorAll("#rhythm button").forEach((b, i) => {
-//     if (i >= event.target.value)
-//       b.disabled = true;
-//     else
-//       b.disabled = false;
-//   });
-// }
+const enableDisableRhythmSteps = (event) => {
+  document.querySelectorAll("#rhythm button").forEach((b, i) => {
+    if (i >= event.target.value)
+      b.disabled = true;
+    else
+      b.disabled = false;
+  });
+}
 
 
 const setupUi = (result) => {
@@ -139,7 +149,8 @@ const ready = () => {
   document.querySelectorAll("#rhythm button").forEach(b => b.addEventListener("click", toggleRhythm));
   document.getElementById("bpm").addEventListener("input", updateBpm);
   document.getElementById("step-rate").addEventListener("input", updateStepRate);
-  // document.getElementById("rhythm-step-count").addEventListener("change", enableDisableRhythmSteps);
+  document.getElementById("rhythm-step-count").addEventListener("change", enableDisableRhythmSteps);
+  document.getElementById("apply-rhythm").addEventListener("change", toggleRhythmDisplay);
 }
 
 

@@ -90,6 +90,17 @@ body {
 }
 
 
+#content #rhythm .step-counts p {
+  margin: 1px 0
+}
+
+
+#content #rhythm .step-counts p span {
+  display: inline-block;
+  width: 110px;
+}
+
+
 #content #rhythm label {
   display: block;
   margin: 5px 0 0 70px;
