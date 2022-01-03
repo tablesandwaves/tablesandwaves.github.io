@@ -37,22 +37,30 @@
   </div>
 
   <div id="rhythm">
-    <strong>Rhythm:</strong>
-    <button type="button" class="active"></button>
-    <button type="button" class="active"></button>
-    <button type="button" class="active"></button>
-    <button type="button"></button>
-    <button type="button" class="active"></button>
-    <button type="button" class="active"></button>
-    <button type="button"></button>
-    <button type="button" class="active"></button>
-    <button type="button"></button>
-    <button type="button" class="active"></button>
-    <button type="button" class="active"></button>
-    <button type="button"></button>
-    Steps: <input type="text" name="step-count" id="step-count" value="24" size="2">
-    <br>
-    <label><input type="checkbox" name="apply-rhythm" id="apply-rhythm" checked> Apply Rhythm</label>
+    <div class="rhythm-steps">
+      <strong>Rhythm:</strong>
+      <button type="button" class="active"></button>
+      <button type="button" class="active"></button>
+      <button type="button" class="active"></button>
+      <button type="button"></button>
+      <button type="button" class="active"></button>
+      <button type="button" class="active"></button>
+      <button type="button"></button>
+      <button type="button" class="active"></button>
+      <button type="button"></button>
+      <button type="button" class="active"></button>
+      <button type="button" class="active"></button>
+      <button type="button"></button>
+      <br>
+      <label><input type="checkbox" name="apply-rhythm" id="apply-rhythm" checked> Apply Rhythm</label>
+    </div>
+    <div class="step-counts">
+      Rhythm Steps:
+      <!-- <input type="number" name="rhythm-step-count" id="rhythm-step-count" value="12" size="2" min="2" max="12"> -->
+      <br>
+      Melody Steps:
+      <input type="number" name="melody-step-count" id="melody-step-count" value="24" size="2" min="2" max="64">
+    </div>
   </div>
 
   <div id="play">

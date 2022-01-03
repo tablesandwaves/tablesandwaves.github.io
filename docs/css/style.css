@@ -73,6 +73,23 @@ body {
 }
 
 
+#content #rhythm .rhythm-steps,
+#content #rhythm .step-counts {
+  position: relative;
+  float: left;
+}
+
+
+#content #rhythm .rhythm-steps {
+  width: 390px;
+}
+
+
+#content #rhythm .step-counts {
+  width: 190px;
+}
+
+
 #content #rhythm label {
   display: block;
   margin: 5px 0 0 70px;
@@ -93,6 +110,12 @@ body {
   width: 20px;
   height: 20px;
   border: 1px solid #09c;
+}
+
+
+#content #rhythm button:disabled {
+  background: #eee;
+  border: 1px solid #ddd;
 }
 
 

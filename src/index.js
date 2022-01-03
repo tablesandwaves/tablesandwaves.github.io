@@ -27,6 +27,8 @@ const renderInfinitySeries = () => {
   document.querySelector("#infinity-series .sequence").textContent = sequence.join(" ");
   pianoRoll.render();
   pianoRoll.setNotes(midiSequence, playNote);
+
+  d3.select("#play-pause").property("disabled", false);
 }
 
 
@@ -51,7 +53,7 @@ const playNote = (midiNote) => {
 
 const infinitySeriesSequence = () => {
   tonic    = document.getElementById("tonic").value;
-  steps    = document.getElementById("step-count").value;
+  steps    = document.getElementById("melody-step-count").value;
   seed     = parseInt(document.getElementById("seed-distance").value);
   sequence = infinitySeries(16, seed, 0);
 
@@ -79,6 +81,16 @@ const updateBpm = (event) => {
 const updateStepRate = (event) => {
   loop.interval = event.target.value;
 }
+
+
+// const enableDisableRhythmSteps = (event) => {
+//   document.querySelectorAll("#rhythm button").forEach((b, i) => {
+//     if (i >= event.target.value)
+//       b.disabled = true;
+//     else
+//       b.disabled = false;
+//   });
+// }
 
 
 const setupUi = (result) => {
@@ -127,7 +139,7 @@ const ready = () => {
   document.querySelectorAll("#rhythm button").forEach(b => b.addEventListener("click", toggleRhythm));
   document.getElementById("bpm").addEventListener("input", updateBpm);
   document.getElementById("step-rate").addEventListener("input", updateStepRate);
-
+  // document.getElementById("rhythm-step-count").addEventListener("change", enableDisableRhythmSteps);
 }
 
 

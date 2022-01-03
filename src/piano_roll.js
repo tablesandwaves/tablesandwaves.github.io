@@ -63,8 +63,6 @@ class PianoRoll {
          .attr("y", n => yScale(n.note) - this.keyHeight)
          .attr("fill", "red")
          .on("click", (event, n) => playNote(n.note));
-
-    d3.select("#play-pause").property("disabled", false);
   }
 
   render() {
