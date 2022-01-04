@@ -20,7 +20,7 @@ const loop  = new Tone.Loop((time) => {
 
 
 let toneStarted = false, beat = 0, currentNote,
-    pianoRoll, sequence, midiSequence, noteSequence, seed, tonic, activeBeat, steps;
+    pianoRoll, sequence, midiSequence, noteSequence, seed, size, tonic, activeBeat, steps;
 
 
 const renderInfinitySeries = () => {
@@ -55,9 +55,9 @@ const playNote = (midiNote) => {
 
 const infinitySeriesSequence = () => {
   tonic    = document.getElementById("tonic").value;
-  steps    = document.getElementById("melody-step-count").value;
   seed     = parseInt(document.getElementById("seed-distance").value);
-  sequence = infinitySeries(16, seed, 0);
+  size     = parseInt(document.getElementById("series-length").value);
+  sequence = infinitySeries(size, seed, 0);
 
   let tonicIndex   = noteData.findIndex(n => n.note_full == tonic);
   midiSequence     = sequence.map(n => n + tonicIndex);
@@ -65,7 +65,7 @@ const infinitySeriesSequence = () => {
   if (document.getElementById("apply-rhythm").checked) {
     let rhythm   = Array.from(document.querySelectorAll("#rhythm button:enabled"))
                         .map(b => b.classList.contains("active") ? 1 : 0);
-    midiSequence = new Weft(midiSequence).rhythm(rhythm, steps, "wrap");
+    midiSequence = new Weft(midiSequence).rhythm(rhythm, "wrap");
   }
 
   noteSequence     = midiSequence.map(midiNum => midiNum == null ? "REST" : noteData[midiNum].note_full);
@@ -79,6 +79,7 @@ const toggleRhythm = (event) => {
 
 const toggleRhythmDisplay = (event) => {
   let checked = document.getElementById("apply-rhythm").checked;
+  document.getElementById("rhythm").classList.toggle("active");
   document.querySelectorAll("#rhythm button").forEach(b => b.disabled = !checked);
   document.querySelectorAll("#rhythm input[type=number]").forEach(b => b.disabled = !checked);
 }

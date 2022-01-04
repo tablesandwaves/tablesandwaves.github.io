@@ -19,35 +19,67 @@ body {
 #content #series-details #controls,
 #content #series-details #current-sequence,
 #content #play,
+#content #play #play-button-wrapper,
+#content #play #step-rate-wrapper,
 #content #rhythm {
   position: relative;
   float: left;
-  /* margin: 0 0 1em 0; */
 }
 
 
-#content #series-details,
-#content #play,
-#content #rhythm {
-  margin-bottom: 1em;
+#content #series-details {
+  margin-bottom: 1.5em;
 }
 
 
-#content #series-details #controls,
 #content #play {
-  width: 500px;
+  margin-bottom: .75em;
 }
 
 
-#content #series-details #current-sequence,
+#content #series-details #controls {
+  width: 520px;
+  margin: 6px 0 0 0;
+}
+
+
 #content #rhythm {
-  width: 580px;
+  width: 548px;
+  padding: 5px;
+  text-align: center;
+  border: 1px solid #ddd;
+  background-color: #fff;
 }
 
 
-#content #series-details #current-sequence {
+#content #rhythm.active {
+  background-color: #eee;
+}
+
+
+#content #rhythm strong {
+  color: #777;
+}
+
+
+#content #rhythm.active strong {
+  color: #000;
+}
+
+
+#content #play {
+  width: 1080px;
+}
+
+
+#content #play #play-button-wrapper {
+  width: 200px;
+}
+
+
+#content #play #step-rate-wrapper {
+  width: 880px;
   text-align: right;
-  visibility: hidden;
 }
 
 
@@ -56,8 +88,8 @@ body {
 }
 
 
-#content #play {
-  text-align: right;
+#content #play #step-rate-wrapper #step-rate {
+  margin-right: 0;
 }
 
 
@@ -73,38 +105,11 @@ body {
 }
 
 
-#content #rhythm .rhythm-steps,
-#content #rhythm .step-counts {
-  position: relative;
-  float: left;
-}
-
-
-#content #rhythm .rhythm-steps {
-  width: 390px;
-}
-
-
-#content #rhythm .step-counts {
-  width: 190px;
-}
-
-
-#content #rhythm .step-counts p {
-  margin: 1px 0
-}
-
-
-#content #rhythm .step-counts p span {
-  display: inline-block;
-  width: 110px;
-}
-
-
-#content #rhythm label {
-  display: block;
-  margin: 5px 0 0 70px;
-  font-size: .8em;
+#content #current-sequence {
+  margin: 1em auto;
+  visibility: hidden;
+  font-size: .9em;
+  text-align: center;
 }
 
 
@@ -117,10 +122,16 @@ body {
 #content #rhythm button {
   position: relative;
   width: 100%;
-  margin-left: 1px;
+  vertical-align: middle;
+  margin-top: -4px;
   width: 20px;
   height: 20px;
   border: 1px solid #09c;
+}
+
+
+#content #rhythm button:last-of-type {
+  margin-right: 1em;
 }
 
 

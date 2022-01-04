@@ -29,16 +29,16 @@
         <option>4</option>
       </select>
 
+      <strong>Length:</strong>
+      <input type="number" name="series-length" id="series-length" value="16" size="3" min="4" max="64">
+
       <button type="button" name="generate" id="generate">Generate</button>
     </div>
-    <div id="current-sequence">
-      <strong>Infinity Series:</strong> <span class="sequence"></span>
-    </div>
-  </div>
-
-  <div id="rhythm">
-    <div class="rhythm-steps">
-      <strong>Rhythm:</strong>
+    <div id="rhythm" class="active">
+      <label>
+        <input type="checkbox" name="apply-rhythm" id="apply-rhythm" checked>
+        <strong>Apply Rhythm:</strong>
+      </label>
       <button type="button" class="active"></button>
       <button type="button" class="active"></button>
       <button type="button" class="active"></button>
@@ -51,34 +51,31 @@
       <button type="button" class="active"></button>
       <button type="button" class="active"></button>
       <button type="button"></button>
-      <br>
-      <label><input type="checkbox" name="apply-rhythm" id="apply-rhythm" checked> Apply Rhythm</label>
-    </div>
-    <div class="step-counts">
-      <p>
-        <span>Rhythm Steps:</span>
-        <input type="number" name="rhythm-step-count" id="rhythm-step-count" value="12" size="2" min="2" max="12">
-      </p>
-      <p>
-        <span>Melody Steps:</span>
-        <input type="number" name="melody-step-count" id="melody-step-count" value="24" size="2" min="8" max="64">
-      </p>
+      <strong>Steps:</strong>
+      <input type="number" name="rhythm-step-count" id="rhythm-step-count" value="12" size="2" min="2" max="12">
     </div>
   </div>
 
   <div id="play">
-    BPM: <span id="bpm-value">128</span>
-    <input type="range" min="60" max="220" value="128" class="slider" id="bpm" disabled>
-    Step Rate:
-    <select name="step-rate" id="step-rate" disabled>
-      <option>4N</option>
-      <option selected>8N</option>
-      <option>16N</option>
-    </select>
-    <button type="button" name="play-pause" id="play-pause" disabled>Play / Pause</button>
+    <div id="play-button-wrapper">
+      <button type="button" name="play-pause" id="play-pause" disabled>Play / Pause</button>
+    </div>
+    <div id="step-rate-wrapper">
+      BPM: <span id="bpm-value">128</span>
+      <input type="range" min="60" max="220" value="128" class="slider" id="bpm" disabled>
+      Step Rate:
+      <select name="step-rate" id="step-rate" disabled>
+        <option>4N</option>
+        <option selected>8N</option>
+        <option>16N</option>
+      </select>
+    </div>
   </div>
 
   <svg class="piano-roll" width="1080" height="360"></svg>
+  <div id="current-sequence">
+    <span class="sequence"></span>
+  </div>
 </div>
 
 </div>
