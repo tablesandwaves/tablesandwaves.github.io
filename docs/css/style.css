@@ -15,13 +15,17 @@ body {
 }
 
 
+#content #infinity-series,
 #content #series-details,
 #content #series-details #controls,
 #content #series-details #current-sequence,
 #content #play,
 #content #play #play-button-wrapper,
 #content #play #step-rate-wrapper,
-#content #rhythm {
+#content #rhythm,
+#content #drum-machine #drum-labels,
+#content #drum-machine #drum-labels .drum-label,
+#content #drum-machine .drum-step {
   position: relative;
   float: left;
 }
@@ -148,4 +152,60 @@ body {
 
 #content button.off {
   background-color: #eee;
+}
+
+
+#drum-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+#drum-machine {
+  width: 512px;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+
+#drum-machine .drum-step {
+  width: 27px;
+}
+
+
+#drum-machine .drum-step button {
+  /* margin: 2px 2px 0 2px; */
+  width: 25px;
+  height: 25px;
+  border: 1px solid #09c;
+}
+
+
+#drum-machine #drum-labels {
+  width: 75px;
+  margin-right: 5px;
+}
+
+
+#drum-machine #drum-labels .drum-label {
+  width: 75px;
+  height: 25px;
+  margin: 3px 0 0 0;
+  text-align: right;
+  vertical-align: middle;
+  font-weight: bold;
+}
+
+
+#drum-machine #drum-labels .drum-label:first-child,
+#drum-machine .drum-step button.transport  {
+  height: 15px;
+  margin-bottom: 0;
+}
+
+
+#drum-machine .drum-step button.transport {
+  background-color: #999;
+  border: 1px solid #bbb;
 }

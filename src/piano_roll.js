@@ -66,13 +66,12 @@ class PianoRoll {
   }
 
   render() {
-
     let stepWidth = (PianoRoll.width - PianoRoll.pianoRollPadding) / this.steps;
 
     this.activeNotes = noteData.slice((this._tonicIndex + this.extent[0]), (this._tonicIndex + this.extent[1] + 1)).reverse();
     let octaves      = this.activeNotes.map(n => n.octave).filter(unique);
 
-    d3.selectAll(".transport").remove();
+    d3.selectAll("svg .transport").remove();
     d3.selectAll(".keys").remove();
     this.svg.attr("height", this.keyHeight * this.activeNotes.length + PianoRoll.transportPadding);
 
@@ -85,8 +84,7 @@ class PianoRoll {
                     .data([...Array(this.steps).keys()])
                   .enter()
                     .append("rect")
-                    .attr("class", "step")
-                    .attr("id", step => `step-${step + 1}`)
+                    .attr("class", step => `step step-${step}`)
                     .attr("width", stepWidth)
                     .attr("height", PianoRoll.transportPadding)
                     .attr("x", step => step * stepWidth + PianoRoll.pianoRollPadding)

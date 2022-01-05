@@ -2,6 +2,7 @@ import * as Tone from "tone";
 const d3 = require("d3");
 
 const PianoRoll      = require("./piano_roll");
+const DrumGrid       = require("./drum_grid");
 const Weft           = require("./weft");
 const infinitySeries = require("./infinity_series");
 const noteData       = require("./note_data");
@@ -9,18 +10,27 @@ const noteData       = require("./note_data");
 
 const synth = new Tone.Synth().toDestination();
 const loop  = new Tone.Loop((time) => {
-  beat = beat == midiSequence.length ? 1 : beat += 1;
 
-  currentNote = noteSequence[beat - 1];
-  if (currentNote != "REST") synth.triggerAttackRelease(currentNote, "16n", time);
+  beat = beat == 15 ? 0 : beat += 1;
+  d3.selectAll(".drum-step .transport").style("background-color", "#999");
+  d3.select(`#drum-transport-${beat % 16}`).style("background-color", "yellow");
 
-  d3.selectAll(".transport .step").attr("fill", "#999");
-  d3.select(`.transport #step-${beat}`).attr("fill", "yellow");
-}, "8n");
+  if (beat % stepDivisor == 0) {
+    sequencerBeat = sequencerBeat == noteSequence.length - 1 ? 0 : sequencerBeat += 1;
+    // sequencerBeat += 1;
+    currentNote = noteSequence[sequencerBeat];
+    if (currentNote != "REST") synth.triggerAttackRelease(currentNote, "16n", time);
+
+    d3.selectAll("svg .transport .step").attr("fill", "#999");
+    d3.select(`svg .transport .step-${sequencerBeat}`).attr("fill", "yellow");
+  }
+
+}, "16n");
+const stepRateModuloMap = {"4N": 4, "8N": 2, "16N": 1};
 
 
-let toneStarted = false, beat = 0, currentNote,
-    pianoRoll, sequence, midiSequence, noteSequence, seed, size, tonic, activeBeat, steps;
+let toneStarted = false, beat = -1, sequencerBeat = -1, stepDivisor = 2, currentNote,
+    pianoRoll, drumGrid, sequence, midiSequence, noteSequence, seed, size, tonic, activeBeat, steps;
 
 
 const renderInfinitySeries = () => {
@@ -37,13 +47,13 @@ const renderInfinitySeries = () => {
 const playPause = () => {
   if (Tone.Transport.state !== "started") {
     Tone.Transport.bpm.value = document.getElementById("bpm").value;
-    loop.interval = document.getElementById("step-rate").value;
     loop.start(0);
     Tone.Transport.start();
   } else {
     Tone.Transport.stop();
     loop.stop();
-    beat = 0;
+    beat = -1;
+    sequencerBeat = -1;
   }
 }
 
@@ -92,7 +102,7 @@ const updateBpm = (event) => {
 
 
 const updateStepRate = (event) => {
-  loop.interval = event.target.value;
+  stepDivisor = stepRateModuloMap[event.target.value];
 }
 
 
@@ -118,6 +128,9 @@ const setupUi = (result) => {
       .text(n => n.note_full);
 
   d3.select("#note-C3").property("selected", "selected");
+
+  drumGrid = new DrumGrid("#drum-machine");
+  drumGrid.render();
 }
 
 
