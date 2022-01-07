@@ -12,7 +12,7 @@ class DrumGrid {
   }
 
 
-  render() {
+  render(updateDrumBeat) {
     let labels     = [""]
     labels.push(...DrumGrid.drumHits)
     let drumLabels = this.wrapper.append("div")
@@ -38,7 +38,7 @@ class DrumGrid {
          .attr("class", d => d.hit == "Transport" ? "transport" : "hit")
          .attr("id", d => `drum-transport-${d.step}`)
          .property("disabled", d => d.hit == "Transport" ? true : false)
-         .on("click", (event) => event.target.classList.toggle("active"));
+         .on("click", (event, beat) => updateDrumBeat(event, beat.step, beat.hit));
   }
 }
 

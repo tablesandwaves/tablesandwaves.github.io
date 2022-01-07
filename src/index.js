@@ -4,20 +4,30 @@ const d3 = require("d3");
 const PianoRoll      = require("./piano_roll");
 const DrumGrid       = require("./drum_grid");
 const Weft           = require("./weft");
+const Kick           = require("./kick")
+const Snare          = require("./snare")
+const HiHat          = require("./hihat")
 const infinitySeries = require("./infinity_series");
 const noteData       = require("./note_data");
 
 
+// const bassDrumSynth = new Tone.MembraneSynth().toDestination();
+const kick  = new Kick();
+const snare = new Snare();
+const hihat = new HiHat();
 const synth = new Tone.Synth().toDestination();
 const loop  = new Tone.Loop((time) => {
 
   beat = beat == 15 ? 0 : beat += 1;
   d3.selectAll(".drum-step .transport").style("background-color", "#999");
   d3.select(`#drum-transport-${beat % 16}`).style("background-color", "yellow");
+  if (drumBeat[beat][0] == 1) kick.hit(time);
+  if (drumBeat[beat][1] == 1) snare.hit(time);
+  if (drumBeat[beat][2] == 1) hihat.hit(time);
 
   if (beat % stepDivisor == 0) {
+    // TODO: deal with changing the sequencer to a shorter length
     sequencerBeat = sequencerBeat == noteSequence.length - 1 ? 0 : sequencerBeat += 1;
-    // sequencerBeat += 1;
     currentNote = noteSequence[sequencerBeat];
     if (currentNote != "REST") synth.triggerAttackRelease(currentNote, "16n", time);
 
@@ -27,11 +37,19 @@ const loop  = new Tone.Loop((time) => {
 
 }, "16n");
 const stepRateModuloMap = {"4N": 4, "8N": 2, "16N": 1};
+const hitIndexMap       = {"Kick": 0, "Snare": 1, "Hat": 2};
 
 
-let toneStarted = false, beat = -1, sequencerBeat = -1, stepDivisor = 2, currentNote,
-    pianoRoll, drumGrid, sequence, midiSequence, noteSequence, seed, size, tonic, activeBeat, steps;
+let toneStarted = false, beat = -1, sequencerBeat = -1, stepDivisor = 2,
+    currentNote, pianoRoll, drumGrid, sequence, midiSequence, noteSequence, seed, size, tonic, activeBeat, steps;
 
+
+let drumBeat = [
+  [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0],
+  [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0],
+  [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0],
+  [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]
+];
 
 const renderInfinitySeries = () => {
   document.querySelector("#infinity-series .sequence").textContent = sequence.join(" ");
@@ -87,6 +105,12 @@ const toggleRhythm = (event) => {
 }
 
 
+const updateDrumBeat = (event, step, hit) => {
+  event.target.classList.toggle("active");
+  drumBeat[step][hitIndexMap[hit]] = event.target.classList.contains("active") ? 1 : 0;
+}
+
+
 const toggleRhythmDisplay = (event) => {
   let checked = document.getElementById("apply-rhythm").checked;
   document.getElementById("rhythm").classList.toggle("active");
@@ -130,7 +154,7 @@ const setupUi = (result) => {
   d3.select("#note-C3").property("selected", "selected");
 
   drumGrid = new DrumGrid("#drum-machine");
-  drumGrid.render();
+  drumGrid.render(updateDrumBeat);
 }
 
 
@@ -167,6 +191,7 @@ const ready = () => {
   document.getElementById("step-rate").addEventListener("input", updateStepRate);
   document.getElementById("rhythm-step-count").addEventListener("change", enableDisableRhythmSteps);
   document.getElementById("apply-rhythm").addEventListener("change", toggleRhythmDisplay);
+  // document.querySelectorAll("button.hit").foreach(b => b.addEventListener("click", toggleHit));
 }
 
 
