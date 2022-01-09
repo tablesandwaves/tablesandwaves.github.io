@@ -11,7 +11,6 @@ const infinitySeries = require("./infinity_series");
 const noteData       = require("./note_data");
 
 
-// const bassDrumSynth = new Tone.MembraneSynth().toDestination();
 const kick  = new Kick();
 const snare = new Snare();
 const hihat = new HiHat();
@@ -52,8 +51,6 @@ let drumBeat = [
 ];
 
 const renderInfinitySeries = () => {
-  document.querySelector("#infinity-series .sequence").textContent = sequence.join(" ");
-  pianoRoll.render();
   pianoRoll.setNotes(midiSequence, playNote);
 
   d3.select("#play-pause").property("disabled", false);
@@ -85,18 +82,18 @@ const infinitySeriesSequence = () => {
   tonic    = document.getElementById("tonic").value;
   seed     = parseInt(document.getElementById("seed-distance").value);
   size     = parseInt(document.getElementById("series-length").value);
-  sequence = infinitySeries(size, seed, 0);
+  sequence = infinitySeries(size, seed);
+  document.querySelector("#infinity-series .sequence").textContent = sequence.join(" ");
 
-  let tonicIndex   = noteData.findIndex(n => n.note_full == tonic);
-  midiSequence     = sequence.map(n => n + tonicIndex);
+  let tonicIndex = noteData.findIndex(n => n.note_full == tonic);
+  midiSequence   = sequence.map(n => n + tonicIndex);
 
   if (document.getElementById("apply-rhythm").checked) {
     let rhythm   = Array.from(document.querySelectorAll("#rhythm button:enabled"))
                         .map(b => b.classList.contains("active") ? 1 : 0);
     midiSequence = new Weft(midiSequence).rhythm(rhythm, "wrap");
   }
-
-  noteSequence     = midiSequence.map(midiNum => midiNum == null ? "REST" : noteData[midiNum].note_full);
+  noteSequence   = midiSequence.map(midiNum => midiNum == null ? "REST" : noteData[midiNum].note_full);
 }
 
 
@@ -153,6 +150,9 @@ const setupUi = (result) => {
 
   d3.select("#note-C3").property("selected", "selected");
 
+  infinitySeriesSequence();
+  renderPianoRoll();
+
   drumGrid = new DrumGrid("#drum-machine");
   drumGrid.render(updateDrumBeat);
 }
@@ -160,6 +160,7 @@ const setupUi = (result) => {
 
 const renderPianoRoll = (result) => {
   pianoRoll = new PianoRoll("#infinity-series .piano-roll", tonic, midiSequence.length, d3.extent(sequence));
+  pianoRoll.render();
 }
 
 
@@ -191,7 +192,6 @@ const ready = () => {
   document.getElementById("step-rate").addEventListener("input", updateStepRate);
   document.getElementById("rhythm-step-count").addEventListener("change", enableDisableRhythmSteps);
   document.getElementById("apply-rhythm").addEventListener("change", toggleRhythmDisplay);
-  // document.querySelectorAll("button.hit").foreach(b => b.addEventListener("click", toggleHit));
 }
 
 
