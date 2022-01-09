@@ -80,6 +80,84 @@
   <div id="drum-wrapper">
     <div id="drum-machine"></div>
   </div>
+
+  <div class="about">
+    <h3>About the Infinity Series</h3>
+    <p>
+      I learned about this number series when Lawton Hall shared a few blog posts about generative composition techniques <a href="#citation-1">[1]</a> on the <a href="https://llllllll.co">lines forum</a>. If this number series piques your interest, go read his blog post about Per Nørgård's work <a href="#citation-1">[2]</a> where he does a very thorough job of breaking down the algorithm. Note that he includes code for use in the SuperCollider music software.
+    </p>
+
+    <h4>Basic Implementation</h4>
+    <p>
+      The best way to generate the infinity series is likely using the "binary trick" Hall mentions. However, for basic demonstration purposes, see the following prodedural code implementation for generating the number series as an array. This version is used to generate the infinity series in the piano roll above.
+    </p>
+    <pre>
+const infinitySeries = (size, seed) => {
+  if (size == undefined) size = 16;
+  if (seed == undefined) seed = 1;
+
+  let sequence      = [0, seed];
+  let germinalIndex = 0;
+
+  while (sequence.length < size) {
+    germinalInterval    = sequence.slice(germinalIndex, germinalIndex + 2);
+    germinalIntDistance = germinalInterval[1] - germinalInterval[0];
+    sequence = sequence.concat([
+      (sequence[sequence.length - 2] + (-1 * germinalIntDistance)),
+      (sequence[sequence.length - 1] + germinalIntDistance)
+    ]);
+    germinalIndex += 1;
+  }
+
+  return sequence;
+}
+    </pre>
+
+    <h4>Notes</h4>
+    <p>
+      So what makes this number series musically interesting? By trying out different combinations of numbers for the initial seed and root note, which together determine the "germinal interval," the self-similarity in this sequence reveals itself. In the discussion that followed on the lines forum, <a href="https://llllllll.co/t/composition-toolkit-blog-generative-techniques/35657/11">I noted</a> that when you generate a table of multiple versions of the series based on different numbers used as the starting point, <strong>the series exhibits <em>both</em> horizontal and vertical self-similarity</strong> (see the screenshot in that forum post).
+    </p>
+    <p>
+      I experience the infinity series as one of the most musically <em>cohesive</em> sequences I have heard. For an algorithm that has little alignment with the modal scale degrees typically associated with western tonality, it has a remarkably strong identity. Especially with a small initial seed (choose "1" for the Seed dropdown menu above), the note sequence initially sounded very strange to my ears, presumably because my western ears are not accustomed to the number of occurrences of consecutive half steps. And changing that seed/germinal interval to 2 produces <a href="https://en.wikipedia.org/wiki/Whole_tone_scale">whole tone melodies</a>. However, once I listened to the sequences looping for a while and let the repetition induce a kind of familiarity, I felt I had an undertanding of its melodic contour.
+    </p>
+    <p>
+      What suprised me most as a listener is the way that either changing the seed or changing the root note still feels musically cohesive. I find there is only a short, if any, disruption to the melody and that it snaps back into a level of familiarity rather quickly when these transpositions happen while the sequence is playing. In other words, I hear <strong>the algorithmic <em>contour</em> of the sequence as a stronger identity in the infinity series than anything I tend to think of as traditional music theory constraints</strong>, such as staying in a particular key (having a stable tonic) or staying mostly within a particular scale.
+    </p>
+    <p>
+      The last observation to make here is a very specific mathematical property about the intervalic growth rate of the sequence. See the figure below of the first 64 notes of the infinity series as rendered on a <a href="https://en.wikipedia.org/wiki/Digital_audio_workstation">DAW</a>-style piano roll (just a screenshot of the piano roll above).
+    </p>
+    <p>
+      <img src="images/infinity-series-growth-rate.png" alt="Infinity Series Growth Rate" width="100%">
+      <small>Figure: Infinity Series Growth Rate by Powers of 2<sup><em>n</em></sup></small>
+    </p>
+    <p>
+      Now consider the sequence as broken up into 4-note groupings. Each group forms a measure. How do the notes in the sequence spread out over time? At what point in the sequence does it add a new maximum vertical distance on the piano roll? It turns out that these intervalic jumps are spaced out at a rate of 2<sup><em>n</em></sup>. <em>N</em> can be considered a <strong>growth index</strong> and 2<sup><em>n</em></sup> computes the next <strong>measure index</strong> where a new maximum interval will occur (with the first measure index being 1). In my personal perception of the melody, this property of the number series has a strong relationship to its melodic contour. Those big jumps create a musically useful kind of tension which are then followed by subsequent sub-series smaller melodic intervals. But the interplay and spacing of this tension over time is very interesting.
+    </p>
+    <p>
+      For those interested in why this melodic growth occurs, take a look at the Internet Archive pages Hall has dug up that for a Per Nørgård website <a href="#citation-3">[3]</a>.
+    </p>
+
+    <h4>References</h4>
+    <ol class="citations">
+      <li>
+        <span class="citation" id="citation-1">
+          _greathorned (Lawton Hall). "Composition Toolkit Blog - Generative Techniques." <em>lines</em> music web forum, 24 Aug. 2020. <a href="https://llllllll.co/t/composition-toolkit-blog-generative-techniques/35657">https://llllllll.co/t/composition-toolkit-blog-generative-techniques/35657</a>
+        </span>
+      </li>
+      <li>
+        <span class="citation" id="citation-2">
+          Hall, Lawton. "Per Nørgård's Infinity Series." <em>Lawton Hall Music + Audio Blog</em>, 9 Sep. 2019.
+          <a href="https://www.lawtonhall.com/blog/2019/9/9/per-nrgrds-infinity-series">https://www.lawtonhall.com/blog/2019/9/9/per-nrgrds-infinity-series</a>
+        </span>
+      </li>
+      <li>
+        <span class="citation" id="citation-3">
+          Mortensen, Jørgen. "Construction by binary numbers." <em>Five ways of constructing the infinity series...</em> from <em>En introduktion til komponisten og hans musik Per Nørgård</em>. [1999].
+          <a href="https://web.archive.org/web/20071010092358/http://www.pernoergaard.dk/eng/strukturer/uendelig/ukonstruktion03.html">https://web.archive.org/web/20071010092358/http://www.pernoergaard.dk/eng/strukturer/uendelig/ukonstruktion03.html</a>
+        </span>
+      </li>
+    </ol>
+  </div>
 </div>
 
 </div>

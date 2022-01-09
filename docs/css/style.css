@@ -209,3 +209,32 @@ body {
   background-color: #999;
   border: 1px solid #bbb;
 }
+
+
+.about ol.citations {
+  padding-inline-start: 20px;
+}
+
+
+.about ol.citations li {
+  margin-bottom: 1em;
+}
+
+
+.about span.citation {
+  margin-left: 40px;
+  text-indent: -40px;
+  display: block;
+}
+
+
+#content a,
+#content a:visited {
+  color: #09c;
+  text-decoration: none;
+}
+
+
+#content a:hover {
+  text-decoration: underline;
+}
