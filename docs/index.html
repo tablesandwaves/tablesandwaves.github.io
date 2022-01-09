@@ -86,10 +86,13 @@
     <p>
       I learned about this number series when Lawton Hall shared a few blog posts about generative composition techniques <a href="#citation-1">[1]</a> on the <a href="https://llllllll.co">lines forum</a>. If this number series piques your interest, go read his blog post about Per Nørgård's work <a href="#citation-1">[2]</a> where he does a very thorough job of breaking down the algorithm. Note that he includes code for use in the SuperCollider music software.
     </p>
+    <p>
+      Formally, literature about the infinity series, such as Hall's writing mentioned above or this mathematical analyis <a href="#citation-3">[3]</a> is based on citations that begin with the numbers [0, 1]. In my own experiments I have found that the algorithm exhibits the same characteristics when the second number is greater than 1 (e.g., [0, 3]). Technically, the infinity series in Tables &amp; Waves music is a modified version. It has very similar properties, but produces other music. Additionally, Tables &amp; Waves music tends to always process basic melodic sequences such as the pure number series produced by the infinity series by applying rhythmic and sometimes even pitch transformations. Note the "Apply Rhythm" transformation available above. I encourage anyone using this algorithm to consider such transformations and the relationship between the lengths of the rhythmic sequence and the number of infinity series notes that are generated.
+    </p>
 
     <h4>Basic Implementation</h4>
     <p>
-      The best way to generate the infinity series is likely using the "binary trick" Hall mentions. However, for basic demonstration purposes, see the following prodedural code implementation for generating the number series as an array. This version is used to generate the infinity series in the piano roll above.
+      The best way to generate the infinity series is likely using the "binary trick" Hall mentions. However, for basic demonstration purposes, see the following prodedural code implementation in JavaScript for generating the number series as an array. This version is used to generate the infinity series in the piano roll above.
     </p>
     <pre>
 const infinitySeries = (size, seed) => {
@@ -134,7 +137,7 @@ const infinitySeries = (size, seed) => {
       Now consider the sequence as broken up into 4-note groupings. Each group forms a measure. How do the notes in the sequence spread out over time? At what point in the sequence does it add a new maximum vertical distance on the piano roll? It turns out that these intervalic jumps are spaced out at a rate of 2<sup><em>n</em></sup>. <em>N</em> can be considered a <strong>growth index</strong> and 2<sup><em>n</em></sup> computes the next <strong>measure index</strong> where a new maximum interval will occur (with the first measure index being 1). In my personal perception of the melody, this property of the number series has a strong relationship to its melodic contour. Those big jumps create a musically useful kind of tension which are then followed by subsequent sub-series smaller melodic intervals. But the interplay and spacing of this tension over time is very interesting.
     </p>
     <p>
-      For those interested in why this melodic growth occurs, take a look at the Internet Archive pages Hall has dug up that for a Per Nørgård website <a href="#citation-3">[3]</a>.
+      For those interested in why this melodic growth occurs, take a look at the Internet Archive pages Hall has dug up that for a Per Nørgård website <a href="#citation-4">[4]</a>.
     </p>
 
     <h4>References</h4>
@@ -152,6 +155,11 @@ const infinitySeries = (size, seed) => {
       </li>
       <li>
         <span class="citation" id="citation-3">
+          Yu Hin (Gary) Au, Christopher Drexler-Lemire and Jeffrey Shallit. "Notes and note pairs in Nørgård's infinity series." <em>Journal of Mathematics and Music</em>, vol. 11, no. 1, 2017, pp. 1-19. DOI: 10.1080/17459737.2017.1299807
+        </span>
+      </li>
+      <li>
+        <span class="citation" id="citation-4">
           Mortensen, Jørgen. "Construction by binary numbers." <em>Five ways of constructing the infinity series...</em> from <em>En introduktion til komponisten og hans musik Per Nørgård</em>. [1999].
           <a href="https://web.archive.org/web/20071010092358/http://www.pernoergaard.dk/eng/strukturer/uendelig/ukonstruktion03.html">https://web.archive.org/web/20071010092358/http://www.pernoergaard.dk/eng/strukturer/uendelig/ukonstruktion03.html</a>
         </span>
