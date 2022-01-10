@@ -7,7 +7,8 @@ const Weft           = require("./weft");
 const Kick           = require("./kick")
 const Snare          = require("./snare")
 const HiHat          = require("./hihat")
-const infinitySeries = require("./infinity_series");
+const InfinitySeries = require("./infinity_series");
+const RationalMelody = require("./rational_melody");
 const noteData       = require("./note_data");
 
 
@@ -26,8 +27,8 @@ const loop  = new Tone.Loop((time) => {
 
   if (beat % stepDivisor == 0) {
     // TODO: deal with changing the sequencer to a shorter length
-    sequencerBeat = sequencerBeat == noteSequence.length - 1 ? 0 : sequencerBeat += 1;
-    currentNote = noteSequence[sequencerBeat];
+    sequencerBeat = sequencerBeat == algorithm.noteSequence.length - 1 ? 0 : sequencerBeat += 1;
+    currentNote = algorithm.noteSequence[sequencerBeat];
     if (currentNote != "REST") synth.triggerAttackRelease(currentNote, "16n", time);
 
     d3.selectAll("svg .transport .step").attr("fill", "#999");
@@ -40,8 +41,8 @@ const hitIndexMap       = {"Kick": 0, "Snare": 1, "Hat": 2};
 
 
 let toneStarted = false, beat = -1, sequencerBeat = -1, stepDivisor = 2,
-    currentNote, pianoRoll, drumGrid, sequence, midiSequence, noteSequence, seed, size, tonic, activeBeat, steps;
-
+    pianoRoll, drumGrid, currentNote,
+    algorithm, seed, size, tonic;
 
 let drumBeat = [
   [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0],
@@ -49,14 +50,6 @@ let drumBeat = [
   [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0],
   [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]
 ];
-
-const renderInfinitySeries = () => {
-  pianoRoll.setNotes(midiSequence, playNote);
-
-  d3.select("#play-pause").property("disabled", false);
-  d3.select("#bpm").property("disabled", false);
-  d3.select("#step-rate").property("disabled", false);
-}
 
 
 const playPause = () => {
@@ -78,22 +71,25 @@ const playNote = (midiNote) => {
 }
 
 
-const infinitySeriesSequence = () => {
-  tonic    = document.getElementById("tonic").value;
-  seed     = parseInt(document.getElementById("seed-distance").value);
-  size     = parseInt(document.getElementById("series-length").value);
-  sequence = infinitySeries(size, seed);
-  document.querySelector("#infinity-series .sequence").textContent = sequence.join(" ");
+const generateSequence = () => {
+  if (document.getElementById("infinity-series") !== null) {
 
-  let tonicIndex = noteData.findIndex(n => n.note_full == tonic);
-  midiSequence   = sequence.map(n => n + tonicIndex);
+    tonic = document.getElementById("tonic").value;
+    seed  = parseInt(document.getElementById("seed-distance").value);
+    size  = parseInt(document.getElementById("series-length").value);
+    algorithm = new InfinitySeries(size, seed, tonic);
+    document.querySelector("#infinity-series .sequence").textContent = algorithm.sequence.join(" ");
 
-  if (document.getElementById("apply-rhythm").checked) {
-    let rhythm   = Array.from(document.querySelectorAll("#rhythm button:enabled"))
-                        .map(b => b.classList.contains("active") ? 1 : 0);
-    midiSequence = new Weft(midiSequence).rhythm(rhythm, "wrap");
+  } else if (document.getElementById("rational-melody") !== null) {
+
+    let noteList = Array.from(document.querySelectorAll(".input-note"))
+                        .map(option => noteData.findIndex(n => n.note_full == option.value));
+    // Tonic is being set here because it is neweded for rendering the piano roll.
+    tonic     = noteData[noteList.slice(0).sort()[0]].note_full;
+    algorithm = new RationalMelody(noteList);
+    algorithm.generate("xv");
+
   }
-  noteSequence   = midiSequence.map(midiNum => midiNum == null ? "REST" : noteData[midiNum].note_full);
 }
 
 
@@ -138,19 +134,23 @@ const enableDisableRhythmSteps = (event) => {
 
 
 const setupUi = (result) => {
-  d3.select("#tonic")
+
+  d3.selectAll("#tonic, .input-note")
       .selectAll(".tonic-note")
       .data(noteData)
     .enter()
       .append("option")
-      .attr("class", ".tonic-note")
-      .attr("id", n => `note-${n.note_full}`)
+      .attr("class", n => `note-${n.note_full}`)
       .attr("value", n => n.note_full)
       .text(n => n.note_full);
 
-  d3.select("#note-C3").property("selected", "selected");
+  let centerNote = 48;
+  document.querySelectorAll("#tonic, .input-note").forEach((selectList, i) => {
+    let noteName = noteData[centerNote + i].note_full;
+    selectList.querySelector(`option[value="${noteName}"]`).setAttribute("selected", "selected");
+  });
 
-  infinitySeriesSequence();
+  generateSequence();
   renderPianoRoll();
 
   drumGrid = new DrumGrid("#drum-machine");
@@ -158,9 +158,24 @@ const setupUi = (result) => {
 }
 
 
-const renderPianoRoll = (result) => {
-  pianoRoll = new PianoRoll("#infinity-series .piano-roll", tonic, midiSequence.length, d3.extent(sequence));
+const renderPianoRoll = () => {
+  let tonicMidiNote   = noteData.findIndex(n => n.note_full == tonic);
+  let sortedMidiNotes = algorithm.midiSequence.slice(0).sort().filter(n => n !== null);
+
+  // The extent is the range of MIDI notes around the tonic. For the infinity series the tonic will be close to the center
+  // of the MIDI note sequence. For other sequences the low number of the extent will be the sequence's lowest note.
+  let extent = [sortedMidiNotes[0] - tonicMidiNote, sortedMidiNotes[sortedMidiNotes.length - 1] - tonicMidiNote];
+  pianoRoll = new PianoRoll(".piano-roll", tonic, algorithm.midiSequence.length, extent);
   pianoRoll.render();
+}
+
+
+const renderMidiSequence = () => {
+  pianoRoll.setNotes(algorithm.midiSequence, playNote);
+
+  d3.select("#play-pause").property("disabled", false);
+  d3.select("#bpm").property("disabled", false);
+  d3.select("#step-rate").property("disabled", false);
 }
 
 
@@ -180,9 +195,9 @@ const ready = () => {
       Tone.start();
       toneStarted = true;
     }
-    infinitySeriesSequence();
+    generateSequence();
     renderPianoRoll();
-    renderInfinitySeries();
+    renderMidiSequence();
     document.getElementById("current-sequence").style.visibility = "visible";
   });
 

@@ -1,0 +1,62 @@
+const noteData = require("./note_data.js");
+
+
+class RationalMelody {
+
+  static xvStepLength = 31;
+
+  constructor(noteList) {
+    this.noteList = noteList;
+    this.sequence = new Array(RationalMelody.xvStepLength).fill(-1);
+
+    this.midiSequence = [];
+    this.noteSequence = [];
+  }
+
+
+  generate(melodyNumber) {
+    if (melodyNumber == "xv") {
+      this.#xv();
+    }
+  }
+
+
+  #xv() {
+
+    let contiguousSequence, currentNote, stepAmount, nextNote;
+    let nextEmpty = 0, count = 0;
+
+    // Build a self replicating melody by powers of 2 until all notes are filled.
+    do {
+      contiguousSequence = this.sequence.slice(0, nextEmpty);
+
+      for (let noteIndex = 0; noteIndex < contiguousSequence.length; noteIndex++) {
+        // For each note in the contiguous sequence...
+        currentNote = contiguousSequence[noteIndex];
+
+        // Determine the self replicating step amounts by computing the powers of 2 for
+        // non-redundant step amounts based on the target length
+        for (let power = 1; power < Math.log2(RationalMelody.xvStepLength); power++) {
+          stepAmount = 2**power;
+
+          // Fill in the melody's future step indices with the current replicating note.
+          this.sequence[(noteIndex * stepAmount) % RationalMelody.xvStepLength] = currentNote;
+        }
+      }
+
+      // If the sequence still has empty spots, find the first one and fill it with the next
+      // note in the input note list.
+      nextNote  = this.noteList[count % this.noteList.length];
+      nextEmpty = this.sequence.findIndex(note => note == -1);
+      if (nextEmpty != -1) this.sequence[nextEmpty] = nextNote;
+      count++;
+    } while (nextEmpty != -1);
+
+    // For this algorithm, the sequence is already based on MIDI note numbers.
+    this.midiSequence = this.sequence;
+    this.noteSequence = this.midiSequence.map(midiNum => noteData[midiNum].note_full);
+  }
+}
+
+
+module.exports = RationalMelody;
