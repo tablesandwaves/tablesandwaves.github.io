@@ -1,5 +1,14 @@
-import * as Tone from "tone";
-const d3 = require("d3");
+import {
+  Synth, Loop, Transport, start, NoiseSynth, FeedbackDelay, Gate, MidSideCompressor,
+  Gain, Destination, MembraneSynth
+} from "tone";
+const Tone = { Synth, Loop, Transport, start, NoiseSynth, FeedbackDelay, Gate,
+               MidSideCompressor, Gain, Destination, MembraneSynth };
+
+import { select, selectAll } from "d3-selection";
+import { scaleLinear } from "d3-scale";
+const d3 = { select, selectAll, scaleLinear };
+
 
 const PianoRoll      = require("./piano_roll");
 const DrumGrid       = require("./drum_grid");
@@ -12,9 +21,9 @@ const RationalMelody = require("./rational_melody");
 const noteData       = require("./note_data");
 
 
-const kick  = new Kick();
-const snare = new Snare();
-const hihat = new HiHat();
+const kick  = new Kick(Tone);
+const snare = new Snare(Tone);
+const hihat = new HiHat(Tone);
 const synth = new Tone.Synth().toDestination();
 const loop  = new Tone.Loop((time) => {
 
@@ -144,7 +153,7 @@ const setupUi = (result) => {
       .attr("value", n => n.note_full)
       .text(n => n.note_full);
 
-  let centerNote = 48;
+  let centerNote = 60;
   document.querySelectorAll("#tonic, .input-note").forEach((selectList, i) => {
     let noteName = noteData[centerNote + i].note_full;
     selectList.querySelector(`option[value="${noteName}"]`).setAttribute("selected", "selected");
@@ -153,7 +162,7 @@ const setupUi = (result) => {
   generateSequence();
   renderPianoRoll();
 
-  drumGrid = new DrumGrid("#drum-machine");
+  drumGrid = new DrumGrid("#drum-machine", d3);
   drumGrid.render(updateDrumBeat);
 }
 
@@ -165,7 +174,7 @@ const renderPianoRoll = () => {
   // The extent is the range of MIDI notes around the tonic. For the infinity series the tonic will be close to the center
   // of the MIDI note sequence. For other sequences the low number of the extent will be the sequence's lowest note.
   let extent = [sortedMidiNotes[0] - tonicMidiNote, sortedMidiNotes[sortedMidiNotes.length - 1] - tonicMidiNote];
-  pianoRoll = new PianoRoll(".piano-roll", tonic, algorithm.midiSequence.length, extent);
+  pianoRoll = new PianoRoll(".piano-roll", tonic, algorithm.midiSequence.length, extent, d3);
   pianoRoll.render();
 }
 

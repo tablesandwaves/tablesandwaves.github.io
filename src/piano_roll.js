@@ -1,4 +1,3 @@
-const d3 = require("d3");
 const noteData = require("./note_data.js");
 
 
@@ -10,11 +9,13 @@ class PianoRoll {
   static pianoRollPadding = 80;
   static transportPadding = 15;
 
-  constructor(svgSelector, tonic, steps, extent) {
-    this.svg = d3.select(svgSelector);
+  constructor(svgSelector, tonic, steps, extent, d3) {
+    this.d3 = d3;
+    this.svg = this.d3.select(svgSelector);
     this._sequence = [];
     this._tonicIndex  = noteData.findIndex(n => n.note_full == tonic);
     this.extent = extent;
+
     this.steps = steps;
     this.activeNotes = [];
     this.keyHeight = PianoRoll.octaveHeight / PianoRoll.notesPerOctave;
@@ -41,8 +42,8 @@ class PianoRoll {
 
     // Note that the domain reverses the extent values because when the piano roll render()s the note range
     // is reversed so that the lowest notes display on the bottom.
-    let xScale = d3.scaleLinear().domain([0, this._sequence.length]).range([PianoRoll.pianoRollPadding, PianoRoll.width]),
-        yScale = d3.scaleLinear()
+    let xScale = this.d3.scaleLinear().domain([0, this._sequence.length]).range([PianoRoll.pianoRollPadding, PianoRoll.width]),
+        yScale = this.d3.scaleLinear()
                    .domain([this.extent[1] + this._tonicIndex + 1, this.extent[0] + this._tonicIndex])
                    .range([0, this.keyHeight * this.activeNotes.length]);
 
@@ -71,8 +72,8 @@ class PianoRoll {
     this.activeNotes = noteData.slice((this._tonicIndex + this.extent[0]), (this._tonicIndex + this.extent[1] + 1)).reverse();
     let octaves      = this.activeNotes.map(n => n.octave).filter(unique);
 
-    d3.selectAll("svg .transport").remove();
-    d3.selectAll(".keys").remove();
+    this.d3.selectAll("svg .transport").remove();
+    this.d3.selectAll(".keys").remove();
     this.svg.attr("height", this.keyHeight * this.activeNotes.length + PianoRoll.transportPadding);
 
     this.transport = this.svg.append("g")

@@ -1,9 +1,6 @@
-const Tone = require("tone");
-
-
 class Snare {
 
-  constructor() {
+  constructor(Tone) {
     this.tom   = new Tone.MembraneSynth();
     this.snare = new Tone.NoiseSynth({
       noise:    { type: "brown" },

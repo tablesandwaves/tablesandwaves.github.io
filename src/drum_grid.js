@@ -1,14 +1,11 @@
-const d3 = require("d3");
-
-
 class DrumGrid {
 
   static steps = 16;
   static drumHits = ["Transport", "Kick", "Snare", "Hat"];
 
-  constructor(containerSelector) {
-    this.wrapper = d3.select(containerSelector);
-
+  constructor(containerSelector, d3) {
+    this.d3 = d3;
+    this.wrapper = this.d3.select(containerSelector);
   }
 
 

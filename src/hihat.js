@@ -1,9 +1,6 @@
-const Tone = require("tone");
-
-
 class HiHat {
 
-  constructor() {
+  constructor(Tone) {
     this.noise = new Tone.NoiseSynth({
       noise:    { type: "pink" },
       envelope: { attack: 0.002, decay: 0.05, sustain: 0.03 }

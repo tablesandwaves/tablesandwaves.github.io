@@ -1,9 +1,6 @@
-const Tone = require("tone");
-
-
 class Kick {
 
-  constructor() {
+  constructor(Tone) {
     this.kick = new Tone.MembraneSynth();
 
     let gate          = new Tone.Gate(-50)
