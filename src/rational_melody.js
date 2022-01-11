@@ -7,8 +7,7 @@ class RationalMelody {
 
   constructor(noteList) {
     this.noteList = noteList;
-    this.sequence = new Array(RationalMelody.xvStepLength).fill(-1);
-
+    this.sequence     = [];
     this.midiSequence = [];
     this.noteSequence = [];
   }
@@ -23,8 +22,13 @@ class RationalMelody {
 
   #xv() {
 
+    this.sequence    = new Array(RationalMelody.xvStepLength).fill(-1);
+    this.sequence[0] = this.noteList[0];
+    this.sequence[1] = this.noteList[1];
+
     let contiguousSequence, currentNote, stepAmount, nextNote;
-    let nextEmpty = 0, count = 0;
+    let nextEmpty = this.sequence.findIndex(note => note == -1),
+        count = 2;
 
     // Build a self replicating melody by powers of 2 until all notes are filled.
     do {
@@ -36,7 +40,7 @@ class RationalMelody {
 
         // Determine the self replicating step amounts by computing the powers of 2 for
         // non-redundant step amounts based on the target length
-        for (let power = 1; power < Math.log2(RationalMelody.xvStepLength); power++) {
+        for (let power = 1; power <= Math.log2(RationalMelody.xvStepLength); power++) {
           stepAmount = 2**power;
 
           // Fill in the melody's future step indices with the current replicating note.
