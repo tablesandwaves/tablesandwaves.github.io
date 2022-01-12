@@ -51,7 +51,7 @@ const hitIndexMap       = {"Kick": 0, "Snare": 1, "Hat": 2};
 
 let toneStarted = false, beat = -1, sequencerBeat = -1, stepDivisor = 2,
     pianoRoll, drumGrid, currentNote,
-    algorithm, seed, size, tonic;
+    algorithm, seed, size, tonic, rhythm;
 
 let drumBeat = [
   [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0],
@@ -83,10 +83,11 @@ const playNote = (midiNote) => {
 const generateSequence = () => {
   if (document.getElementById("infinity-series") !== null) {
 
-    tonic = document.getElementById("tonic").value;
-    seed  = parseInt(document.getElementById("seed-distance").value);
-    size  = parseInt(document.getElementById("series-length").value);
-    algorithm = new InfinitySeries(size, seed, tonic);
+    tonic  = document.getElementById("tonic").value;
+    seed   = parseInt(document.getElementById("seed-distance").value);
+    size   = parseInt(document.getElementById("series-length").value);
+    rhythm = getRhythm();
+    algorithm = new InfinitySeries(size, seed, tonic, rhythm);
     document.querySelector("#infinity-series .sequence").textContent = algorithm.sequence.join(" ");
 
   } else if (document.getElementById("rational-melody") !== null) {
@@ -95,9 +96,20 @@ const generateSequence = () => {
                         .map(option => noteData.findIndex(n => n.note_full == option.value));
     // Tonic is being set here because it is neweded for rendering the piano roll.
     tonic     = noteData[noteList.slice(0).sort()[0]].note_full;
-    algorithm = new RationalMelody(noteList);
+    rhythm    = getRhythm();
+    algorithm = new RationalMelody(noteList, rhythm);
     algorithm.generate("xv");
 
+  }
+}
+
+
+const getRhythm = () => {
+  if (document.getElementById("apply-rhythm").checked) {
+    return Array.from(document.querySelectorAll("#rhythm button:enabled"))
+                .map(b => b.classList.contains("active") ? 1 : 0);
+  } else {
+    return [];
   }
 }
 
@@ -142,7 +154,7 @@ const enableDisableRhythmSteps = (event) => {
 }
 
 
-const setupUi = (result) => {
+const setupUi = () => {
 
   d3.selectAll("#tonic, .input-note")
       .selectAll(".tonic-note")
@@ -153,9 +165,9 @@ const setupUi = (result) => {
       .attr("value", n => n.note_full)
       .text(n => n.note_full);
 
-  let centerNote = 60;
+  let seedNotes = [60, 72, 63, 67, 67];
   document.querySelectorAll("#tonic, .input-note").forEach((selectList, i) => {
-    let noteName = noteData[centerNote + i].note_full;
+    let noteName = noteData[seedNotes[i]].note_full;
     selectList.querySelector(`option[value="${noteName}"]`).setAttribute("selected", "selected");
   });
 

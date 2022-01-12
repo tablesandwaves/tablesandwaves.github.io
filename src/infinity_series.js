@@ -1,13 +1,14 @@
-const noteData = require("./note_data.js");
+const noteData = require("./note_data");
 const Weft     = require("./weft");
 
 
 class InfinitySeries {
 
-  constructor(size, seed, tonic) {
-    this.size  = size  == undefined ?   16 : size;
-    this.seed  = seed  == undefined ?    1 : seed;
-    this.tonic = tonic == undefined ? "C4" : tonic;
+  constructor(size, seed, tonic, rhythm) {
+    this.size   = size   == undefined ?   16 : size;
+    this.seed   = seed   == undefined ?    1 : seed;
+    this.tonic  = tonic  == undefined ? "C4" : tonic;
+    this.rhythm = rhythm == undefined ?   [] : rhythm;
 
     this.sequence     = [];
     this.midiSequence = [];
@@ -37,12 +38,7 @@ class InfinitySeries {
   #generateMidiSequence() {
     let tonicIndex    = noteData.findIndex(n => n.note_full == this.tonic);
     this.midiSequence = this.sequence.map(n => n + tonicIndex);
-
-    if (document.getElementById("apply-rhythm").checked) {
-      let rhythm   = Array.from(document.querySelectorAll("#rhythm button:enabled"))
-                          .map(b => b.classList.contains("active") ? 1 : 0);
-      this.midiSequence = new Weft(this.midiSequence).rhythm(rhythm, "wrap");
-    }
+    if (this.rhythm.length > 0) this.midiSequence = new Weft(this.midiSequence).rhythm(this.rhythm, "wrap");
   }
 
 

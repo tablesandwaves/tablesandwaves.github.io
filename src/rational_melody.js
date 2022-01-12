@@ -1,12 +1,15 @@
-const noteData = require("./note_data.js");
+const noteData = require("./note_data");
+const Weft     = require("./weft")
 
 
 class RationalMelody {
 
   static xvStepLength = 31;
 
-  constructor(noteList) {
+  constructor(noteList, rhythm) {
     this.noteList = noteList;
+    this.rhythm   = rhythm;
+
     this.sequence     = [];
     this.midiSequence = [];
     this.noteSequence = [];
@@ -57,8 +60,8 @@ class RationalMelody {
     } while (nextEmpty != -1);
 
     // For this algorithm, the sequence is already based on MIDI note numbers.
-    this.midiSequence = this.sequence;
-    this.noteSequence = this.midiSequence.map(midiNum => noteData[midiNum].note_full);
+    this.midiSequence = this.rhythm.length == 0 ? this.sequence : new Weft(this.sequence).rhythm(this.rhythm, "wrap");
+    this.noteSequence = this.midiSequence.map(midiNum => midiNum == null ? "REST" : noteData[midiNum].note_full);
   }
 }
 
