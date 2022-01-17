@@ -4,11 +4,11 @@ const Weft     = require("./weft")
 
 class RationalMelody {
 
-  static xvStepLength = 31;
+  static xvStepLength = 15;
 
   constructor(noteList, rhythm) {
     this.noteList = noteList;
-    this.rhythm   = rhythm;
+    this.rhythm   = rhythm == undefined ? [] : rhythm;
 
     this.sequence     = [];
     this.midiSequence = [];

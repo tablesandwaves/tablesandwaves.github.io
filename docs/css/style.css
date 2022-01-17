@@ -238,3 +238,39 @@ body {
 #content a:hover {
   text-decoration: underline;
 }
+
+
+#content table#self-replicating-melody {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+
+#content table#self-replicating-melody tbody th,
+#content table#self-replicating-melody thead th.first {
+  text-align: right;
+  padding-right: 15px;
+  width: 20%;
+}
+
+
+#content table#self-replicating-melody tbody td {
+  text-align: center;
+}
+
+
+#content table#self-replicating-melody th,
+#content table#self-replicating-melody td {
+  background-color: #fff;
+}
+
+
+#content table#self-replicating-melody th.active,
+#content table#self-replicating-melody td.active {
+  background-color: yellow;
+}
+
+
+#content p.highlight-ratio {
+  text-align: center;
+}

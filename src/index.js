@@ -200,10 +200,28 @@ const renderMidiSequence = () => {
 }
 
 
-const setupRejected = (err) => {
-  console.log(err);
-  throw new Error("Setup failed", { cause: err });
-};
+const highlightRatios = (event) => {
+  let allCellSelector = "#self-replicating-melody td";
+  let addedCellIndices = new Array();
+  document.querySelectorAll(allCellSelector).forEach((cell, i) => {
+    if (cell.textContent == event.target.value) {
+      cell.classList.add("active");
+      addedCellIndices.push(i);
+    } else {
+      cell.classList.remove("active");
+    }
+  });
+
+  let addedNoteIndices = addedCellIndices.map(index => index % 15);
+  let noteCellSelector = "#self-replicating-melody thead th:not(.first)";
+  document.querySelectorAll(noteCellSelector).forEach((cell, i) => {
+    if (addedNoteIndices.includes(i)) {
+      cell.classList.add("active");
+    } else {
+      cell.classList.remove("active");
+    }
+  })
+}
 
 
 const ready = () => {
@@ -228,6 +246,7 @@ const ready = () => {
   document.getElementById("step-rate").addEventListener("input", updateStepRate);
   document.getElementById("rhythm-step-count").addEventListener("change", enableDisableRhythmSteps);
   document.getElementById("apply-rhythm").addEventListener("change", toggleRhythmDisplay);
+  document.getElementById("ratio-index").addEventListener("change", highlightRatios)
 }
 
 

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Self Similar Melody Experiments | Tables &amp; Waves</title>
+  <link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+<body>
+<div id="content">
+
+<h1>Tables &amp; Waves</h1>
+
+<div id="rational-melody">
+  <h2>Self Similarity</h2>
+
+  <div id="series-details">
+    <div id="controls">
+      <strong>Note List:</strong>
+      <select class="input-note"></select>
+      <select class="input-note"></select>
+      <select class="input-note"></select>
+      <select class="input-note"></select>
+      <select class="input-note"></select>
+      <button type="button" name="generate" id="generate">Generate</button>
+    </div>
+    <div id="rhythm" class="active">
+      <label>
+        <input type="checkbox" name="apply-rhythm" id="apply-rhythm" checked>
+        <strong>Apply Rhythm:</strong>
+      </label>
+      <button type="button" class="active"></button>
+      <button type="button" class="active"></button>
+      <button type="button" class="active"></button>
+      <button type="button"></button>
+      <button type="button"></button>
+      <button type="button" class="active"></button>
+      <button type="button" class="active"></button>
+      <button type="button"></button>
+      <button type="button" class="active"></button>
+      <button type="button"></button>
+      <strong>Steps:</strong>
+      <input type="number" name="rhythm-step-count" id="rhythm-step-count" value="12" size="2" min="2" max="12">
+    </div>
+  </div>
+
+  <div id="play">
+    <div id="play-button-wrapper">
+      <button type="button" name="play-pause" id="play-pause" disabled>Play / Pause</button>
+    </div>
+    <div id="step-rate-wrapper">
+      BPM: <span id="bpm-value">128</span>
+      <input type="range" min="60" max="220" value="128" class="slider" id="bpm" disabled>
+      Step Rate:
+      <select name="step-rate" id="step-rate" disabled>
+        <option>4N</option>
+        <option selected>8N</option>
+        <option>16N</option>
+      </select>
+    </div>
+  </div>
+
+  <svg class="piano-roll" width="1080" height="360"></svg>
+  <div id="current-sequence">
+    <span class="sequence"></span>
+  </div>
+
+  <div id="drum-wrapper">
+    <div id="drum-machine"></div>
+  </div>
+
+  <div class="about">
+    <h3>About Self Similar Melodies</h3>
+    <p>
+      The form of self-similar melodies demonstrated here are note sequences that self replicate at multiple rhythms. For example, it is possible to construct a melodic line that plays the same sequence of notes if you play every note in order and also when you play every other note or every fourth note. The composer Tom Johnson used this technique for his composition "Rational Melody XV" and included this composition in his Illustrated Music series on YouTube <a href="#citation-1">[1]</a>. (As an aside, this video series is excellent and includes a number of great visual examples of many different algorithmic composition techniques. Just go watch them!)
+    </p>
+    <p>
+      Here is a linear reprepsentation of a melody that self replicates at the ratios of 1:1, 2:1, 4:1 and 8:1.
+    </p>
+    <p class="highlight-ratio">
+      <strong>Highlight Ratio Index:</strong>
+      <select id="ratio-index" name="ratio-index">
+        <option>-None-</option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+        <option>6</option>
+        <option>7</option>
+        <option>8</option>
+        <option>9</option>
+        <option>10</option>
+        <option>11</option>
+        <option>12</option>
+        <option>13</option>
+        <option>14</option>
+        <option>15</option>
+      </select>
+    </p>
+    <table id="self-replicating-melody">
+      <thead>
+        <tr>
+          <th class="first">Note Sequence</th>
+          <th>C2</th>
+          <th>D2</th>
+          <th>D2</th>
+          <th>Eb2</th>
+          <th>D2</th>
+          <th>F2</th>
+          <th>Eb2</th>
+          <th>G2</th>
+          <th>D2</th>
+          <th>Eb2</th>
+          <th>F2</th>
+          <th>G2</th>
+          <th>Eb2</th>
+          <th>G2</th>
+          <th>G2</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>1:1 Note Index</th>
+          <td>1</td>
+          <td>2</td>
+          <td>3</td>
+          <td>4</td>
+          <td>5</td>
+          <td>6</td>
+          <td>7</td>
+          <td>8</td>
+          <td>9</td>
+          <td>10</td>
+          <td>11</td>
+          <td>12</td>
+          <td>13</td>
+          <td>14</td>
+          <td>15</td>
+        </tr>
+        <tr>
+          <th>2:1 Note Index</th>
+          <td>1</td>
+          <td>9</td>
+          <td>2</td>
+          <td>10</td>
+          <td>3</td>
+          <td>11</td>
+          <td>4</td>
+          <td>12</td>
+          <td>5</td>
+          <td>13</td>
+          <td>6</td>
+          <td>14</td>
+          <td>7</td>
+          <td>15</td>
+          <td>8</td>
+        </tr>
+        <tr>
+          <th>4:1 Note Index</th>
+          <td>1</td>
+          <td>5</td>
+          <td>9</td>
+          <td>13</td>
+          <td>2</td>
+          <td>6</td>
+          <td>10</td>
+          <td>14</td>
+          <td>3</td>
+          <td>7</td>
+          <td>11</td>
+          <td>15</td>
+          <td>4</td>
+          <td>8</td>
+          <td>12</td>
+        </tr>
+        <tr>
+          <th>8:1 Note Index</th>
+          <td>1</td>
+          <td>3</td>
+          <td>5</td>
+          <td>7</td>
+          <td>9</td>
+          <td>11</td>
+          <td>13</td>
+          <td>15</td>
+          <td>2</td>
+          <td>4</td>
+          <td>6</td>
+          <td>8</td>
+          <td>10</td>
+          <td>12</td>
+          <td>14</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      To see what this table is trying illustrate, let's start with the top, header row. This row is the self-similar melody itself as a sequence of 15 notes. The sequence length is important and we'll get to the reason why 15 notes was chosen will below. The second row is the indices of melody at the most basic one-to-one (1:1) ratio. Because this ratio is 1:1, the note sequence in the header row and the note indices (1-15) of the sequence line up with each other.
+    </p>
+    <p>
+      Things get interesting at the ratios that are not one-to-one. The third row in the table shows the <strong>2:1 Note Index</strong>. This row simply counts by twos and (as all the subsequent rows do) it <em>wraps around</em> the sequence back to the beginning to continue counting when it runs out of columns. For a 15 note sequence, when counting by 2, the first pass through the sequence will be able to count up to 8. Then for the 9th index, it must go back to the beginning. It is important to note that when wrapping around, you still should <em>count by</em> N as you wrap around. Therefore, index 9 in this row is not the first note in the sequence, it is the second. This is because for a 15 note sequence, index 8 when counting by twos is the last note. The next note needs to be skipped and so the next skipped note is the first note in the second pass through the sequence.
+    </p>
+    <p>
+      The process that is used for the ratio 2:1 is also applied to 4:1 and 8:1 with the only difference being the "count by" amounts.
+    </p>
+    <p>
+      If you can follow things this far, let's now get to the observation that demonstrates why the sequence self replicates at multiple rhythms as noted above. <strong>The note corresponding to an index at any of the replication ratios is always the same.</strong> To see how this is true for the sequence example in this table, choose different note index values for the dropdown menu <strong>Highlight Ratio Index</strong>. These indexes will be highlighted in the table and the note corresponding to these indices will also be highlighted. No matter what index you choose, the highlighted notes are always the same note.
+    </p>
+    <h4>Sequence Length</h4>
+    <p>
+
+    </p>
+
+    <h4>Basic Implementation</h4>
+    <p>
+      Below is a basic implementation for generating this kind of self-replicating melody in JavaScript. It will produce self-replication at powers of 2. It is not extremely efficient and may end up overwriting values in the sequence (with their previous value of course). It works by seeding the first two sequence steps from a list of notes and then repeatedly filling out the remaining steps until the sequence at powers of 2 until the sequence is complete. Copy the code and log the state of the sequence at each iteration of the loop to see how it progresses.
+    </p>
+<pre>
+const selfReplicate = (noteList, length) => {
+
+  let sequence = new Array(length).fill(-1);
+  sequence[0]  = noteList[0];
+  sequence[1]  = noteList[1];
+
+  let contiguousSequence, currentNote, stepAmount, nextNote;
+  let nextEmpty = sequence.findIndex(note => note == -1),
+      count = 2;
+
+  // Build a self replicating melody by powers of 2 until all notes are filled.
+  do {
+    contiguousSequence = sequence.slice(0, nextEmpty);
+
+    for (let noteIndex = 0; noteIndex < contiguousSequence.length; noteIndex++) {
+      // For each note in the contiguous sequence...
+      currentNote = contiguousSequence[noteIndex];
+
+      // Determine the self replicating step amounts by computing the powers of 2 for
+      // non-redundant step amounts based on the target length
+      for (let power = 1; power <= Math.log2(length); power++) {
+        stepAmount = 2**power;
+
+        // Fill in the melody's future step indices with the current replicating note.
+        sequence[(noteIndex * stepAmount) % length] = currentNote;
+      }
+    }
+
+    // If the sequence still has empty spots, find the first one and fill it with the next
+    // note in the input note list.
+    nextNote  = noteList[count % noteList.length];
+    nextEmpty = sequence.findIndex(note => note == -1);
+    if (nextEmpty != -1) sequence[nextEmpty] = nextNote;
+    count++;
+  } while (nextEmpty != -1);
+
+  return sequence;
+}
+
+
+let noteList = ["C2", "D2", "Eb2", "F2", "G2"];
+let length   = 15;
+let sequence = selfReplicate(noteList, length);
+</pre>
+
+    <h4>References</h4>
+    <ol class="citations">
+      <li>
+        <span class="citation" id="citation-1">
+          Johnson, Tom. "Illustrated Music #6, Rational Melody XV." <em>Illustrated Music.</em> 14 Aug. 2018. <a href="https://www.youtube.com/watch?v=Bqn7cLC6bak">https://www.youtube.com/watch?v=Bqn7cLC6bak</a>
+        </span>
+      </li>
+    </ol>
+  </div>
+</div>
+
+</div>
+<script src="js/main.js"></script>
+</body>
+</html>
