@@ -15,7 +15,9 @@ body {
 }
 
 
-#content #infinity-series,
+#content nav,
+#content .main,
+#content #portrait,
 #content #series-details,
 #content #series-details #controls,
 #content #series-details #current-sequence,
@@ -25,9 +27,72 @@ body {
 #content #rhythm,
 #content #drum-machine #drum-labels,
 #content #drum-machine #drum-labels .drum-label,
-#content #drum-machine .drum-step {
+#content #drum-machine .drum-step,
+#content ul#experiments
+#content ul#experiments li {
   position: relative;
   float: left;
+}
+
+
+#content nav {
+  width: 100%;
+  z-index: 9;
+}
+
+
+#content nav ul {
+  list-style: none;
+  margin: 0 0 0 15px;
+  padding: 0;
+  display: flex;
+}
+
+
+#content nav ul li {
+  display: inline;
+  margin: 0;
+}
+
+
+#content nav ul li a,
+#content nav ul li span {
+  display: inline-block;
+  padding: 10px 30px;
+  text-decoration: none;
+  font-weight: bold;
+  color: #09c;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+
+
+#content nav ul li a:hover {
+  text-decoration: none;
+}
+
+
+#content nav ul li span.selected {
+  border-bottom: 1px solid #fff;
+  color: #333;
+}
+
+
+#content .main {
+  width: 100%;
+  margin-top: -1px;
+  border-top: 1px solid #ccc;
+}
+
+
+#content h2 {
+  /* margin-top: 0; */
+}
+
+
+#content p.breadcrumbs {
+  font-size: .9em;
+  margin: 2em 0;
 }
 
 
@@ -250,7 +315,7 @@ body {
 #content table#self-replicating-melody thead th.first {
   text-align: right;
   padding-right: 15px;
-  width: 20%;
+  width: 150px;
 }
 
 
@@ -273,4 +338,76 @@ body {
 
 #content p.highlight-ratio {
   text-align: center;
+}
+
+
+#portrait {
+  width: 100%;
+  height: 641px;
+  background-position: left top;
+  background-repeat: no-repeat;
+  background-size: 1080px;
+  background-image: linear-gradient(rgba(255,255,255,1), rgba(0,0,0,0)),
+                    url("../images/portrait-3.1.jpg");
+  border-bottom: 5px solid #333;
+}
+
+
+#content ul#experiments {
+  list-style: none;
+  padding-left: 0;
+}
+
+
+#content ul#experiments li {
+  width: 100%;
+  height: 200px;
+  font-size: 2em;
+  background-position: left top;
+  background-repeat: no-repeat;
+  background-size: 1080px;
+  margin-top: 1em;
+}
+
+
+#content ul#experiments li a {
+  display: block;
+  width: 100%;
+  height: 200px;
+}
+
+
+#content ul#experiments li a:hover {
+  text-decoration: none;
+  color: #333;
+}
+
+
+#content ul#experiments li.infinity-series {
+  background-image: linear-gradient(to right, rgba(255,255,255,1), rgba(0,0,0,0)),
+                    url("../infinity-series/images/infinity-series-growth-rate.jpg");
+}
+
+
+#content ul#experiments li.self-similarity {
+  background-image: linear-gradient(to right, rgba(255,255,255,1), rgba(0,0,0,0)),
+                    url("../self-similarity/images/self-similarity-piano-roll.jpg");
+}
+
+
+#content ul#experiments li a span {
+  display: block;
+  font-size: .5em;
+  color: #111;
+}
+
+
+#content ul#experiments li a:hover span {
+  color: #09c;
+}
+
+
+#content #wtf {
+  width: 1040px;
+  padding: 10px 20px 20px 20px;
 }

@@ -10,7 +10,21 @@
 
 <h1>Tables &amp; Waves</h1>
 
-<div id="rational-melody">
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><span class="selected">Experiments</span></li>
+    <li><a href="../about">WTF is This?</a></li>
+  </ul>
+</nav>
+
+<div id="self-similarity" class="main">
+  <p class="breadcrumbs">
+    <a href="../">Tables &amp; Waves</a> &raquo;
+    <a href="../experiments">Experiments</a> &raquo;
+    Self Similarity
+  </p>
+
   <h2>Self Similarity</h2>
 
   <div id="series-details">
@@ -203,17 +217,22 @@
       The process that is used for the ratio 2:1 is also applied to 4:1 and 8:1 with the only difference being the "count by" amounts.
     </p>
     <p>
-      If you can follow things this far, let's now get to the observation that demonstrates why the sequence self replicates at multiple rhythms as noted above. <strong>The note corresponding to an index at any of the replication ratios is always the same.</strong> To see how this is true for the sequence example in this table, choose different note index values for the dropdown menu <strong>Highlight Ratio Index</strong>. These indexes will be highlighted in the table and the note corresponding to these indices will also be highlighted. No matter what index you choose, the highlighted notes are always the same note.
+      If you can follow things this far, let's now get to the observation that demonstrates why the sequence self replicates at multiple rhythms as noted above. <strong>The note corresponding to an index at any of the replication ratios is always the same.</strong> To see how this is true for the sequence example in this table, choose different note index values for the dropdown menu <strong>Highlight Ratio Index</strong>. These indexes will be highlighted in the table and the note corresponding to these indices will also be highlighted. No matter what index you choose, the highlighted notes in the top row are always the same note.
     </p>
-    <!-- <h4>Sequence Length</h4>
-    <p>
 
-    </p> -->
+    <h4>Sequence Length</h4>
+    <p>
+      One important thing to note about generating these sequences is that that the sequence length (number of notes) matters. In his book <em>Self-Similar Melodies</em>, Johnson writes of melodic loops, "The limitation is that if you want one to be self-replicating at the ration of n : 1, n has to be prime with the number of notes in the loop" (p. 237) <a href="#citation-2">[2]</a>. (As another aside, go read this book! It is a treasure trove of techniques for generative melodies.) For practical purposes in my own work, I simply use sequence lengths of <code>2<sup>n</sup> - 1</code> because I am also only generating sequences that self-replicate at rations of <code>2<sup>n</sup></code>. This preserves the ability to let a sequence loop and maintain self-similarity.
+    </p>
+    <p>
+      In Johnson's vide for "Rational Melody XV" he mentions the French researcher Emmanuel Amiot as a leading expert on self-similar melodies, which Amiot calls "autosimilar melodies." For an in-depth (though beyond my personal comprehension) look at the math behind self-similar melodies, see Amiot's article "Autosimilar Melodies" <a href="#citation-3">[3]</a>.
+    </p>
 
     <h4>Basic Implementation</h4>
     <p>
       Below is a basic implementation for generating this kind of self-replicating melody in JavaScript. It will produce self-replication at powers of 2. It is not extremely efficient and may end up overwriting values in the sequence (with their previous value of course). It works by seeding the first two sequence steps from a list of notes and then repeatedly filling out the remaining steps until the sequence at powers of 2 until the sequence is complete. Copy the code and log the state of the sequence at each iteration of the loop to see how it progresses.
     </p>
+
 <pre>
 const selfReplicate = (noteList, length) => {
 
@@ -265,6 +284,16 @@ let sequence = selfReplicate(noteList, length);
       <li>
         <span class="citation" id="citation-1">
           Johnson, Tom. "Illustrated Music #6, Rational Melody XV." <em>Illustrated Music.</em> 14 Aug. 2018. <a href="https://www.youtube.com/watch?v=Bqn7cLC6bak">https://www.youtube.com/watch?v=Bqn7cLC6bak</a>
+        </span>
+      </li>
+      <li>
+        <span class="citation" id="citation-2">
+          Johnson, Tom. <em>Self-Similar Melodies.</em> 1996. Fourth printing, Editions 75, 2017.
+        </span>
+      </li>
+      <li>
+        <span class="citation" id="citation-3">
+          Amiot, Emmanuel. "Autosimilar Melodies." <em>Journal of Mathematics and Music</em>, vol. 2, no. 3, 2008, pp. 157-180. DOI: 10.1080/17459730802598146
         </span>
       </li>
     </ol>

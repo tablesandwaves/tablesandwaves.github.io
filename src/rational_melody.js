@@ -4,7 +4,7 @@ const Weft     = require("./weft")
 
 class RationalMelody {
 
-  static xvStepLength = 15;
+  static xvStepLength = 31;
 
   constructor(noteList, rhythm) {
     this.noteList = noteList;

@@ -3,14 +3,28 @@
 <head>
   <meta charset="utf-8" />
   <title>Infinity Series | Tables &amp; Waves</title>
-  <link rel="stylesheet" href="css/style.css" type="text/css">
+  <link rel="stylesheet" href="../css/style.css" type="text/css">
 </head>
 <body>
 <div id="content">
 
 <h1>Tables &amp; Waves</h1>
 
-<div id="infinity-series" class="faux-daw">
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><span class="selected">Experiments</span></li>
+    <li><a href="../about">WTF is This?</a></li>
+  </ul>
+</nav>
+
+<div id="infinity-series" class="main">
+  <p class="breadcrumbs">
+    <a href="../">Tables &amp; Waves</a> &raquo;
+    <a href="../experiments">Experiments</a> &raquo;
+    Infinity Series
+  </p>
+
   <h2>Infinity Series</h2>
 
   <div id="series-details">
@@ -127,7 +141,7 @@ const infinitySeries = (size, seed) => {
       The last observation to make here is a very specific mathematical property about the intervalic growth rate of the sequence. See the figure below of the first 64 notes of the infinity series as rendered on a <a href="https://en.wikipedia.org/wiki/Digital_audio_workstation">DAW</a>-style piano roll (just a screenshot of the piano roll above).
     </p>
     <p>
-      <img src="images/infinity-series-growth-rate.png" alt="Infinity Series Growth Rate" width="100%">
+      <img src="images/infinity-series-growth-rate.jpg" alt="Infinity Series Growth Rate" width="100%">
       <small>Figure: Infinity Series Growth Rate by Powers of 2<sup><em>n</em></sup></small>
     </p>
     <p>
@@ -166,6 +180,6 @@ const infinitySeries = (size, seed) => {
 </div>
 
 </div>
-<script src="js/main.js"></script>
+<script src="../js/main.js"></script>
 </body>
 </html>

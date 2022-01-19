@@ -90,7 +90,7 @@ const generateSequence = () => {
     algorithm = new InfinitySeries(size, seed, tonic, rhythm);
     document.querySelector("#infinity-series .sequence").textContent = algorithm.sequence.join(" ");
 
-  } else if (document.getElementById("rational-melody") !== null) {
+  } else if (document.getElementById("self-similarity") !== null) {
 
     let noteList = Array.from(document.querySelectorAll(".input-note"))
                         .map(option => noteData.findIndex(n => n.note_full == option.value));
@@ -246,7 +246,8 @@ const ready = () => {
   document.getElementById("step-rate").addEventListener("input", updateStepRate);
   document.getElementById("rhythm-step-count").addEventListener("change", enableDisableRhythmSteps);
   document.getElementById("apply-rhythm").addEventListener("change", toggleRhythmDisplay);
-  document.getElementById("ratio-index").addEventListener("change", highlightRatios)
+  const ratioIndex = document.getElementById("ratio-index");
+  if (ratioIndex != undefined) ratioIndex.addEventListener("change", highlightRatios);
 }
 
 
