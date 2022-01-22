@@ -21,6 +21,10 @@ body {
 #content #series-details,
 #content #series-details #controls,
 #content #series-details #current-sequence,
+#content #motif,
+#content #motif h3,
+#content #motif .data,
+#content .about,
 #content #play,
 #content #play #play-button-wrapper,
 #content #play #step-rate-wrapper,
@@ -152,7 +156,9 @@ body {
 }
 
 
-#content select, #content input[type="text"] {
+#content select,
+#content input[type="text"],
+#content input#motif-length {
   margin-right: 1em;
 }
 
@@ -273,6 +279,11 @@ body {
 #drum-machine .drum-step button.transport {
   background-color: #999;
   border: 1px solid #bbb;
+}
+
+
+.about {
+  margin-top: 2em;
 }
 
 
@@ -410,4 +421,22 @@ body {
 #content #wtf {
   width: 1040px;
   padding: 10px 20px 20px 20px;
+}
+
+
+#content #motif {
+  width: 100%;
+}
+
+
+#content #motif h3 {
+  margin: 0;
+  width: 130px;
+  padding-right: 20px;
+  text-align: right;
+}
+
+
+#content #motif .data {
+  width: 930px;
 }

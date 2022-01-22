@@ -100,6 +100,12 @@ const generateSequence = () => {
     algorithm = new RationalMelody(noteList, rhythm);
     algorithm.generate("xv");
 
+  } else if (document.getElementById("scales-as-vectors") !== null) {
+
+    console.log("wefty")
+    setupScaleVectorData();
+    updateScaleDegreeList(parseInt(document.getElementById("motif-length").value));
+
   }
 }
 
@@ -221,6 +227,34 @@ const highlightRatios = (event) => {
       cell.classList.remove("active");
     }
   })
+}
+
+
+const addScaleDegreeOption = (selectionEntrance) => {
+  const scaleDegrees = [1, 2, 3, 4, 5, 6, 7, 0];
+  return selectionEntrance.append("select").selectAll(".scale-degree")
+              .data(scaleDegrees)
+            .enter()
+              .append("option")
+              .attr("class", "scale-degree")
+              .attr("value", d => d)
+              .text(d => d == 0 ? "rest" : d);
+}
+
+
+const updateScaleDegreeList = (numNotes) => {
+
+  d3.select("#scale-degrees").selectAll("select")
+      .data(new Array(numNotes).fill(1)) // the array element values does not matter
+      .join(addScaleDegreeOption, () => {}, exit => exit.remove());
+}
+
+
+const setupScaleVectorData = () => {
+
+  document.getElementById("motif-length").addEventListener("change", (event) => {
+    updateScaleDegreeList(parseInt(event.target.value));
+  });
 }
 
 

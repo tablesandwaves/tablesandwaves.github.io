@@ -14,6 +14,19 @@ class Weft {
   }
 
 
+  shift(shiftPattern) {
+    let transformedSequence = new Array();
+
+    for (let i = 0; i < this._sequence.length; i++)
+      if (this._sequence == 0)
+        transformedSequence.push(this._sequence);
+      else
+        transformedSequence.push(this._sequence + shiftPattern[i % shiftPattern.length]);
+
+    return transformedSequence;
+  }
+
+
   rhythm(rhythm, fillMode) {
     let transformedSequence  = new Array();
     let transformedSeqLength = this.calculateLength(rhythm);
