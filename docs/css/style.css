@@ -23,12 +23,20 @@ body {
 #content #series-details #current-sequence,
 #content #motif,
 #content #motif h3,
-#content #motif .data,
+#content #shifts,
+#content #shifts h3,
+#content #rhythm h3,
+#content .data,
 #content .about,
+#content #transformations,
+#content #transformations li.transform,
+#content .transform-type,
+#content #add-transform,
 #content #play,
 #content #play #play-button-wrapper,
 #content #play #step-rate-wrapper,
 #content #rhythm,
+#content .rhythm,
 #content #drum-machine #drum-labels,
 #content #drum-machine #drum-labels .drum-label,
 #content #drum-machine .drum-step,
@@ -116,7 +124,8 @@ body {
 }
 
 
-#content #rhythm {
+#content #infinity-series #rhythm,
+#content #self-similarity #rhythm {
   width: 548px;
   padding: 5px;
   text-align: center;
@@ -125,7 +134,8 @@ body {
 }
 
 
-#content #rhythm.active {
+#content #infinity-series #rhythm.active,
+#content #self-similarity #rhythm.active {
   background-color: #eee;
 }
 
@@ -158,8 +168,18 @@ body {
 
 #content select,
 #content input[type="text"],
-#content input#motif-length {
+#content input#motif-length,
+#content input#shift-seq-length,
+#content input#rhythm-step-count {
   margin-right: 1em;
+}
+
+
+#content input#motif-length,
+#content input#shift-seq-length,
+#content input#rhythm-step-count {
+  width: 30px;
+  text-align: right;
 }
 
 
@@ -194,7 +214,8 @@ body {
 }
 
 
-#content #rhythm button {
+#content #rhythm button,
+#content .rhythm button {
   position: relative;
   width: 100%;
   vertical-align: middle;
@@ -424,19 +445,49 @@ body {
 }
 
 
-#content #motif {
+#content #motif,
+#content #shifts {
   width: 100%;
 }
 
 
-#content #motif h3 {
+#content #motif h3,
+#content #shifts h3,
+#content #rhythm h3 {
   margin: 0;
-  width: 130px;
-  padding-right: 20px;
+  width: 120px;
+  padding-right: 50px;
   text-align: right;
 }
 
 
-#content #motif .data {
-  width: 930px;
+#content .data {
+  width: 910px;
+}
+
+
+#scales-as-vectors #rhythm,
+#scales-as-vectors #shifts {
+  margin-top: 1em;
+}
+
+
+#scales-as-vectors .data .control-label {
+  display: inline-block;
+  width: 125px;
+  text-align: right;
+  margin-right: .5em;
+}
+
+
+#scales-as-vectors .data select {
+  width: 32px;
+  border-color: #aaa;
+  margin: auto 14px auto auto;
+}
+
+
+#scales-as-vectors #rhythm .data button {
+  width: 28px;
+  margin: 0 14px 0 0;
 }

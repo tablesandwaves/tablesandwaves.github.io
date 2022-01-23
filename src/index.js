@@ -103,8 +103,8 @@ const generateSequence = () => {
   } else if (document.getElementById("scales-as-vectors") !== null) {
 
     console.log("wefty")
-    setupScaleVectorData();
-    updateScaleDegreeList(parseInt(document.getElementById("motif-length").value));
+    // setupScaleVectorData();
+    // updateScaleDegreeList(parseInt(document.getElementById("motif-length").value));
 
   }
 }
@@ -161,6 +161,11 @@ const enableDisableRhythmSteps = (event) => {
 
 
 const setupUi = () => {
+
+  if (document.getElementById("scales-as-vectors") != undefined) {
+    setupScaleVectorControls();
+    d3.selectAll(".transform-type").on("change", addTransformation);
+  }
 
   d3.selectAll("#tonic, .input-note")
       .selectAll(".tonic-note")
@@ -230,32 +235,85 @@ const highlightRatios = (event) => {
 }
 
 
-const addScaleDegreeOption = (selectionEntrance) => {
-  const scaleDegrees = [1, 2, 3, 4, 5, 6, 7, 0];
-  return selectionEntrance.append("select").selectAll(".scale-degree")
-              .data(scaleDegrees)
-            .enter()
-              .append("option")
-              .attr("class", "scale-degree")
-              .attr("value", d => d)
-              .text(d => d == 0 ? "rest" : d);
-}
+const setupScaleVectorControls = () => {
 
+  const scaleDegrees  = [1, 2, 3, 4, 5, 6, 7, 0];
+  const shiftDegrees  = [0, 1, 2, 3, 4, 5, 6, 7];
+  const defaultMotif  = [1, 5, 0,  5, 3, 0,  7, 0, 0,  4, 1, 0];
+  const defaultShifts = [7, 7, 0,  0, 7, 0,  0, 0, 0,  0, 7, 0];
+  ["#scale-degrees", "#shift-degrees"].forEach(selector => {
+    d3.selectAll(selector).selectAll("select")
+        .data(new Array(12).fill(1)) // the array element values does not matter
+      .enter()
+        .append("select")
+        .selectAll(".scale-degree")
+        .data(selector == "#scale-degrees" ? scaleDegrees : shiftDegrees)
+      .enter()
+        .append("option")
+        .attr("class", "scale-degree")
+        .attr("value", d => d)
+        .text(d => selector == "#scale-degrees" && d == 0 ? "R" : d);
+  });
 
-const updateScaleDegreeList = (numNotes) => {
+  document.querySelectorAll("#scale-degrees select").forEach((select, i) => {
+    let selectedScaleDegree = defaultMotif[i];
+    select.querySelector(`option[value="${selectedScaleDegree}"]`).selected = "selected";
+  });
 
-  d3.select("#scale-degrees").selectAll("select")
-      .data(new Array(numNotes).fill(1)) // the array element values does not matter
-      .join(addScaleDegreeOption, () => {}, exit => exit.remove());
-}
+  document.querySelectorAll("#shift-degrees select").forEach((select, i) => {
+    let selectedScaleDegree = defaultShifts[i];
+    select.querySelector(`option[value="${selectedScaleDegree}"]`).selected = "selected";
+  });
 
+  d3.select("#motif-length").on("change", event => {
+    document.querySelectorAll("#scale-degrees select").forEach((s, i) => {
+      s.disabled = i >= event.target.value ? true : false;
+    });
+  });
 
-const setupScaleVectorData = () => {
+  d3.select("#shift-seq-length").on("change", event => {
+    document.querySelectorAll("#shift-degrees select").forEach((s, i) => {
+      s.disabled = i >= event.target.value ? true : false;
+    });
+  });
 
-  document.getElementById("motif-length").addEventListener("change", (event) => {
-    updateScaleDegreeList(parseInt(event.target.value));
+  d3.select("#rhythm-step-count").on("change", event => {
+    document.querySelectorAll(".rhythm-steps button").forEach((b, i) => {
+      b.disabled = i >= event.target.value ? true : false;
+    });
   });
 }
+
+
+// const setupScaleVectorData = () => {
+//
+//   document.getElementById("motif-length").addEventListener("change", (event) => {
+//     updateScaleDegreeList(parseInt(event.target.value));
+//   });
+//
+//   d3.selectAll(".transform-type").on("change", addTransformation);
+// }
+//
+//
+// const addTransformation = (event) => {
+//   console.log("addTransformation()")
+//   if (event.target.value == "rhythm")
+//     addRhythm(event);
+//
+// }
+//
+//
+// const addRhythm = (event) => {
+//   console.log("addRhythm()")
+//   let rhythmContainer = d3.select(event.target.parentNode.parentNode)
+//       .append("div")
+//       .attr("class", "rhythm active");
+//
+//   rhythmContainer.append("strong").text("Steps:");
+//   rhythmContainer.append("input").attr("type", "number").attr("class", "rhythm-step-count")
+//                  .attr("size", "2").attr("min", "2").attr("max", "12").attr("value", "12");
+//   rhythmContainer.selectAll("button").data(new Array(12).fill(1)).enter().append("button");
+// }
 
 
 const ready = () => {

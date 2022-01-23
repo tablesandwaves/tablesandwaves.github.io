@@ -29,18 +29,44 @@
 
   <div id="sequence-components">
     <div id="motif">
-      <h3>Motif:</h3>
+      <h3>Motif</h3>
       <div class="data">
         <strong>Length:</strong>
-        <input type="number" name="motif-length" id="motif-length" value="6" size="3" min="3" max="8">
-        <strong>Scale Degrees:</strong>
+        <input type="number" name="motif-length" id="motif-length" value="12" size="3" min="3" max="12">
+        <strong class="control-label">Scale Degrees:</strong>
         <span id="scale-degrees"></span>
-        <button type="button" name="generate" id="generate">Generate</button>
       </div>
     </div>
-
-    <div id="controls">
-
+    <div id="shifts">
+      <h3>Shifts</h3>
+      <div class="data">
+        <strong>Length:</strong>
+        <input type="number" name="shift-seq-length" id="shift-seq-length" value="12" size="3" min="3" max="12">
+        <strong class="control-label">Shift Degrees:</strong>
+        <span id="shift-degrees"></span>
+      </div>
+    </div>
+    <div id="rhythm" class="active">
+      <h3>Rhythm</h3>
+      <div class="data">
+        <strong>Length:</strong>
+        <input type="number" name="rhythm-step-count" id="rhythm-step-count" value="8" size="3" min="2" max="12">
+        <strong class="control-label">Rhythmic Steps:</strong>
+        <span class="rhythm-steps">
+          <button type="button" class="active"></button>
+          <button type="button" class="active"></button>
+          <button type="button"></button>
+          <button type="button" class="active"></button>
+          <button type="button"></button>
+          <button type="button"></button>
+          <button type="button" class="active"></button>
+          <button type="button"></button>
+          <button type="button" disabled></button>
+          <button type="button" disabled></button>
+          <button type="button" disabled></button>
+          <button type="button" disabled></button>
+        </span>
+      </div>
     </div>
   </div>
 
