@@ -18,10 +18,10 @@ class Weft {
     let transformedSequence = new Array();
 
     for (let i = 0; i < this._sequence.length; i++)
-      if (this._sequence == 0)
-        transformedSequence.push(this._sequence);
+      if (this._sequence[i] == null)
+        transformedSequence.push(null);
       else
-        transformedSequence.push(this._sequence + shiftPattern[i % shiftPattern.length]);
+        transformedSequence.push(this._sequence[i] + shiftPattern[i % shiftPattern.length]);
 
     return transformedSequence;
   }

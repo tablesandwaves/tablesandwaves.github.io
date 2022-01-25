@@ -19,6 +19,7 @@ const HiHat          = require("./hihat")
 const InfinitySeries = require("./infinity_series");
 const RationalMelody = require("./rational_melody");
 const noteData       = require("./note_data");
+const scaleHelper    = require("./scale_data");
 
 
 const kick  = new Kick(Tone);
@@ -35,22 +36,34 @@ const loop  = new Tone.Loop((time) => {
   if (drumBeat[beat][2] == 1) hihat.hit(time);
 
   if (beat % stepDivisor == 0) {
-    // TODO: deal with changing the sequencer to a shorter length
-    sequencerBeat = sequencerBeat == algorithm.noteSequence.length - 1 ? 0 : sequencerBeat += 1;
-    currentNote = algorithm.noteSequence[sequencerBeat];
+    sequencerBeat += 1;
+    currentStep = sequencerBeat % algorithm.noteSequence.length;
+    currentNote = algorithm.noteSequence[currentStep];
     if (currentNote != "REST") synth.triggerAttackRelease(currentNote, "16n", time);
 
     d3.selectAll("svg .transport .step").attr("fill", "#999");
-    d3.select(`svg .transport .step-${sequencerBeat}`).attr("fill", "yellow");
-  }
+    d3.select(`svg .transport .step-${currentStep}`).attr("fill", "yellow");
 
+    if (cycleRhythm && currentStep == algorithm.noteSequence.length - 1) {
+      let currentCycleLength = parseInt(document.getElementById("rhythm-step-count").value);
+      let maxCycleLength     = parseInt(document.getElementById("rhythm-cycle").value);
+      let nextCycleLength    = currentCycleLength >= maxCycleLength ? 2 : currentCycleLength + 1;
+      document.getElementById("rhythm-step-count").value = nextCycleLength;
+      document.querySelectorAll(".rhythm-steps button").forEach((b, i) => {
+        b.disabled = i >= nextCycleLength ? true : false;
+      });
+      generateSequence();
+      renderPianoRoll();
+      renderMidiSequence();
+    }
+  }
 }, "16n");
 const stepRateModuloMap = {"4N": 4, "8N": 2, "16N": 1};
 const hitIndexMap       = {"Kick": 0, "Snare": 1, "Hat": 2};
 
 
-let toneStarted = false, beat = -1, sequencerBeat = -1, stepDivisor = 2,
-    pianoRoll, drumGrid, currentNote,
+let toneStarted = false, cycleRhythm = false, beat = -1, sequencerBeat = -1, stepDivisor = 2,
+    pianoRoll, drumGrid, currentNote, currentStep,
     algorithm, seed, size, tonic, rhythm;
 
 let drumBeat = [
@@ -102,16 +115,34 @@ const generateSequence = () => {
 
   } else if (document.getElementById("scales-as-vectors") !== null) {
 
-    console.log("wefty")
-    // setupScaleVectorData();
-    // updateScaleDegreeList(parseInt(document.getElementById("motif-length").value));
+    rhythm        = getRhythm(true);
+    tonic         = document.getElementById("tonic").value;
+    let seqLength = document.getElementById("seq-length").value;
+    let scale     = document.getElementById("scale").value;
+    let tonicMidi = noteData.findIndex(n => n.note_full == tonic);
+    let motif     = Array.from(document.querySelectorAll("#motif select"))
+                         .map(select => select.value == 0 ? null : parseInt(select.value));
+    let shifts    = Array.from(document.querySelectorAll("#shifts select"))
+                         .map(select => parseInt(select.value));
+
+    let motifWithRhythm = new Weft(motif).rhythm(rhythm);
+    let motifWithShifts = new Weft(motifWithRhythm).shift(shifts);
+    let sequence;
+    if (motifWithShifts.length < seqLength)
+      sequence = motifWithShifts.concat(new Array(seqLength - motifWithShifts.length).fill(null))
+    else
+      sequence = motifWithShifts.slice(0, seqLength);
+    let midiSequence = sequence.map(scaleDeg => scaleDeg == null ? null : scaleHelper.degree2HalfSteps(scale, scaleDeg) + tonicMidi);
+    let noteSequence = midiSequence.map(midiNote => midiNote == null ? "REST" : noteData[midiNote].note_full);
+
+    algorithm = { "sequence": sequence, "midiSequence": midiSequence, "noteSequence": noteSequence }
 
   }
 }
 
 
-const getRhythm = () => {
-  if (document.getElementById("apply-rhythm").checked) {
+const getRhythm = (skipCheck) => {
+  if (skipCheck != undefined || document.getElementById("apply-rhythm").checked) {
     return Array.from(document.querySelectorAll("#rhythm button:enabled"))
                 .map(b => b.classList.contains("active") ? 1 : 0);
   } else {
@@ -164,7 +195,11 @@ const setupUi = () => {
 
   if (document.getElementById("scales-as-vectors") != undefined) {
     setupScaleVectorControls();
-    d3.selectAll(".transform-type").on("change", addTransformation);
+  } else if (document.getElementById("self-similarity") != undefined) {
+    document.getElementById("apply-rhythm").addEventListener("change", toggleRhythmDisplay);
+    document.getElementById("ratio-index").addEventListener("change", highlightRatios);
+  } else if (document.getElementById("self-similarity") != undefined) {
+    document.getElementById("apply-rhythm").addEventListener("change", toggleRhythmDisplay);
   }
 
   d3.selectAll("#tonic, .input-note")
@@ -277,43 +312,14 @@ const setupScaleVectorControls = () => {
     });
   });
 
-  d3.select("#rhythm-step-count").on("change", event => {
+  document.getElementById("rhythm-step-count").addEventListener("change", event => {
     document.querySelectorAll(".rhythm-steps button").forEach((b, i) => {
       b.disabled = i >= event.target.value ? true : false;
     });
   });
+
+  d3.select("#apply-cycle").on("change", event => cycleRhythm = event.target.checked);
 }
-
-
-// const setupScaleVectorData = () => {
-//
-//   document.getElementById("motif-length").addEventListener("change", (event) => {
-//     updateScaleDegreeList(parseInt(event.target.value));
-//   });
-//
-//   d3.selectAll(".transform-type").on("change", addTransformation);
-// }
-//
-//
-// const addTransformation = (event) => {
-//   console.log("addTransformation()")
-//   if (event.target.value == "rhythm")
-//     addRhythm(event);
-//
-// }
-//
-//
-// const addRhythm = (event) => {
-//   console.log("addRhythm()")
-//   let rhythmContainer = d3.select(event.target.parentNode.parentNode)
-//       .append("div")
-//       .attr("class", "rhythm active");
-//
-//   rhythmContainer.append("strong").text("Steps:");
-//   rhythmContainer.append("input").attr("type", "number").attr("class", "rhythm-step-count")
-//                  .attr("size", "2").attr("min", "2").attr("max", "12").attr("value", "12");
-//   rhythmContainer.selectAll("button").data(new Array(12).fill(1)).enter().append("button");
-// }
 
 
 const ready = () => {
@@ -337,9 +343,6 @@ const ready = () => {
   document.getElementById("bpm").addEventListener("input", updateBpm);
   document.getElementById("step-rate").addEventListener("input", updateStepRate);
   document.getElementById("rhythm-step-count").addEventListener("change", enableDisableRhythmSteps);
-  document.getElementById("apply-rhythm").addEventListener("change", toggleRhythmDisplay);
-  const ratioIndex = document.getElementById("ratio-index");
-  if (ratioIndex != undefined) ratioIndex.addEventListener("change", highlightRatios);
 }
 
 

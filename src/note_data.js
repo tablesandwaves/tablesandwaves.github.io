@@ -1,4 +1,4 @@
-const width = 1080;
+// const width = 1080;
 
 
 // IMPORTANT: do not change the order. This keeps the array itself in MIDI 0-127 index order.

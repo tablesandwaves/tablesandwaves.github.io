@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Melody Vectors Experiments | Tables &amp; Waves</title>
+  <title>Vector Melodies Experiments | Tables &amp; Waves</title>
   <link rel="stylesheet" href="../css/style.css" type="text/css">
 </head>
 <body>
@@ -22,12 +22,12 @@
   <p class="breadcrumbs">
     <a href="../">Tables &amp; Waves</a> &raquo;
     <a href="../experiments">Experiments</a> &raquo;
-    Melody Vectors (sort of)
+    Vector Melodies (sort of)
   </p>
 
-  <h2>Melody Vectors</h2>
+  <h2>Vector Melodies</h2>
 
-  <div id="sequence-components">
+  <div id="series-details">
     <div id="motif">
       <h3>Motif</h3>
       <div class="data">
@@ -37,22 +37,13 @@
         <span id="scale-degrees"></span>
       </div>
     </div>
-    <div id="shifts">
-      <h3>Shifts</h3>
-      <div class="data">
-        <strong>Length:</strong>
-        <input type="number" name="shift-seq-length" id="shift-seq-length" value="12" size="3" min="3" max="12">
-        <strong class="control-label">Shift Degrees:</strong>
-        <span id="shift-degrees"></span>
-      </div>
-    </div>
     <div id="rhythm" class="active">
       <h3>Rhythm</h3>
       <div class="data">
         <strong>Length:</strong>
         <input type="number" name="rhythm-step-count" id="rhythm-step-count" value="8" size="3" min="2" max="12">
-        <strong class="control-label">Rhythmic Steps:</strong>
         <span class="rhythm-steps">
+          <strong class="control-label">Rhythmic Steps:</strong>
           <button type="button" class="active"></button>
           <button type="button" class="active"></button>
           <button type="button"></button>
@@ -68,13 +59,236 @@
         </span>
       </div>
     </div>
+    <div id="shifts">
+      <h3>Shifts</h3>
+      <div class="data">
+        <strong>Length:</strong>
+        <input type="number" name="shift-seq-length" id="shift-seq-length" value="12" size="3" min="3" max="12">
+        <strong class="control-label">Shift Degrees:</strong>
+        <span id="shift-degrees"></span>
+      </div>
+    </div>
+    <div id="scale-tonic">
+      <div class="data">
+        <strong>Scale:</strong>
+        <select id="scale" name="scale">
+          <option value="major">Major</option>
+          <option value="minor" selected>Minor</option>
+        </select>
+        <strong>Tonic:</strong>
+        <select id="tonic"></select>
+        <strong>Sequence Length:</strong>
+        <input type="number" name="seq-length" id="seq-length" value="16" size="3" min="12" max="16">
+        <button type="button" name="generate" id="generate" style="margin-left: 1em;">Generate</button>
+        <span id="cycle-rhythm">
+          <label>
+            <input type="checkbox" name="apply-cycle" id="apply-cycle">
+            <strong>Cycle Rhythm Thru:</strong>
+          </label>
+          <input type="number" name="rhythm-cycle" id="rhythm-cycle" value="8" size="2" min="2" max="12">
+        </span>
+      </div>
+    </div>
   </div>
 
+  <div id="play">
+    <div id="play-button-wrapper">
+      <button type="button" name="play-pause" id="play-pause" disabled>Play / Pause</button>
+    </div>
+    <div id="step-rate-wrapper">
+      BPM: <span id="bpm-value">105</span>
+      <input type="range" min="60" max="220" value="105" class="slider" id="bpm" disabled>
+      Step Rate:
+      <select name="step-rate" id="step-rate" disabled>
+        <option>4N</option>
+        <option selected>8N</option>
+        <option>16N</option>
+      </select>
+    </div>
+  </div>
+
+  <svg class="piano-roll" width="1080" height="360"></svg>
+  <div id="current-sequence">
+    <span class="sequence"></span>
+  </div>
+
+  <div id="drum-wrapper">
+    <div id="drum-machine"></div>
+  </div>
   <div class="about">
-    <h3>Shifting</h3>
-    <h3>Rhythm</h3>
-    <h3>Gates</h3>
-    <h3>Repetition</h3>
+    <h3>About Melody Vectors</h3>
+    <div>
+      <p>
+        There is probably an established name for this and I just don't know about it. I refer to these kinds of methods for melody <em>evolution</em> as "melodic vectors" because I am taking inspiration from the simplest forms of vector operations from linear algebrar...but with a few caveats that will be discussed below.
+      </p>
+      <p>
+        See this <a href="https://www.ling.upenn.edu/courses/cogs501/LinearAlgebraReview.html">Basic Linear Algebra Review</a> <a href="#citation-1">[1]</a> for a non-mathematician's high-level overview (i.e., without the need to read math in all its symbol glory) of the math concepts related to vectors. These lecture notes give the following definition:
+      </p>
+      <blockquote cite="https://www.ling.upenn.edu/courses/cogs501/LinearAlgebraReview.html">
+        <p>
+          A <strong>vector</strong> is an n-tuple (an ordered set) of numbers, e.g. a member of R^n (where R stands for the real numbers). Thus two-dimensional vectors are elements of the set {R × R}, e.g. <code>[1 2]</code> or <code>[-43.2565 -114.6471]</code> or <code>[2.8768e+11 0]</code>.
+        </p>
+      </blockquote>
+      <p>
+        The authors naturally focus on geometry as that is what vectors are commonly used to model (e.g., lines in 2- or 3-D space). However, for our purposes, a <strong>melodic vector</strong> will simply be <strong>a list/array of numbers that represent some kind of sequence of musical notes <em>that can be transformed</em></strong>. Those numbers could be <a href="https://en.wikipedia.org/wiki/MIDI">MIDI</a> note number pitches, for example. For the melody generator above, I am using scale degrees. For the sake of simplicity of demonstration, there is a menu above that lets one choose either the Major or Minor western scales. These scales both have seven notes and so the scale degrees are the numbers 1-7. For the Major scale, the scale degrees 1, 2, 3, 4, 5, 6 and 7 correspond to the notes in <a href="https://en.wikipedia.org/wiki/Solf%C3%A8ge#Movable_do_solf%C3%A8ge">♪ do re mi fa so la ti ♪</a>. For a seven note scale, the 8th scale degree is the same note as the root note, represented by scale degree 1, only raised by one octave (i.e., the next ♪ do ♪).
+      </p>
+      <p>
+        Now let's consider why the mathematical concept of <strong>Vector</strong> is a better one than, for example, the computer programming concepts of List or Array. It all comes down to change and movement. In math, vectors have <em>operations</em> like addition and multiplication and it is extremely useful to merge those operations with a few musical concepts, such as transposition. Another general term I will use for an operation on a melodic vector will be a "transformation" because these operations generally will transform a melody into a new melody. And yet, as with most tranformations, the original melody, its identity, will often still bleed through.
+      </p>
+      <p>
+        Here is an explanation of what is happening in the melody generator above...
+      </p>
+    </div>
+
+    <div>
+      <h4>Shift (Transpose)</h4>
+      <p>
+        <strong>The shift transformation transposes notes by mathematical addition.</strong> For example, if using MIDI note numbers, a shift by the number 12 transposes a note by one octave. When using MIDI note numbers, a shift of 1 will raise a note by a half step. Similarly, if using scale degrees, as in the example above, and the scale in question has 7 notes, then shifting by 7 will raise a note one octave because the first note in a scale is degree 1 and adding 7 arrives at degree 8. In call cases, a shift of 0, as would be expected mathematically, leaves the original note number intact.
+      </p>
+      <p>
+        The scale degree case is interesting because, unlike a simple MIDI note pitch based numbering system, a shift by 1 will have a different affect on the resulting pitch (or frequency). For the western scale modes, such as Major/Ionian and Minor/Aeolian, the adjacent scale degrees are sometimes 1 half step apart and sometimes 2 half steps apart.
+      </p>
+    </div>
+
+    <div class="digression">
+      <h4>Digression 1: How Does Transposition Qualify as a Vector Operation?</h4>
+      <p>
+        So at this point, it is not entirely clear how transposing or shifting notes qualifies as a <em>vector operation</em>. Before moving on to the other definitions, let's use the Shift transformation as an example. With the default settings that this page loads with, there is a series of dropdown menus that represent a <strong>Motif</strong> written as a sequence of scale degrees and/or rests. The rests are written as <strong>R</strong> in the menus, but in my system, I assign special meaning to the number <strong>0</strong> and it represents a melodic rest. Therefore, as a melodic vector, this motif is represented as the number sequence:
+      </p>
+      <pre>[ 1 5 0   5 3 0   7 0 0   4 1 0 ]</pre>
+      <p>
+        <small>Note: the spacing here is just visual grouping of the 12 notes as 4 groups of 3 scale degrees for humans. No math-y significance.</small>
+      </p>
+      <p>
+        The third row of controls above, labeled <strong>Shifts</strong>, is a <em>sequence</em> of transposition amounts. In this system of Melodic Vectors, <strong>the transformations, here the shifts, are themselves another vector</strong>:
+      </p>
+      <pre>[ 7 7 0   0 7 0   0 0 0   0 7 0 ]</pre>
+      <p>
+        This means that applying these shifts to the motif is exactly equivalent to vector addition:
+      </p>
+<pre>
+   [ 1  5 0   5  3 0   7 0 0   4 1 0 ]
+ + [ 7  7 0   0  7 0   0 0 0   0 7 0 ]
+--------------------------------------
+   [ 8 12 0   8 10 0   7 0 0   4 8 0 ]
+</pre>
+      <p>
+        This is the fundamental principle at play with melodic vectors: in addition to representing an original melody as a sequence, a list/array of notes, <strong>the melodic transformations should also be represented as sequences.</strong>
+      </p>
+    </div>
+
+    <div>
+      <h4>Rhythm</h4>
+      <div class="aside">
+        <h5>A Note on Defining "Rhythm"</h5>
+        There are many different notions of rhythm and this conceptualization for Melodic Vectors will not mesh with all of them. This definition is internal to this framework, a made up concept: the <em>rhythm vector</em>.
+      </div>
+      <p>
+        <strong>The rhythm transformation changes a melody by inserting 0-to-many rests into it.</strong> As you can surmise, this may not be what we would typically think of as a mathematical operation on a vector. The transformation does not use arithmetic, rather, it is more like a Boolean operation or a bitwise operation.
+      </p>
+      <p>
+        A rhythm vector is represented as a simple sequence of binary digits (1 and 0) where 1 represents On and enables a melodic note/step to pass thru it and 0 represents Off and interupts/disrupts a melody by inserting a rest. Hopefully this will become clear with an example, but first another digression...
+      </p>
+    </div>
+
+    <div class="digression">
+      <h4>Digression 2: Breaking with the Maths, cuz: OY! Art!</h4>
+      <p>
+        I noted above that there are a few caveats in terms of using the linear algebra concept of vectors. In the lecture notes cited above, Liberman and Isard state, "You can't add two vectors of different sizes." They also note that the MatLab software throws an error when trying to add vectors with different dimensions (number of elements).
+      </p>
+      <p>
+        For Melodic Vectors, we shall have no such constraint. Instead, a reasonable and common interpretation can be used: wrap-around via <a href="https://en.wikipedia.org/wiki/Modulo_operation">modulo operation</a>. In this case, the formula used to determine what number from a transformation vector (such as the shifts vector or the rhythm vector) is applied to a number in a melodic sequence will be something like:
+      </p>
+      <pre>shifts_vector[melody_index % shifts_vector.length]</pre>
+      <p>
+        For example, given a set/tuple of shifts with 3 numbers, <code>[ 7 0 0 ]</code>, and a 5 note melody, <code>[ 1 3 5 8 7 ]</code>, the combination should look like the equivalent of this:
+      </p>
+<pre>
+   [ 1 3 5  4 7 ]
+ + [ 7 0 0  7 0 ]
+-----------------
+   [ 8 3 5 12 7 ]
+</pre>
+      <p>
+        Another break from the purely mathematical interpretration involves the shift vectors in particular. In the implementations that I use for shift transformations, rests from the melody will not be shifted. This means that if the motif that was used as input to the shift transformation had a rest step that lined up with a non-zero shift step, the result will still be a rest like this:
+      </p>
+<pre>
+   [ 1 0 5 ] (melody)
+ + [ 7 7 0 ] (shifts)
+------------
+   [ 8 0 5 ]
+</pre>
+      <p>
+        This is because, the number 0 in this framework is not really a number, it is a special case that is interpreted as a rest. <a href="https://www.youtube.com/watch?v=1vBesOFURek">That's just, like, my opinion</a> for how it should work and I am sharing the details and links to code so you might make your own version should you feel differently...
+      </p>
+    </div>
+
+    <div>
+      <p>
+        Again, going back to the transformation that loads with this page, let's dissect the motif and its first transformation, the rhyhtm vector. The motif is the scale degrees <code>[ 1 5 0   5 3 0   7 0 0   4 1 0 ]</code> and the rhythm is represented by by the 8-element binary sequence <code>[ 1 1 0   1 0 0   1 0 ]</code>.
+      </p>
+      <p>
+        <img src="images/rhythm-vector-transformation.jpg" alt="Rhythm vector transform diagram" title="Rhythm vector transform diagram" width="1080px">
+        <small>Figure: Rhythm vector transform diagram</small>
+      </p>
+      <p>
+        See the figure above for a step-by-step diagram of how the transformation progresses. The rhythm is, in a sense, the primary vector that the transformation loops over as a control structure. As the algorithm loops over the rhythmic steps, <strong>when it encounters a 1/On step, it will pull the next element from the motif. When it encounters a 0/Off, it will insert a 0/rest</strong>.
+      </p>
+      <p>
+        Note that it is possible that a 1/On element in the rhythm, could pull a 0/rest from the motif, too. In the figure, the third 1/On step in the rhythm (which is step 4 of the rhythm because step 3 is a 0/Off in the rhythm) pulls the third step from the motif, which happens to be a 0/rest step.
+      </p>
+    </div>
+    <div>
+      <h4>Change &amp; The All Important Order of Operations</h4>
+      <p>
+        Now...if you are following to this point so that the basics of these two transformations makes sense, it is time to talk about how they interact with each other. Some experimentation will reveal that it is wise to be intentional about the <strong>the order of transformations</strong>.
+      </p>
+      <p>
+        The melody generator above illustrates this point when the box labeled <strong>Cycle Rhythm Thru</strong> is checked. Enabling this feature will cause the sequencer to change the rhythm with each pass through the loop. It does this by cycling the rhythmic vector's step length from 2 thru the number specified. Because the rhythmic vector transformation happens <em>before</em> the shift vector transformation, how the scale degrees get shifted changes with each pass thru the loop.
+      </p>
+      <p>
+        Let's step through the changes one iteration at a time. To do this manually, refresh the page (maybe Shift+Refresh if your browser is remembering any changed menus) to get to the original starting state. Then set the <strong>Cycle Rhythm Thru</strong> number box to <strong>8</strong> and set the <strong>Rhythm Length</strong> number box to <strong>2</strong> (it's lowest number). Then click the <strong>Generate</strong> button and notice how the sequence shakes out/renders in the piano roll. Then set the <strong>Rhythm Length</strong> number box to <strong>3</strong> and click the <strong>Generate</strong> button again and look at the changed sequence in the piano roll.
+      </p>
+      <p>
+        So what's going on? As noted above, the default rhythm that loads on the page is <code>[ 1 1 0 1 0 0 1 0 ]</code>. When the length of those 8 rhythm steps is only 2, it becomes <code>[ 1 1 ]</code> and because they are both 1/On steps, the motif passes thru the rhythm unchanged. The only rests in the sequence are the original rests in the motif itself. This means that the original motif is what gets passed to the next vector transformation, the shifts. As seen above, this becomes:
+      </p>
+<pre>
+   [ 1  5 0   5  3 0   7 0 0   4 1 0 ]
+ + [ 7  7 0   0  7 0   0 0 0   0 7 0 ]
+--------------------------------------
+   [ 8 12 0   8 10 0   7 0 0   4 8 0 ]
+</pre>
+      <p>
+        However, once you change the <strong>Rhythm Length</strong> number box to <strong>3</strong> and click the <strong>Generate</strong> button again, the inputs to the shifts vector are different. The rhythmic vector, which is now <code>[ 1 1 0 ]</code>, results in this intermediary transformation:
+      </p>
+<pre>
+rhythm:     [ 1 1 0 ]
+applied to: [ 1 5 0 5 3 0 7 0 0 4 1 0 ]
+results in: [ 1 5 0 0 5 0 3 0 0 7 0 0 0 4 0 1 0 0 ]
+</pre>
+      <p>
+        So when <code>[ 1 5 0 0 5 0 3 0 0 7 0 0 0 4 0 1 0 0 ]</code> then has the shifts vector applied, the numbers from the previous pass (Rhythm Length = 2) are no longer in their same positions and the shift transpositions happen to other notes:
+      </p>
+<pre>
+  [ 1  5 0   0  5 0  3 0 0  7 0 0  0  4 0  1 0 0 ]
++ [ 7  7 0   0  7 0  0 0 0  0 7 0  7  7 0  0 7 0 ]
+--------------------------------------------------
+  [ 8 12 0   0 12 0  3 0 0  7 0 0  0 11 0  1 0 0 ]
+</pre>
+      <p>
+        And as you may guess from the global <strong>Sequence Length</strong> parameter, this is shorted to 16 steps: <code>[ 8 12 0 0   12 0 3 0   0 7 0 0   0 11 0 1 ]</code>. As a reminder, this process is using scale degrees, not MIDI note numbers, so the 11th scale degree when the tonic/root is set to C3 and the scale is Minor is F4.
+      </p>
+    </div>
+
+    <h3>References</h3>
+    <ol class="citations">
+      <li>
+        <span class="citation" id="citation-1">
+          Liberman, Mark and Stephen Isard. "Basic Linear Algebra Review." Lecture notes from <em>COGS 501 Mathematical Foundations for the Study of Language and Communication</em>, Fall 2011. Department of Linguistics, University of Pennsylvania.
+          <a href="https://www.ling.upenn.edu/courses/cogs501/LinearAlgebraReview.html">https://www.ling.upenn.edu/courses/cogs501/LinearAlgebraReview.html</a>
+        </span>
+      </li>
+    </ol>
   </div>
 </div>
 

@@ -8,6 +8,13 @@ body {
 }
 
 
+h1 { font-size: 2em; margin: 1em auto .5em; }
+h2 { font-size: 1.6em; margin: 1em auto 1em; }
+h3 { font-size: 1.4em; margin: 1em auto .5em; }
+h4 { font-size: 1.3em; margin: 1em auto .5em; }
+h5 { font-size: 1.1em; margin: 1em auto .5em; }
+
+
 #content {
   position: relative;
   width: 1080px;
@@ -25,7 +32,10 @@ body {
 #content #motif h3,
 #content #shifts,
 #content #shifts h3,
+#content #rhythm,
 #content #rhythm h3,
+#content #scale-tonic,
+#content #scale-tonic h3,
 #content .data,
 #content .about,
 #content #transformations,
@@ -35,13 +45,12 @@ body {
 #content #play,
 #content #play #play-button-wrapper,
 #content #play #step-rate-wrapper,
-#content #rhythm,
-#content .rhythm,
 #content #drum-machine #drum-labels,
 #content #drum-machine #drum-labels .drum-label,
 #content #drum-machine .drum-step,
 #content ul#experiments
-#content ul#experiments li {
+#content ul#experiments li,
+#content .digression {
   position: relative;
   float: left;
 }
@@ -214,8 +223,7 @@ body {
 }
 
 
-#content #rhythm button,
-#content .rhythm button {
+#content #rhythm button {
   position: relative;
   width: 100%;
   vertical-align: middle;
@@ -304,7 +312,13 @@ body {
 
 
 .about {
+  width: 100%;
   margin-top: 2em;
+}
+
+
+.about p, .about div {
+  clear: left;
 }
 
 
@@ -322,6 +336,19 @@ body {
   margin-left: 40px;
   text-indent: -40px;
   display: block;
+}
+
+
+.about .aside {
+  float: right;
+  width: 30%;
+  margin: 0 0 1em 2em;
+}
+
+
+.about .aside h5 {
+  margin: 0;
+  font-size: 1.1em;
 }
 
 
@@ -427,6 +454,13 @@ body {
 }
 
 
+#content ul#experiments li.melodic-vectors {
+  background-image: linear-gradient(to right, rgba(255,255,255,1), rgba(0,0,0,0)),
+                    url("../vectors/images/rhythm-vector-transformation.jpg");
+  background-position: left bottom;
+}
+
+
 #content ul#experiments li a span {
   display: block;
   font-size: .5em;
@@ -446,28 +480,32 @@ body {
 
 
 #content #motif,
-#content #shifts {
+#content #shifts,
+#content #rhythm,
+#content #scale-tonic {
   width: 100%;
 }
 
 
 #content #motif h3,
 #content #shifts h3,
-#content #rhythm h3 {
+#content #rhythm h3,
+#content #scale-tonic h3 {
   margin: 0;
   width: 120px;
-  padding-right: 50px;
+  padding-right: 40px;
   text-align: right;
 }
 
 
 #content .data {
-  width: 910px;
+  width: 920px;
 }
 
 
 #scales-as-vectors #rhythm,
-#scales-as-vectors #shifts {
+#scales-as-vectors #shifts,
+#scales-as-vectors #scale-tonic {
   margin-top: 1em;
 }
 
@@ -481,13 +519,39 @@ body {
 
 
 #scales-as-vectors .data select {
-  width: 32px;
-  border-color: #aaa;
+  width: 40px;
+  border: 1px solid #aaa;
   margin: auto 14px auto auto;
+
 }
 
 
 #scales-as-vectors #rhythm .data button {
-  width: 28px;
+  width: 36px;
   margin: 0 14px 0 0;
+}
+
+
+#scales-as-vectors #scale-tonic .data {
+  text-align: center;
+  margin-left: 160px;
+}
+
+
+#scales-as-vectors #scale-tonic .data select {
+  width: auto;
+}
+
+
+#cycle-rhythm {
+  margin-left: 2em;
+}
+
+
+#content .digression {
+  width: 1038px;
+  margin: auto 0 1em;
+  padding: 10px 20px;
+  background: #eee;
+  border: 1px solid #ccc;
 }
