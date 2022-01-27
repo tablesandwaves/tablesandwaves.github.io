@@ -63,7 +63,7 @@ const hitIndexMap       = {"Kick": 0, "Snare": 1, "Hat": 2};
 
 
 let toneStarted = false, cycleRhythm = false, beat = -1, sequencerBeat = -1, stepDivisor = 2,
-    pianoRoll, drumGrid, currentNote, currentStep,
+    pianoRoll, fixedPianoRollExtent, drumGrid, currentNote, currentStep,
     algorithm, seed, size, tonic, rhythm;
 
 let drumBeat = [
@@ -121,8 +121,10 @@ const generateSequence = () => {
     let scale     = document.getElementById("scale").value;
     let tonicMidi = noteData.findIndex(n => n.note_full == tonic);
     let motif     = Array.from(document.querySelectorAll("#motif select"))
+                         .filter(select => select.disabled == false)
                          .map(select => select.value == 0 ? null : parseInt(select.value));
     let shifts    = Array.from(document.querySelectorAll("#shifts select"))
+                         .filter(select => select.disabled == false)
                          .map(select => parseInt(select.value));
 
     let motifWithRhythm = new Weft(motif).rhythm(rhythm);
@@ -135,6 +137,7 @@ const generateSequence = () => {
     let midiSequence = sequence.map(scaleDeg => scaleDeg == null ? null : scaleHelper.degree2HalfSteps(scale, scaleDeg) + tonicMidi);
     let noteSequence = midiSequence.map(midiNote => midiNote == null ? "REST" : noteData[midiNote].note_full);
 
+    fixedPianoRollExtent = [0, 24];
     algorithm = { "sequence": sequence, "midiSequence": midiSequence, "noteSequence": noteSequence }
 
   }
@@ -193,13 +196,17 @@ const enableDisableRhythmSteps = (event) => {
 
 const setupUi = () => {
 
+  let seedNotes;
   if (document.getElementById("scales-as-vectors") != undefined) {
     setupScaleVectorControls();
+    seedNotes = [48];
   } else if (document.getElementById("self-similarity") != undefined) {
     document.getElementById("apply-rhythm").addEventListener("change", toggleRhythmDisplay);
     document.getElementById("ratio-index").addEventListener("change", highlightRatios);
-  } else if (document.getElementById("self-similarity") != undefined) {
+    seedNotes = [60, 72, 63, 67, 67];
+  } else if (document.getElementById("infinity-series") != undefined) {
     document.getElementById("apply-rhythm").addEventListener("change", toggleRhythmDisplay);
+    seedNotes = [60];
   }
 
   d3.selectAll("#tonic, .input-note")
@@ -211,7 +218,6 @@ const setupUi = () => {
       .attr("value", n => n.note_full)
       .text(n => n.note_full);
 
-  let seedNotes = [60, 72, 63, 67, 67];
   document.querySelectorAll("#tonic, .input-note").forEach((selectList, i) => {
     let noteName = noteData[seedNotes[i]].note_full;
     selectList.querySelector(`option[value="${noteName}"]`).setAttribute("selected", "selected");
@@ -231,7 +237,14 @@ const renderPianoRoll = () => {
 
   // The extent is the range of MIDI notes around the tonic. For the infinity series the tonic will be close to the center
   // of the MIDI note sequence. For other sequences the low number of the extent will be the sequence's lowest note.
-  let extent = [sortedMidiNotes[0] - tonicMidiNote, sortedMidiNotes[sortedMidiNotes.length - 1] - tonicMidiNote];
+  // The vector melodies viz has the option to cycle thru a rhythm. The fixed extent keeps the piano roll height stable
+  // for a state that changes without user input.
+  let extent;
+  if (fixedPianoRollExtent == undefined)
+    extent = [sortedMidiNotes[0] - tonicMidiNote, sortedMidiNotes[sortedMidiNotes.length - 1] - tonicMidiNote];
+  else
+    extent = fixedPianoRollExtent;
+
   pianoRoll = new PianoRoll(".piano-roll", tonic, algorithm.midiSequence.length, extent, d3);
   pianoRoll.render();
 }

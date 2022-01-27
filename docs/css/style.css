@@ -8,7 +8,7 @@ body {
 }
 
 
-h1 { font-size: 2em; margin: 1em auto .5em; }
+h1 { font-size: 2em;   margin: 1em auto .5em; }
 h2 { font-size: 1.6em; margin: 1em auto 1em; }
 h3 { font-size: 1.4em; margin: 1em auto .5em; }
 h4 { font-size: 1.3em; margin: 1em auto .5em; }
@@ -231,6 +231,7 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
   width: 20px;
   height: 20px;
   border: 1px solid #09c;
+  background-color: #fff;
 }
 
 
@@ -245,7 +246,13 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 }
 
 
-#content button.active {
+#content #rhythm button:disabled.active {
+  background: #aaa;
+}
+
+
+#content button.active,
+#content #rhythm button.active {
   background-color: #09c;
 }
 
@@ -349,6 +356,11 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 .about .aside h5 {
   margin: 0;
   font-size: 1.1em;
+}
+
+
+.about .work {
+  font-style: italic;
 }
 
 
@@ -456,7 +468,7 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 
 #content ul#experiments li.melodic-vectors {
   background-image: linear-gradient(to right, rgba(255,255,255,1), rgba(0,0,0,0)),
-                    url("../vectors/images/rhythm-vector-transformation.jpg");
+                    url("../vectors/images/rhythm-vector-transformation-2.png");
   background-position: left bottom;
 }
 
