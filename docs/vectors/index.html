@@ -137,7 +137,7 @@
         The authors naturally focus on geometry as that is what vectors are commonly used to model (e.g., lines in 2- or 3-D space). However, for our purposes, a <strong>melodic vector</strong> will simply be <strong>a list/array of numbers that represent some kind of sequence of musical notes <em>that can be transformed</em></strong>. Those numbers could be <a href="https://en.wikipedia.org/wiki/MIDI">MIDI</a> pitch numbers, for example. For the melody generator above, I am using scale degrees. For the sake of simplicity of demonstration, there is a menu above that lets one choose either the Major or Minor western scales. These scales both have seven notes and so the scale degrees are the numbers 1-7. For the Major scale, the scale degrees 1, 2, 3, 4, 5, 6 and 7 correspond to the notes in <a href="https://en.wikipedia.org/wiki/Solf%C3%A8ge#Movable_do_solf%C3%A8ge">♪ do re mi fa so la ti ♪</a>. For a seven note scale, the 8th scale degree is the same note as the root note, represented by scale degree 1, only raised by one octave (i.e., the next ♪ do ♪).
       </p>
       <p>
-        Now let's consider why the mathematical concept of <strong>Vector</strong> is a better one than, for example, the computer programming concepts of List or Array. It all comes down to change and movement. In math, vectors have <em>operations</em> like addition or multiplication and it is extremely useful to merge those operations with a few musical concepts, such as transposition. Another general term I will use for an operation on a melodic vector will be a "transformation" because these operations generally will transform a melody into a new melody. With these tranformations, the original melody, which might be thought of as the core identity for later versions, will often still bleed through in the transformed, derivative melodies.
+        Now let's consider why the mathematical concept of <strong>Vector</strong> is a better one than, for example, the computer programming concepts of List or Array. It all comes down to change and movement. In math, vectors have <em>operations</em> like addition or multiplication and it is extremely useful to merge those operations with a few musical concepts, such as transposition. Another general term I will use for an operation on a melodic vector will be a "transformation" because these operations generally will transform a melody into a new melody. With these tranformations, the original melody, which might be thought of as the core identity for later versions, will often still bleed through in the transformed, derivative melodies. I find this to produce a useful push/pull between stasis and change.
       </p>
       <p>
         In the melody generator above, these are the melody vector transformations. For the sake of explanation, the order is switched...
@@ -150,21 +150,21 @@
         <strong>The shift transformation transposes notes by mathematical addition.</strong> For example, if using MIDI note numbers, a shift by the number 12 transposes a note by one octave. When using MIDI note numbers, a shift of 1 will raise any note by a half step. Similarly, if using scale degrees, as in the example above, and the scale in question has 7 notes, then shifting by 7 will raise a note one octave because the first note in a scale is degree 1 and adding 7 arrives at degree 8. In call cases, a shift of 0, as would be expected mathematically, leaves the original note number intact.
       </p>
       <p>
-        The scale degree case is interesting because, unlike the MIDI note pitch numbering system, a shift by 1 will have a different affect on the resulting pitch (or frequency). For the western scale modes like Major/Ionian and Minor/Aeolian the adjacent scale degrees are sometimes 1 half step apart and sometimes 2 half steps apart.
+        The scale degree case is interesting because, unlike the MIDI note pitch numbering system, a shift by 1 will have a different effect on the resulting pitch (or frequency). For the western scale modes like Major/Ionian and Minor/Aeolian the adjacent scale degrees are sometimes 1 half step apart and sometimes 2 half steps apart.
       </p>
     </div>
 
     <div class="digression">
       <h4>How Does Transposition Qualify as a Vector Operation?</h4>
       <p>
-        So at this point, it is not entirely clear how transposing or shifting notes qualifies as a <em>vector operation</em>. Before moving on to the other definitions, let's use the Shift transformation as an example. With the default settings that this page loads with, there is a series of dropdown menus that represent a <strong>Motif</strong> written as a sequence of scale degrees and/or rests. The rests are written as <strong>R</strong> in the menus, but in my system, I assign special meaning to the number <strong>0</strong> and it represents a melodic rest. Therefore, as a melodic vector, this motif is represented as the number sequence:
+        So at this point, it is not entirely clear how transposing or shifting notes qualifies as a <em>vector operation</em>. Before moving on to the other definitions, let's use the Shift transformation as an example. With the default settings that this page loads with, there is a series of dropdown menus that represent a <strong>Motif</strong> written as a sequence of scale degrees and/or rests. The rests are written as <strong>R</strong> in the menus for the Motif row, but in my system, I assign special meaning to the number <strong>0</strong> and it represents a melodic rest. Therefore, as a melodic vector, this motif is represented as the number sequence:
       </p>
       <pre>[ 1 5 0   5 3 0   7 0 0   4 1 0 ]</pre>
       <p>
         <small>Note: the spacing here is just visual grouping of the 12 notes as 4 groups of 3 scale degrees for humans. No math-y significance.</small>
       </p>
       <p>
-        In the third row of controls, labeled <strong>Shifts</strong>, there is a <em>sequence</em> of transposition amounts. In this system of Melodic Vectors, <strong>the transformations are themselves another vector</strong>:
+        In the third row of controls, labeled <strong>Shifts</strong>, there is a <em>sequence</em> of transposition amounts. In this system of Melodic Vectors, <strong>the shifts/transformations are themselves another vector</strong>:
       </p>
       <pre>[ 7 7 0   0 7 0   0 0 0   0 7 0 ]</pre>
       <p>
@@ -223,7 +223,7 @@
    [ 8 <strong>0</strong> 5 ]
 </pre>
       <p>
-        Another way to think about this is that Melodic Vectors are <strong>non-commutative</strong> mathematically, even for addition. I tend to think of this as due to the fact that in music, which is so fundamentally dependent on <em>timing</em>, the order in which things happens is critically important. Therefore, numerical representation of music is rather less numerical than we might think initially. For example, dimensional similarity should not be a constraint (the modulo case), nor should we think that order is irrelevant (shifts are applied to a motif, not the other way around). Also, the number 0 in this framework is not really a number, it is a special case that is interpreted as a rest.
+        Another way to think about this is that Melodic Vectors are <strong>non-commutative</strong> mathematically, even for addition. I tend to think of this as due to the fact that in music, which is so fundamentally dependent on <em>timing</em>, the order in which things happens is critically important. Therefore, numerical representation of music is rather less numerical than we might think initially. For example, dimensional similarity should not be a constraint (the modulo case), nor should we think that order is irrelevant (shifts are applied to a motif, not the other way around). Also, the number 0 in this framework is not really a number, it is a special case that is interpreted as a rest when a given vector/sequence represents a melody.
       </p>
       <p>
         <a href="https://www.youtube.com/watch?v=1vBesOFURek">That's just, like, my opinion</a> for how it should work and I am sharing the details and links to code so you might make your own version should you feel differently...
