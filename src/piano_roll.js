@@ -3,7 +3,7 @@ const noteData = require("./note_data.js");
 
 class PianoRoll {
 
-  static width = 1080;
+  static width = 1000;
   static octaveHeight = 180;
   static notesPerOctave = 12;
   static pianoRollPadding = 80;
@@ -62,7 +62,7 @@ class PianoRoll {
          .attr("height", this.keyHeight)
          .attr("x", n => xScale(n.step))
          .attr("y", n => yScale(n.note) - this.keyHeight)
-         .attr("fill", "red")
+         .attr("fill", "#09c")
          .on("click", (event, n) => playNote(n.note));
   }
 

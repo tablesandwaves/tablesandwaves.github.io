@@ -5,10 +5,12 @@ body {
   margin: .5em auto;
   float: left;
   width: 100%;
+  background: #010D23 url("../images/intone.jpg") no-repeat fixed center;
 }
 
 
-h1 { font-size: 2em;   margin: 1em auto .5em; }
+h1 { font-size: 2em;   margin: 1em auto .5em; color: #EFE491; }
+h2, h3, h4, h5 { color: #2a4273; }
 h2 { font-size: 1.6em; margin: 1em auto 1em; }
 h3 { font-size: 1.4em; margin: 1em auto .5em; }
 h4 { font-size: 1.3em; margin: 1em auto .5em; }
@@ -24,7 +26,6 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 
 #content nav,
 #content .main,
-#content #portrait,
 #content #series-details,
 #content #series-details #controls,
 #content #series-details #current-sequence,
@@ -100,14 +101,29 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 
 
 #content .main {
-  width: 100%;
+  width: 1000px;
+  min-height: 400px;
   margin-top: -1px;
+  margin-bottom: 200px;
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-bottom: 80px;
   border-top: 1px solid #ccc;
+  background: #fff;
+  border-radius: 3px;
 }
 
 
-#content h2 {
-  /* margin-top: 0; */
+#content #home-page-info {
+  background-color: #fff;
+  background-blend-mode: lighten;
+}
+
+#content #home-page-info p:first-child { margin-top: 50px; text-align: center; }
+#content #home-page-info p:first-child strong {
+  color: #158;
+  background-color: #EFE491;
+  padding: 2px auto;
 }
 
 
@@ -117,8 +133,20 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 }
 
 
+#content a.release {
+  display: block;
+  color: black;
+}
+
+
+#content a.release:hover, #content a.release:visited {
+  text-decoration: none;
+  color: black;
+}
+
 #content #series-details {
   margin-bottom: 1.5em;
+  width: 1000px;
 }
 
 
@@ -128,14 +156,14 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 
 
 #content #series-details #controls {
-  width: 520px;
+  width: 460px;
   margin: 6px 0 0 0;
 }
 
 
 #content #infinity-series #rhythm,
 #content #self-similarity #rhythm {
-  width: 548px;
+  width: 528px;
   padding: 5px;
   text-align: center;
   border: 1px solid #ddd;
@@ -160,7 +188,7 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 
 
 #content #play {
-  width: 1080px;
+  width: 1000px;
 }
 
 
@@ -170,7 +198,7 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 
 
 #content #play #step-rate-wrapper {
-  width: 880px;
+  width: 800px;
   text-align: right;
 }
 
@@ -180,7 +208,7 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 #content input#motif-length,
 #content input#shift-seq-length,
 #content input#rhythm-step-count {
-  margin-right: 1em;
+  margin-right: .2em;
 }
 
 
@@ -236,7 +264,7 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 
 
 #content #rhythm button:last-of-type {
-  margin-right: 1em;
+  margin-right: .5em;
 }
 
 
@@ -366,7 +394,7 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 
 #content a,
 #content a:visited {
-  color: #09c;
+  color: #158;
   text-decoration: none;
 }
 
@@ -412,18 +440,6 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 }
 
 
-#portrait {
-  width: 100%;
-  height: 641px;
-  background-position: left top;
-  background-repeat: no-repeat;
-  background-size: 1080px;
-  background-image: linear-gradient(rgba(255,255,255,1), rgba(0,0,0,0)),
-                    url("../images/portrait-3.1.jpg");
-  border-bottom: 5px solid #333;
-}
-
-
 #content ul#experiments {
   list-style: none;
   padding-left: 0;
@@ -435,7 +451,7 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
   font-size: 2em;
   background-position: left top;
   background-repeat: no-repeat;
-  background-size: 1080px;
+  background-size: 1000px;
   margin-top: 1em;
 }
 
@@ -470,6 +486,10 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 }
 
 
+#content #wtf a.obscured { color: black; }
+#content #wtf a.obscured:hover { color: black; text-decoration: none; }
+
+
 #content #motif,
 #content #shifts,
 #content #rhythm,
@@ -482,15 +502,15 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 #content #shifts h3,
 #content #rhythm h3,
 #content #scale-tonic h3 {
-  margin: 0;
-  width: 120px;
-  padding-right: 40px;
+  margin: -5px 0 0 0;
+  width: 100px;
+  padding-right: 20px;
   text-align: right;
 }
 
 
 #content .data {
-  width: 920px;
+  width: 840px;
 }
 
 
@@ -506,20 +526,20 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
   width: 125px;
   text-align: right;
   margin-right: .5em;
+  margin-left: 1em;
 }
 
 
 #scales-as-vectors .data select {
-  width: 40px;
+  width: 35px;
   border: 1px solid #aaa;
-  margin: auto 14px auto auto;
-
+  margin: auto 10px auto auto;
 }
 
 
 #scales-as-vectors #rhythm .data button {
-  width: 36px;
-  margin: 0 14px 0 0;
+  width: 31px;
+  margin: 0 10px 0 0;
 }
 
 
@@ -540,7 +560,7 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 
 
 #content .digression {
-  width: 1038px;
+  width: 958px;
   margin: auto 0 1em;
   padding: 10px 20px;
   background: #eee;

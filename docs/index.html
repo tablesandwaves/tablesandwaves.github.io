@@ -19,11 +19,58 @@
   </ul>
 </nav>
 
-<div class="main">
-  <div id="portrait"></div>
-  <!-- <img src="images/portrait-3.png" alt="Self portrait" width="1080px" id="portrait"> -->
+<div id="home-page-info" class="main">
+  <p>
+    <strong>Tables &amp; Waves</strong> is an electronic music project transmitting from the upper midwest of the U.S.<br>
+    This site documents a few musical experiments.
+  </p>
+
+  <h2>Releases</h2>
+
+  <a href="https://tablesandwaves.bandcamp.com/album/intone" id="intone" class="release">
+    <h3>Intone</h3>
+    <p>
+      Releases: April 15, 2022
+    </p>
+    <p>
+      <strong>Int</strong>uit<strong>o</strong>n & i<strong>n</strong>t<strong>e</strong>nt.
+    </p>
+<pre>
+Intuition I  1. Start
+Intention I  2. Infinitely Serious, 3. Clock Clock Go, 4. Rationalize This
+Intuition II 5. Breathe, 6. Too Many Things on Fire, 7. Regroup
+Intention II 8. End
+</pre>
+  </a>
+
+
+  <a href="https://tablesandwaves.bandcamp.com/album/fragment-maybe-left-out" id="fragment" class="release">
+    <h3>Fragment Maybe Left Out</h3>
+    <p>
+      Released: November 1, 2019
+    </p>
+    <p>
+      A <strong>f</strong>ragment <strong>m</strong>ay be <strong>l</strong>e<strong>f</strong>t <strong>o</strong>ut here or there. What fills in the spaces where the shards chipped away is unknown until it happens.
+    </p>
+  </a>
+
+
+  <a href="https://tablesandwaves.bandcamp.com/album/untiled" id="untiled" class="release">
+    <h3>Untiled</h3>
+    <p>
+      Released: August 27, 2017
+    </p>
+    <p>
+      The <em>Untiled</em> EP is a mixture of sounds developed from organic sources like micro guitar samples sculpted into entirely new sounds to fully synthesized sound materials using traditional electronic music building blocks. Melodic, harmonic and tonal sculptures are accompanied by algorithmic and sequenced beats that have been similarly processed, <strong>mangled</strong> and reshaped.
+    </p>
+  </a>
 </div>
 
 </div>
+
+<script type="text/javascript">
+let showRelease = (event) => document.body.style.backgroundImage = `url("images/${event.currentTarget.id}.jpg")`;
+document.querySelectorAll(".release").forEach(div => div.addEventListener("mouseover", showRelease));
+</script>
 </body>
 </html>
