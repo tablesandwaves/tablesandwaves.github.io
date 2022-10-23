@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack"
+    "build": "node build.js"
   },
   "keywords": [
     "Tables & Waves"
@@ -13,8 +13,7 @@
   "author": "Stephen Meyer",
   "license": "MIT",
   "devDependencies": {
-    "webpack": "^5.33.2",
-    "webpack-cli": "^4.6.0"
+    "esbuild": "^0.15.12"
   },
   "dependencies": {
     "d3": "^7.2.1",
