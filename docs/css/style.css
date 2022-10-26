@@ -28,7 +28,7 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 #content .main,
 #content #series-details,
 #content #series-details #controls,
-#content #series-details #current-sequence,
+#content #current-sequence,
 #content #motif,
 #content #motif h3,
 #content #shifts,
@@ -51,7 +51,9 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 #content #drum-machine .drum-step,
 #content ul#experiments
 #content ul#experiments li,
-#content .digression {
+#content .digression,
+#content div.note-ruler,
+#content div.piano-roll {
   position: relative;
   float: left;
 }
@@ -238,6 +240,7 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 
 
 #content #current-sequence {
+  width: 100%;
   margin: 1em auto;
   visibility: hidden;
   font-size: .9em;
@@ -290,7 +293,20 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 }
 
 
+div.note-ruler {
+  width: 60px;
+}
+
+
+div.piano-roll {
+  width: 940px;
+  overflow-x: scroll;
+}
+
+
 #drum-wrapper {
+  width: 100%;
+  margin-top: 100px;
   display: flex;
   align-items: center;
   justify-content: center;

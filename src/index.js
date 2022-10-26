@@ -5,9 +5,13 @@ import {
 const Tone = { Synth, Loop, Transport, start, NoiseSynth, FeedbackDelay, Gate,
                MidSideCompressor, Gain, Destination, MembraneSynth };
 
+import { text } from "d3-fetch";
 import { select, selectAll } from "d3-selection";
 import { scaleLinear } from "d3-scale";
-const d3 = { select, selectAll, scaleLinear };
+const d3 = { text, select, selectAll, scaleLinear };
+
+import { MarkovChain, Melody, MelodyType } from "tblswvs";
+const tblswvs = { MarkovChain, Melody, MelodyType };
 
 
 const PianoRoll      = require("./piano_roll");
@@ -75,6 +79,13 @@ let drumBeat = [
 
 
 const playPause = () => {
+  // Due to browser permissions for enabling audio, Tone cannot be initialized fully
+  // until a user action makes it happen.
+  if (!toneStarted) {
+    Tone.start();
+    toneStarted = true;
+  }
+
   if (Tone.Transport.state !== "started") {
     Tone.Transport.bpm.value = document.getElementById("bpm").value;
     loop.start(0);
@@ -94,6 +105,7 @@ const playNote = (midiNote) => {
 
 
 const generateSequence = () => {
+  console.log("generateSequence()")
   if (document.getElementById("infinity-series") !== null) {
 
     tonic  = document.getElementById("tonic").value;
@@ -102,6 +114,9 @@ const generateSequence = () => {
     rhythm = getRhythm();
     algorithm = new InfinitySeries(size, seed, tonic, rhythm);
     document.querySelector("#infinity-series .sequence").textContent = algorithm.sequence.join(" ");
+    document.getElementById("current-sequence").style.visibility = "visible";
+    renderPianoRoll();
+    renderMidiSequence();
 
   } else if (document.getElementById("self-similarity") !== null) {
 
@@ -112,6 +127,8 @@ const generateSequence = () => {
     rhythm    = getRhythm();
     algorithm = new RationalMelody(noteList, rhythm);
     algorithm.generate("xv");
+    renderPianoRoll();
+    renderMidiSequence();
 
   } else if (document.getElementById("scales-as-vectors") !== null) {
 
@@ -138,7 +155,23 @@ const generateSequence = () => {
     let noteSequence = midiSequence.map(midiNote => midiNote == null ? "REST" : noteData[midiNote].note_full);
 
     fixedPianoRollExtent = [0, 24];
-    algorithm = { "sequence": sequence, "midiSequence": midiSequence, "noteSequence": noteSequence }
+    algorithm = { "sequence": sequence, "midiSequence": midiSequence, "noteSequence": noteSequence };
+    renderPianoRoll();
+    renderMidiSequence();
+
+  } else if (document.getElementById("markov-chain-melodies") !== null) {
+
+    d3.text("data/cs-prld-note-list.txt").then((data) => {
+      let midiSequence = data.split("\n").map(n => parseInt(n)).filter(n => !isNaN(n));
+      let noteSequence = midiSequence.map(midiNote => midiNote == null ? "REST" : noteData[midiNote].note_full);
+      let melody       = new tblswvs.Melody(midiSequence, -1, MelodyType.MIDI);
+      let markovChain  = new tblswvs.MarkovChain(melody);
+
+      algorithm = { "sequence": [], "midiSequence": midiSequence, "noteSequence": noteSequence };
+      renderPianoRoll();
+      renderMidiSequence();
+    });
+
 
   }
 }
@@ -224,7 +257,6 @@ const setupUi = () => {
   });
 
   generateSequence();
-  renderPianoRoll();
 
   drumGrid = new DrumGrid("#drum-machine", d3);
   drumGrid.render(updateDrumBeat);
@@ -245,7 +277,7 @@ const renderPianoRoll = () => {
   else
     extent = fixedPianoRollExtent;
 
-  pianoRoll = new PianoRoll(".piano-roll", tonic, algorithm.midiSequence.length, extent, d3);
+  pianoRoll = new PianoRoll(["svg.piano-roll", "svg.note-ruler"], tonic, algorithm.midiSequence.length, extent, d3);
   pianoRoll.render();
 }
 
@@ -338,19 +370,7 @@ const setupScaleVectorControls = () => {
 const ready = () => {
   setupUi();
 
-  // Due to browser permissions for enabling audio, Tone cannot be initialized fully
-  // until a user action makes it happen.
-  document.querySelector("button#generate").addEventListener("click", () => {
-    if (!toneStarted) {
-      Tone.start();
-      toneStarted = true;
-    }
-    generateSequence();
-    renderPianoRoll();
-    renderMidiSequence();
-    document.getElementById("current-sequence").style.visibility = "visible";
-  });
-
+  document.querySelector("button#generate").addEventListener("click", generateSequence);
   document.querySelector("button#play-pause").addEventListener("click", playPause);
   document.querySelectorAll("#rhythm button").forEach(b => b.addEventListener("click", toggleRhythm));
   document.getElementById("bpm").addEventListener("input", updateBpm);
