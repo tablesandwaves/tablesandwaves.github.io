@@ -53,7 +53,10 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 #content ul#experiments li,
 #content .digression,
 #content div.note-ruler,
-#content div.piano-roll {
+#content div.piano-roll,
+#content #markov-chain-stm,
+#content div.markov-note-ruler,
+#content div.markov-piano-roll {
   position: relative;
   float: left;
 }
@@ -293,12 +296,13 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 }
 
 
-div.note-ruler {
+div.note-ruler, div.markov-note-ruler {
   width: 60px;
+  clear: left;
 }
 
 
-div.piano-roll {
+div.piano-roll, div.markov-piano-roll {
   width: 940px;
   overflow-x: scroll;
 }
@@ -582,3 +586,37 @@ div.piano-roll {
   background: #eee;
   border: 1px solid #ccc;
 }
+
+
+#content #markov-chain-stm {
+  width: 100%;
+  font-size: .9em;
+}
+
+
+#content #markov-chain-stm h3,
+#content #markov-chain-stm #markov-play-wrapper,
+#content #markov-chain-stm table {
+  position: relative;
+  float: left;
+}
+
+
+#content #markov-chain-stm h3 {
+  width: 67%;
+}
+
+
+#content #markov-chain-stm #markov-play-wrapper {
+  width: 33%;
+  margin-top: 1.5em;
+  text-align: right;
+}
+
+
+#content #markov-chain-stm table {
+  width: 100%;
+  margin-top: 1.5em;
+}
+
+

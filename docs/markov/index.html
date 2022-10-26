@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Markov Chain Melodies | Tables &amp; Waves</title>
+  <link rel="stylesheet" href="../css/style.css" type="text/css">
+  <link rel="shortcut icon" type="image/x-icon" href="../images/favicon.ico">
+</head>
+<body>
+<div id="content">
+
+<h1>Tables &amp; Waves</h1>
+
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><span class="selected">Experiments</span></li>
+    <li><a href="../about">About</a></li>
+  </ul>
+</nav>
+
+<div id="markov-chain-melodies" class="main">
+  <p class="breadcrumbs">
+    <a href="../">Tables &amp; Waves</a> &raquo;
+    <a href="../experiments">Experiments</a> &raquo;
+    Markov Chain Melodies
+  </p>
+
+  <h2>Markov Chain Melodies</h2>
+
+  <div id="play">
+    <h3>Input Melody</h3>
+    <div id="play-button-wrapper">
+      <button type="button" name="play-pause" id="play-pause">Play / Pause</button>
+    </div>
+    <div id="step-rate-wrapper">
+      BPM: <span id="bpm-value">80</span>
+      <input type="range" min="60" max="220" value="80" class="slider" id="bpm">
+      Step Rate:
+      <select name="step-rate" id="step-rate">
+        <option>4N</option>
+        <option>8N</option>
+        <option selected>16N</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="note-ruler">
+    <svg class="note-ruler"></svg>
+  </div>
+  <div class="piano-roll">
+    <svg class="piano-roll"></svg>
+  </div>
+
+  <div id="markov-chain-stm">
+    <h3>Markov Chain State Transition Matrix</h3>
+    <div id="markov-play-wrapper">
+      <button type="button" name="markov-generate" id="markov-generate">Regenerate</button>
+      <button type="button" name="markov-play-pause" id="markov-play-pause">Play / Pause Markov Chain</button>
+    </div>
+    <div class="markov-note-ruler">
+      <svg class="markov-note-ruler"></svg>
+    </div>
+    <div class="markov-piano-roll">
+      <svg class="markov-piano-roll"></svg>
+    </div>
+  </div>
+</div>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

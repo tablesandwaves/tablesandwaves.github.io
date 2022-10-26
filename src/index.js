@@ -5,10 +5,11 @@ import {
 const Tone = { Synth, Loop, Transport, start, NoiseSynth, FeedbackDelay, Gate,
                MidSideCompressor, Gain, Destination, MembraneSynth };
 
+import { format } from "d3-format";
 import { text } from "d3-fetch";
 import { select, selectAll } from "d3-selection";
 import { scaleLinear } from "d3-scale";
-const d3 = { text, select, selectAll, scaleLinear };
+const d3 = { format, text, select, selectAll, scaleLinear };
 
 import { MarkovChain, Melody, MelodyType } from "tblswvs";
 const tblswvs = { MarkovChain, Melody, MelodyType };
@@ -41,34 +42,34 @@ const loop  = new Tone.Loop((time) => {
 
   if (beat % stepDivisor == 0) {
     sequencerBeat += 1;
-    currentStep = sequencerBeat % algorithm.noteSequence.length;
-    currentNote = algorithm.noteSequence[currentStep];
+    currentStep = sequencerBeat % currentAlgorithm.noteSequence.length;
+    currentNote = currentAlgorithm.noteSequence[currentStep];
     if (currentNote != "REST") synth.triggerAttackRelease(currentNote, "16n", time);
 
-    d3.selectAll("svg .transport .step").attr("fill", "#999");
-    d3.select(`svg .transport .step-${currentStep}`).attr("fill", "yellow");
+    d3.selectAll(`${activeTransport} .transport .step`).attr("fill", "#999");
+    d3.select(`${activeTransport} .transport .step-${currentStep}`).attr("fill", "yellow");
 
-    if (cycleRhythm && currentStep == algorithm.noteSequence.length - 1) {
+    if (cycleRhythm && currentStep == currentAlgorithm.noteSequence.length - 1) {
       let currentCycleLength = parseInt(document.getElementById("rhythm-step-count").value);
       let maxCycleLength     = parseInt(document.getElementById("rhythm-cycle").value);
       let nextCycleLength    = currentCycleLength >= maxCycleLength ? 2 : currentCycleLength + 1;
       document.getElementById("rhythm-step-count").value = nextCycleLength;
-      document.querySelectorAll(".rhythm-steps button").forEach((b, i) => {
-        b.disabled = i >= nextCycleLength ? true : false;
-      });
+      document.querySelectorAll(".rhythm-steps button").forEach((b, i) => b.disabled = i >= nextCycleLength ? true : false);
       generateSequence();
       renderPianoRoll();
-      renderMidiSequence();
     }
   }
 }, "16n");
 const stepRateModuloMap = {"4N": 4, "8N": 2, "16N": 1};
 const hitIndexMap       = {"Kick": 0, "Snare": 1, "Hat": 2};
 
+const formatPercent = d3.format(".1%");
 
+const defaultTransport = "svg.piano-roll";
 let toneStarted = false, cycleRhythm = false, beat = -1, sequencerBeat = -1, stepDivisor = 2,
     pianoRoll, fixedPianoRollExtent, drumGrid, currentNote, currentStep,
-    algorithm, seed, size, tonic, rhythm;
+    algorithm, markovAlgorithm, currentAlgorithm, markovChain, seed, size, tonic, rhythm,
+    activeTransport = defaultTransport;
 
 let drumBeat = [
   [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0],
@@ -85,6 +86,9 @@ const playPause = () => {
     Tone.start();
     toneStarted = true;
   }
+
+  activeTransport = defaultTransport;
+  currentAlgorithm = algorithm;
 
   if (Tone.Transport.state !== "started") {
     Tone.Transport.bpm.value = document.getElementById("bpm").value;
@@ -105,7 +109,6 @@ const playNote = (midiNote) => {
 
 
 const generateSequence = () => {
-  console.log("generateSequence()")
   if (document.getElementById("infinity-series") !== null) {
 
     tonic  = document.getElementById("tonic").value;
@@ -116,7 +119,6 @@ const generateSequence = () => {
     document.querySelector("#infinity-series .sequence").textContent = algorithm.sequence.join(" ");
     document.getElementById("current-sequence").style.visibility = "visible";
     renderPianoRoll();
-    renderMidiSequence();
 
   } else if (document.getElementById("self-similarity") !== null) {
 
@@ -128,7 +130,6 @@ const generateSequence = () => {
     algorithm = new RationalMelody(noteList, rhythm);
     algorithm.generate("xv");
     renderPianoRoll();
-    renderMidiSequence();
 
   } else if (document.getElementById("scales-as-vectors") !== null) {
 
@@ -157,7 +158,6 @@ const generateSequence = () => {
     fixedPianoRollExtent = [0, 24];
     algorithm = { "sequence": sequence, "midiSequence": midiSequence, "noteSequence": noteSequence };
     renderPianoRoll();
-    renderMidiSequence();
 
   } else if (document.getElementById("markov-chain-melodies") !== null) {
 
@@ -165,15 +165,97 @@ const generateSequence = () => {
       let midiSequence = data.split("\n").map(n => parseInt(n)).filter(n => !isNaN(n));
       let noteSequence = midiSequence.map(midiNote => midiNote == null ? "REST" : noteData[midiNote].note_full);
       let melody       = new tblswvs.Melody(midiSequence, -1, MelodyType.MIDI);
-      let markovChain  = new tblswvs.MarkovChain(melody);
+      markovChain  = new tblswvs.MarkovChain(melody);
 
       algorithm = { "sequence": [], "midiSequence": midiSequence, "noteSequence": noteSequence };
       renderPianoRoll();
-      renderMidiSequence();
+      displayStmTable();
+      generateStmNotes();
     });
-
-
   }
+
+  currentAlgorithm = algorithm;
+}
+
+
+const generateStmNotes = () => {
+  let midiSequence = [...Array(32).keys()].reduce((arr, i) => {
+    if (i == 0) {
+      arr.push(markovChain.get(markovChain.input.steps[0], markovChain.input.steps[0]));
+    } else if (i == 1) {
+      arr.push(markovChain.get(markovChain.input.steps[0], arr[0]));
+    } else {
+      arr.push(markovChain.get(arr[i - 2], arr[i - 1]));
+    }
+    return arr;
+  }, []);
+  let noteSequence = midiSequence.map(midiNote => midiNote == null ? "REST" : noteData[midiNote].note_full);
+  markovAlgorithm = { "sequence": [], "midiSequence": midiSequence, "noteSequence": noteSequence };
+  currentAlgorithm = markovAlgorithm;
+
+  renderPianoRoll("svg.markov-piano-roll", "svg.markov-note-ruler", midiSequence, playNote);
+}
+
+
+const displayStmTable = () => {
+  const table = d3.select("#markov-chain-stm").append("table");
+  table.append("thead").append("tr")
+    .selectAll("th")
+    .data(["2 Notes Earlier", "Previous Note", "Values"])
+    .join("th")
+    .text(d => d);
+
+  const rows = table.append("tbody")
+    .selectAll("tr")
+    .data(markovChain.stateTransitionMatrix.entries())
+    .join("tr");
+
+  rows.selectAll("td")
+    .data(d => {
+      return [
+        noteData[d[0].split(":")[0]].note_full,
+        noteData[d[0].split(":")[1]].note_full,
+        mapPercentages(d[1])
+      ];
+    })
+    .join("td")
+    .text(d => d);
+}
+
+
+const playPauseMarkovMelody = () => {
+  // Due to browser permissions for enabling audio, Tone cannot be initialized fully
+  // until a user action makes it happen.
+  if (!toneStarted) {
+    Tone.start();
+    toneStarted = true;
+  }
+
+  activeTransport = "svg.markov-piano-roll";
+  currentAlgorithm = markovAlgorithm;
+
+  if (Tone.Transport.state !== "started") {
+    Tone.Transport.bpm.value = document.getElementById("bpm").value;
+    loop.start(0);
+    Tone.Transport.start();
+  } else {
+    Tone.Transport.stop();
+    loop.stop();
+    beat = -1;
+    sequencerBeat = -1;
+  }
+}
+
+
+const mapPercentages = (noteOccurrences) => {
+  const grouped = noteOccurrences.reduce((grouped, note) => {
+    grouped[note] = grouped.hasOwnProperty(note) ? grouped[note] += 1 : 1;
+    return grouped;
+  }, {});
+
+  const total    = Object.values(grouped).reduce((total, n) => total += n);
+  const percents = Object.keys(grouped).sort().map(n => `${noteData[n].note_full}: ${formatPercent(grouped[n] / total)}`);
+  return percents.join(" ");
 }
 
 
@@ -260,34 +342,33 @@ const setupUi = () => {
 
   drumGrid = new DrumGrid("#drum-machine", d3);
   drumGrid.render(updateDrumBeat);
+  Tone.Transport.bpm.value = document.getElementById("bpm").value;
+  stepDivisor = stepRateModuloMap[document.getElementById("step-rate").value];
 }
 
 
-const renderPianoRoll = () => {
-  let tonicMidiNote   = noteData.findIndex(n => n.note_full == tonic);
-  let sortedMidiNotes = algorithm.midiSequence.slice(0).sort().filter(n => n !== null);
+const renderPianoRoll = (pianoRollElement, noteRulerElement, midiSequence, playNote) => {
+  // let tonicMidiNote   = noteData.findIndex(n => n.note_full == tonic);
+  // let sortedMidiNotes = algorithm.midiSequence.slice(0).sort().filter(n => n !== null);
 
   // The extent is the range of MIDI notes around the tonic. For the infinity series the tonic will be close to the center
   // of the MIDI note sequence. For other sequences the low number of the extent will be the sequence's lowest note.
   // The vector melodies viz has the option to cycle thru a rhythm. The fixed extent keeps the piano roll height stable
   // for a state that changes without user input.
-  let extent;
-  if (fixedPianoRollExtent == undefined)
-    extent = [sortedMidiNotes[0] - tonicMidiNote, sortedMidiNotes[sortedMidiNotes.length - 1] - tonicMidiNote];
-  else
-    extent = fixedPianoRollExtent;
+  // let extent;
+  // if (fixedPianoRollExtent == undefined)
+  //   extent = [sortedMidiNotes[0] - tonicMidiNote, sortedMidiNotes[sortedMidiNotes.length - 1] - tonicMidiNote];
+  // else
+  //   extent = fixedPianoRollExtent;
 
-  pianoRoll = new PianoRoll(["svg.piano-roll", "svg.note-ruler"], tonic, algorithm.midiSequence.length, extent, d3);
+  pianoRollElement = pianoRollElement == undefined ? "svg.piano-roll" : pianoRollElement;
+  noteRulerElement = noteRulerElement == undefined ? "svg.note-ruler" : noteRulerElement;
+  midiSequence     = midiSequence     == undefined ? algorithm.midiSequence : midiSequence;
+  playNote         = playNote         == undefined ? playNote : playNote;
+
+  pianoRoll = new PianoRoll([pianoRollElement, noteRulerElement], midiSequence, d3);
   pianoRoll.render();
-}
-
-
-const renderMidiSequence = () => {
-  pianoRoll.setNotes(algorithm.midiSequence, playNote);
-
-  d3.select("#play-pause").property("disabled", false);
-  d3.select("#bpm").property("disabled", false);
-  d3.select("#step-rate").property("disabled", false);
+  pianoRoll.setNotes(playNote);
 }
 
 
@@ -370,12 +451,18 @@ const setupScaleVectorControls = () => {
 const ready = () => {
   setupUi();
 
-  document.querySelector("button#generate").addEventListener("click", generateSequence);
+  if (document.querySelector("button#generate") != null)
+    document.querySelector("button#generate").addEventListener("click", generateSequence);
+  if (document.querySelector("button#markov-generate") != null)
+    document.querySelector("button#markov-generate").addEventListener("click", generateStmNotes);
   document.querySelector("button#play-pause").addEventListener("click", playPause);
   document.querySelectorAll("#rhythm button").forEach(b => b.addEventListener("click", toggleRhythm));
   document.getElementById("bpm").addEventListener("input", updateBpm);
   document.getElementById("step-rate").addEventListener("input", updateStepRate);
-  document.getElementById("rhythm-step-count").addEventListener("change", enableDisableRhythmSteps);
+  if (document.getElementById("rhythm-step-count") != null)
+    document.getElementById("rhythm-step-count").addEventListener("change", enableDisableRhythmSteps);
+  if (document.getElementById("markov-play-pause") != null)
+    document.getElementById("markov-play-pause").addEventListener("click", playPauseMarkovMelody);
 }
 
 
