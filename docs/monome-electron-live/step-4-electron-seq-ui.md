@@ -32,6 +32,16 @@ In order for the displays on the grid and the UI to be in sync with Live's trans
 
 The `main.js` class also watches for the Electron window close event. When it occurs, it calls a method that resets the grid display by turning off all button lights.
 
+Since the Electron UI is a web browser, specifically an instance of Chromium, you have access to its developer tools. In order to utilize this development debugging resource, at this point in the tutorial, the `BrowserWindow` object width has been increased and the developer tools are opened on load:
+
+```js
+win.webContents.openDevTools();
+```
+
+This means that you now have an additional way to utilize JavaScript's `console.log()` for quick debugging. Up to this point, we have been calling `console.log()` from the Node.js process of the Electron app, such as when we log grid key presses in the `MonomeGrid` class or log the transport Bars, Beats and 16th notes in the `AbletonLive` class.
+
+Now any `console.log()` statements that are called in the file `./app/view/js/ui.js` will be logged in the Chromium developer tools console. This can be very helpful when debugging exactly what kind of data is being sent to the Electron UI process from the Electron Node.js process.
+
 ## Code Updates for Step 4
 
 ### `./app/model/ableton_live.js`
