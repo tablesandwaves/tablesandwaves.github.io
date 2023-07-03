@@ -33,7 +33,7 @@ $ npm run start
 > monome-electron-live@0.1.0 start
 > electron .
 
-Connected to monome 128 m31931181 on localhost:10706
+Connected to monome 128 m123456789 on localhost:10706
 { x: 4, y: 4, s: 1 }
 { x: 4, y: 4, s: 0 }
 { x: 3, y: 4, s: 1 }
