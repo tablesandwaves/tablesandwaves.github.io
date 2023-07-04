@@ -59,6 +59,10 @@ This step in the tutorial introduces a few new classes to our data model:
 * `AbletonTrack`: an object that will store state for a track's rhythm (and more data in the future)
 * `AbletonNote`: an object that takes in basic parameters for Ableton note data and that can format the data for packing into a UDP message
 
+At this point, when you run the app (`npm start`) and have an Ableton Live set configured as described above, you should be able to press buttons on the top row of the grid and see notes show up in the kick track's MIDI clip.
+
+Despite the fact that the grid has 16 buttons each representing a 16th note, the rhythm will fill in all four bars of the MIDI clip. We will utilize the four bar loop in more interesting ways in upcoming tutorial steps.
+
 ## Code Updates for Step 5
 
 The CSS changes below are a partial addition. All other updates below should replace the Step 4 code.
