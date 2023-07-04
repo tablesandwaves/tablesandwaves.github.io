@@ -18,3 +18,4 @@ While the tutorial is intended to be a cut-n-paste set of instructions, it is be
 * git version control
 * Basic web development using HTML, CSS and JavaScript (JS)
 * The *basics* of building a Node.js app: installing and using third party libraries
+* The basics of creating a Max for Live object
