@@ -17,6 +17,9 @@ While the tutorial is intended to be a cut-n-paste set of instructions, it is be
 * Working in a Unix-style command line terminal
 * git version control
 * Basic web development using HTML, CSS and JavaScript (JS)
+  * Focus on using element class and ID attributes integrated with CSS rules
+  * Object-oriented JavaScript code using class declarations
+  * Contemporary JavaScript that uses `const`, `let` and arrow functions
 * The *basics* of building a Node.js app: installing and using third party libraries
 * The basics of creating a Max for Live object
 
