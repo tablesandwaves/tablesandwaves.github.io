@@ -87,7 +87,7 @@ The `AbletonTrack#abletonNotes()` method is where you will find the code that im
 
 ## Code Updates for Step 6
 
-The HTML and `main.js` changes below are a partial addition. All other updates below should replace the Step 4 code.
+The HTML and `main.js` changes below are a partial addition. All other updates below should replace the Step 5 code.
 
 ### `./app/model/ableton_live.js`
 
