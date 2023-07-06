@@ -9,7 +9,7 @@ $ npm install easymidi
 This involves a onetime configuration of the MIDI port that will be establsihed. Do the following steps in order:
 
 1. Update the code for the AbletonLive class to the version below.
-1. Start the Electron app with `npm run start`
+1. Start the Electron app with `npm start`
 1. Launch Live and open its MIDI preferences
 1. Find the entry named "monome in" that is established in the code below, check its box for Sync
 

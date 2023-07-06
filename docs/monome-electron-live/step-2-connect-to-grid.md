@@ -28,7 +28,7 @@ serial: m123456789
 Now when you run `npm start` in your terminal, the Electron UI will launch again. However, if things are working correctly, you should see a message indicating that the app has established communication with your grid. Additionally, if you press buttons on the grid, you should see "press" objects logging to the terminal window:
 
 ```
-$ npm run start
+$ npm start
 
 > monome-electron-live@0.1.0 start
 > electron .
