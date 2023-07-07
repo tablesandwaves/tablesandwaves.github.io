@@ -82,7 +82,23 @@ $ touch main.js
 $ touch preload.js
 ```
 
-To start fill in the HTML and CSS files with the following content:
+## Step 1.3: Test Run
+
+For the newly created files listed below in **Code Updates for Step 1** (we'll get to `preload.js` and `ui.js` in later steps), add the HTML, CSS and JS code to the files just created.
+
+Once that is done, you should be able to start the Electron app. It won't do anything besides launch a GUI in development mode, but it is your first check-point to see if all of this necessary but annoying plumbing is correctly setup:
+
+```
+$ npm start
+```
+
+![Screenshot of the Electron app running in development mode](./images/electron-app-1.png)
+
+If you are seeing something similar to the screenshot above, step 1 is complete.
+
+## Code Updates for Step 1
+
+### `./app/view/index.html`
 
 ```html
 <!DOCTYPE html>
@@ -96,11 +112,14 @@ To start fill in the HTML and CSS files with the following content:
 </head>
 <body>
 
-<h1>Monome Electron Live</h1>
+<h1>Monome Grid + Electron + Live</h1>
 
+<script src="js/ui.js"></script>
 </body>
 </html>
 ```
+
+### `./app/view/css/styles.css`
 
 ```css
 body {
@@ -110,7 +129,9 @@ body {
 }
 ```
 
-Then update the main.js file so it looks like the following. This is the same content as the Electron Quick Start guide, with the exception that the paths have been updated for this custom directory structure:
+### `./main.js`
+
+This is mostly the same content as the Electron Quick Start guide, with the exception that the paths have been updated for this custom directory structure.
 
 ```js
 const { app, BrowserWindow } = require('electron');
@@ -143,12 +164,4 @@ app.on('window-all-closed', () => {
     app.quit();
   }
 });
-```
-
-## Step 1.3: Test Run
-
-At this point, you should be able to start the Electron app. It won't do anything besides launch a GUI in development mode, but it is your first check-point to see if all of this necessary but annoying plumbing is correctly setup:
-
-```
-$ npm start
 ```

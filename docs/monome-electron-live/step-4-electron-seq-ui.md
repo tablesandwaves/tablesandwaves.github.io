@@ -246,9 +246,8 @@ div#sequencer-steps div.current {
   <meta charset="UTF-8">
   <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-  <title>Monome Electron Live</title>
+  <title>Monome Grid + Electron + Live</title>
   <link rel="stylesheet" href="css/styles.css">
-
 </head>
 <body>
 
