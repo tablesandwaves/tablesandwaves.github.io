@@ -15,11 +15,11 @@ $ touch app/helpers/algorithms.js
 
 ## Implementing the grid Interface
 
-There is still a 4 by 6 matrix of buttons on the grid that currently have no key press events associated with them. We will dedicate the button at row 7, column 16 as a button that will toggle this melody algorithm on or off for the active track. On the code side, the act of toggling the button on the grid hardware will simply update a boolean value in the currently active track, the `selfReplicatingMelody` prpoerty of `AbletonTrack`.
+There is still a 4 by 6 matrix of buttons on the grid that currently have no key press events associated with them. We will dedicate the button at row 7, column 16 as a button that will toggle this melody algorithm on or off for the active track. On the code side, the act of toggling the button on the grid hardware will simply update a boolean value in the currently active track, the `selfReplicatingMelody` property of `AbletonTrack`.
 
 ## Calling the `selfReplate()` Algorithm
 
-Whenever this is on, when the `AbletonTrack` class will then check if it needs to generate a self-replicating melody within its `abletonNotes()` method:
+Whenever this is on, the `AbletonTrack` class will then check if it needs to generate a self-replicating melody within its `abletonNotes()` method:
 
 ```js
 const melody = this.selfReplicatingMelody ? algorithms.selfReplicate(this.melody) : this.melody;
@@ -31,11 +31,13 @@ The result will write the self-similar version of the melody into the Ableton Li
 
 Run the Electron app using `npm start` and try out this new feature.
 
-## Parting Thoughts
+## Wrapping Up
 
 At this point this tutorial series is concluded. The goal of the tutorial is to demonstrate how to create a bridge between the monome grid hardware and use it as an algorithmic step sequencer/controller for Ableton Live. There's a bit of glue code to wrap your head around, but from this point forward, the plumbing is in place and you can focus your attention on the kinds of things that computer code can do musically.
 
-JavaScript is a very accessible language due to its ubiquity on the web. It is also an extremely fast scripting language, which makes it a good fit for the timing-focused music tech environment. But there is another aspect of the design of this app that is worth pointing out now that you see a simple, but complete picture: notice that the Electron app is truly a controller here. Ableton Live is still the main clock source and we are just sending data to it. We are even making use of its own data model of tracks and clips. This means that in terms of all the core timing dependent things you want in a computer music environment, no wheels have been reinvented. This little Monome + Electron + Live application architecture is designed to leave a lot of the heavy lifting of the DAW to Live and simply provide a space for you to direct your creative coding in the service of composition and performance.
+JavaScript is a very accessible language due to its ubiquity on the web. It is also an extremely fast scripting language, which makes it a good fit for the timing-focused music tech environment. But there is another aspect of the design of this app that is worth pointing out now that you see a simple, but complete picture: notice that the Electron app is truly a controller here. Ableton Live is still the main clock source and we are primarily just sending data to it.
+
+We are even making use of its own data model of tracks and clips. This means that in terms of all the core timing dependent things you want in a computer music environment, no wheels have been reinvented. This little Monome + Electron + Live application architecture is designed to leave a lot of the heavy lifting of the DAW to Live and simply provide a space for you to direct your creative coding in the service of composition and performance.
 
 Happy hacking.
 
