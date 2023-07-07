@@ -25,21 +25,17 @@ $ more config/grid.yml
 serial: m123456789
 ```
 
+## Update the Files & Run
+
+As in step 1, update each of the files listed in **Code Updates for Step 2** with the code below. The `main.js` file was created in step 1, but now its coded needs to be updated so it looks like the version below.
+
 Now when you run `npm start` in your terminal, the Electron UI will launch again. However, if things are working correctly, you should see a message indicating that the app has established communication with your grid. Additionally, if you press buttons on the grid, you should see "press" objects logging to the terminal window:
 
 ```
 $ npm start
-
-> monome-electron-live@0.1.0 start
-> electron .
-
-Connected to monome 128 m123456789 on localhost:10706
-{ x: 4, y: 4, s: 1 }
-{ x: 4, y: 4, s: 0 }
-{ x: 3, y: 4, s: 1 }
-{ x: 3, y: 4, s: 0 }
-...
 ```
+
+![Screenshot of the Electron app running in with key press events logging to the console](./images/electron-app-connect-to-grid.png)
 
 ## Code Updates for Step 2
 
