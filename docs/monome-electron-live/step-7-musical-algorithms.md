@@ -17,7 +17,7 @@ $ touch app/helpers/algorithms.js
 
 There is still a 4 by 6 matrix of buttons on the grid that currently have no key press events associated with them. We will dedicate the button at row 7, column 16 as a button that will toggle this melody algorithm on or off for the active track. On the code side, the act of toggling the button on the grid hardware will simply update a boolean value in the currently active track, the `selfReplicatingMelody` property of `AbletonTrack`.
 
-## Calling the `selfReplate()` Algorithm
+## Calling the `selfReplicate()` Algorithm
 
 Whenever this is on, the `AbletonTrack` class will then check if it needs to generate a self-replicating melody within its `abletonNotes()` method:
 
