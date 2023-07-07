@@ -40,6 +40,8 @@ This also means that because Live is a stable and exceptional piece of software,
 
 Embracing rather than fighting the framework, and with Live here being the framework or platform, means that all the other kind of functionality that a DAW provides that we take for granted, such as effects or return tracks, is already implemented.
 
+Additionally, this means that the way in which Live is already an abstraction is maintained. By using Live's own MIDI clips, this Electron app does not force you to use either software or hardware instruments. Data is written at the clip slot level and working with Live's device model is left alone.
+
 ### 2. Create a Foundation for Creative Coding
 
 Given the embrace-the-tools-that-exist nature of #1, this means that the Electron app can hone in on creative programming tasks. In my particular case, this tutorial aims to highlight a path through the annoying side of application development: all that stupid digital plumbing involved in wiring different components together through code.
