@@ -28,7 +28,7 @@ Once all the code files below have been updated, launch the Electron app (`npm s
 
 ## Other Notes
 
-In order for the displays on the grid and the UI to be in sync with Live's transport, you may need to Adjust the MIDI in timing in Live's preferences. If the 16th note represented by Live's trasnport line in a MIDI clip seems to be ahead of the steps displayed in the UI or on the grid, try adjusting the MIDI Clock Sync Delay by a negative number, such as -100ms.
+In order for the displays on the grid and the UI to be in sync with Live's transport, you may need to Adjust the MIDI in timing in Live's preferences. If the 16th note represented by Live's transport line in a MIDI clip seems to be ahead of the steps displayed in the UI or on the grid, try adjusting the MIDI Clock Sync Delay by a negative number, such as -100ms.
 
 The `main.js` class also watches for the Electron window close event. When it occurs, it calls a method that resets the grid display by turning off all button lights.
 
@@ -42,6 +42,8 @@ This means that you now have an additional way to utilize JavaScript's `console.
 
 Now any `console.log()` statements that are called in the file `./app/view/js/ui.js` will be logged in the Chromium developer tools console. This can be very helpful when debugging exactly what kind of data is being sent to the Electron UI process from the Electron Node.js process.
 
+![Screenshot of the Live running in sync with Electron app](./images/seq-transport-sync.png)
+
 ## Code Updates for Step 4
 
 ### `./app/model/ableton_live.js`
@@ -51,19 +53,14 @@ const easymidi   = require("easymidi");
 const MonomeGrid = require("./monome_grid");
 
 
-/**
- * The super measure is defined as the number of measures to use before all active sequences resynchronize.
- */
-const SUPER_MEASURE = 4;
-
-
 class AbletonLive {
   // this instance variable is set to an Electron BrowserWindow object and provides the communication channel
   // for updating the UI
   electronUi = undefined;
   // this instance variable is set to a MonomeGrid object and provides the communication channel to the hardware
   controller = undefined;
-  // 16n step count
+  // For a sequencer with a 16th note pulse, 4 measures will be one "super measure" to enable a 64 step sequence
+  superMeasure = 4;  // 16n step count
   step = 0;
 
 
@@ -85,15 +82,9 @@ class AbletonLive {
       // 6 MIDI clock ticks equals a 16th note.
       if (this.ticks % 6 != 0) return;
 
-      // console.log(
-      //   "Bar: " + (Math.floor(this.step / 16) + 1) +
-      //   " Beat: " + (Math.floor(this.step / 4) % 4 + 1) +
-      //   " 16th Note: " + (this.step % SUPER_MEASURE + 1)
-      // );
-
       this.electronUi.webContents.send("transport", this.step % 16);
       this.controller.displayTransport(this.step % 16);
-      this.step = this.step == SUPER_MEASURE * 16 - 1 ? 0 : this.step + 1;
+      this.step = this.step == this.superMeasure * 16 - 1 ? 0 : this.step + 1;
     });
 
     this.midiIn.on("start", () => {
@@ -251,7 +242,7 @@ div#sequencer-steps div.current {
 </head>
 <body>
 
-<h1>Monome Electron Live</h1>
+<h1>Monome Grid + Electron + Live</h1>
 
 <div id="sequencer-steps" class="wrapper">
   <div class="active wrapper step-0"><span></span></div>
