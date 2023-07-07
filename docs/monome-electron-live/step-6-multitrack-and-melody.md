@@ -1,15 +1,15 @@
 # Step 6: Multitrack Sequencer & Melodies
 
-At this point in the tutorial, the momentum is starting to shift. This step will deal with the last two pieces of plumbing and lay the foundation for focusing on creative coding. In this step, we will be implementing
+At this point in the tutorial, the momentum is starting to shift. This step will deal with the last two pieces of plumbing and lay the foundation for focusing on creative coding. In this step, we will be implementing:
 
 1. multi-track sequencing, and
-1. the ability to write melodic lines into Live MIDI clip's in addition to the rhythms
+1. the ability to write melodic lines into Live MIDI clips in addition to the rhythms
 
 ## Updates to the Ableton Live Set
 
 To get everything prepared on the Live side of things, we need to add a few more tracks to our Live set. Add 3 more MIDI tracks in the set and make sure they are the 2nd, 3rd and 4th tracks, which will push the UDP Channel track that stores the Max for Live device to track 5. Just like in step 4 of this tutorial, on each of the new tracks, create a MIDI clip that is four bars long. While not strictly necessary, in order to keep things in sync conceptually between the Electron app code and Live, name tracks 2-4 Snare, HiHat and Bass. Eventually we are going to end up with something like the following combination of Live and Electron:
 
-![Screenshot of Ableton Live and the Electron sequencer app](./images/live-electron-5-notes-7-of-16-steps.png)
+![Screenshot of Ableton Live and the Electron sequencer app](./images/live-electron-5-notes-8-of-16-steps.png)
 
 ## Implementing a Multi-track Sequencer
 
@@ -79,7 +79,7 @@ The melody implementation here is found primarily in the `MonomeGrid` and `Ablet
 
 When the melody recording button is pressed it lights up to indicate melody recording is active. When active, the app will begin listening for button presses in rows 2-7 between columns 1-12. Within this 12 column by 6 row matrix, the application defines the notes within the Western chromatic scale that is the default used by Ableton Live. Columns 1-12 (indices 0-11) correspond to the notes C through B and each row going up from row 7/index 6 to row 2/index 1 corresponds to an octave. Going from bottom to top, the buttons in column 1 (column index 0) will be C1, C2, C3, C4, C5, C6. The corresponding column 2 buttons will be C#1, C#2, C#3, C#4, C#5, C#6.
 
-The `MonomeGrid` class has a `queuedMelody` property. Button presses are recorded into this array as number pairs: a the MIDI note index between 0-11 and an octave number. Note that the octave number inverts the grid indices so that octave 6 corresponds to row 1 and octave 1 corresponds to row 7. The use of the `queuedMelody` property also allows the musician operating the grid to wait until the entire melodic sequence is programmed into the app before *flushing* the melody to an Ableton Live MIDI clip.
+The `MonomeGrid` class has a `queuedMelody` property. Button presses are recorded into this array as number pairs: a the MIDI note index between 0-11 and an octave number. Note that the octave number inverts the grid indices so that octave 6 corresponds to 2 and octave 1 corresponds to row 7. The use of the `queuedMelody` property also allows the musician operating the grid to wait until the entire melodic sequence is programmed into the app before *flushing* the melody to an Ableton Live MIDI clip.
 
 This brings us to the final button press defined in the `MonomeGrid#keyPress()` method. Row 8, button 15 is used to flush the melody to the active `AbletonTrack` object and ultimately to the corresponding Live MIDI clip. This is accomplish by passing the `queuedMelody` to the active track's `setMelody()` method where the `queuedMelody` note data pairs are translated to MIDI note numbers. At the same time, an array of notes suitable for display in the UI is generated (the `displayMelody` property).
 
