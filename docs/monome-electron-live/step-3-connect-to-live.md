@@ -8,7 +8,7 @@ $ npm install easymidi
 
 This involves a onetime configuration of the MIDI port that will be establsihed. Do the following steps in order:
 
-1. Update the code for the AbletonLive class to the version below.
+1. Update the code for the `AbletonLive` class and the `main.js` file to the versions below.
 1. Start the Electron app with `npm start`
 1. Launch Live and open its MIDI preferences
 1. Find the entry named "monome in" that is established in the code below, check its box for Sync
@@ -17,18 +17,9 @@ Now, while the Electron app is running in development mode via `npm start` you s
 
 ```
 $ npm start
-
-> monome-electron-live@0.1.0 start
-> electron .
-
-Connected to monome 128 m123456789 on localhost:10706
-Bar: 1 Beat: 1 16th Note: 1
-Bar: 1 Beat: 1 16th Note: 2
-Bar: 1 Beat: 1 16th Note: 3
-Bar: 1 Beat: 1 16th Note: 4
-Bar: 1 Beat: 2 16th Note: 1
-...
 ```
+
+![Screenshot of the Live running in with Bar/Beat/16th notes logging to the console](./images/log-live-clock-to-terminal.png)
 
 ## Code Updates for Step 3
 
@@ -54,13 +45,9 @@ const easymidi   = require("easymidi");
 const MonomeGrid = require("./monome_grid");
 
 
-/**
- * The super measure is defined as the number of measures to use before all active sequences resynchronize.
- */
-const SUPER_MEASURE = 4;
-
-
 class AbletonLive {
+  // For a sequencer with a 16th note pulse, 4 measures will be one "super measure" to enable a 64 step sequence
+  superMeasure = 4;
   // 16n step count
   step = 0;
 
@@ -86,10 +73,10 @@ class AbletonLive {
       console.log(
         "Bar: " + (Math.floor(this.step / 16) + 1) +
         " Beat: " + (Math.floor(this.step / 4) % 4 + 1) +
-        " 16th Note: " + (this.step % SUPER_MEASURE + 1)
+        " 16th Note: " + (this.step % this.superMeasure + 1)
       );
 
-      this.step = this.step == SUPER_MEASURE * 16 - 1 ? 0 : this.step + 1;
+      this.step = this.step == this.superMeasure * 16 - 1 ? 0 : this.step + 1;
     });
 
     this.midiIn.on("start", () => {
