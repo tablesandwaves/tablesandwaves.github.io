@@ -32,7 +32,7 @@ You can use a different port number than 44444, but be sure to update it in the 
 
 #### UDP as OSC-like Communication
 
-This M4L device receives communication from the Electron app, specifically the note data that should be used to update MIDI clips. Communication happens over an internal UDP network within your computer. This works because Max has the `[udpreceive]` object (and a send equivalent) and we can use the JavaScript package `osc-emitter` from our Node.js app to send messages into Live.
+This M4L device receives communication from the Electron app, specifically the note data that should be used to update MIDI clips. Communication happens over an internal UDP network within your computer. This works because Max has the `[udpreceive]` object (and a send equivalent not used here) and we can use the JavaScript package `osc-emitter` from our Node.js app to send messages into Live.
 
 #### Updating Ableton Live Notes via Live Object Model (LOM)
 
@@ -50,11 +50,16 @@ The track and clip indices are parsed out of the first entry in the message. The
 1. Note velocity
 1. Note probability
 
-After some experimentation, this implementation of sync'ing notes sent from the Electron app uses a simple method to *diff* the MIDI clip's current note list against the incoming note list. A delta is generated specifying the notes that should be added an any that should be removed. Using this method requires more processing and logic, but it does not remove and then re-add the same note if it exists in both the current and incoming note lists. The design goal is therefore to minimize the amount of data that changes in a clip so that changes are as minimally disruptive as possible while the Live's transport is running.
+After some experimentation, this implementation of sync'ing notes sent from the Electron app uses a simple method to *diff* the MIDI clip's current note list against the incoming note list. A delta is generated specifying the notes that should be added and any that should be removed. Using this method requires more processing and logic, but it does not remove and then re-add the same note if it exists in both the current and incoming note lists. The design goal is therefore to minimize the amount of data that changes in a clip so that changes are as minimally disruptive as possible while the Live's transport is running.
 
 ## Electron App Updates
 
 This step in the tutorial introduces a few new classes to our data model:
+
+```
+$ touch app/model/ableton_note.js
+$ touch app/model/ableton_track.js
+```
 
 * `AbletonTrack`: an object that will store state for a track's rhythm (and more data in the future)
 * `AbletonNote`: an object that takes in basic parameters for Ableton note data and that can format the data for packing into a UDP message
@@ -62,6 +67,8 @@ This step in the tutorial introduces a few new classes to our data model:
 At this point, when you run the app (`npm start`) and have an Ableton Live set configured as described above, you should be able to press buttons on the top row of the grid and see notes show up in the kick track's MIDI clip.
 
 Despite the fact that the grid has 16 buttons each representing a 16th note, the rhythm will fill in all four bars of the MIDI clip. We will utilize the four bar loop in more interesting ways in upcoming tutorial steps.
+
+![Screenshot of the Live running in sync with Electron with notes](./images/seq-transport-notes.png)
 
 ## Code Updates for Step 5
 
@@ -390,3 +397,125 @@ contextBridge.exposeInMainWorld("stepSequencer", {
 });
 ```
 
+### `electron_msg_processor.js`
+
+Note that this file is **not** saved within the Electron app. Save this file in the same directory as the Max for Live device per the instructions above.
+
+Note also that Max is running a very old version of JavaScript, so it does not use modern `const` and `let` declarations, nor can it use arrow functions as the rest of the code in this tutorial does.
+
+```js
+var notesPattern = /\/tracks\/(\d+)\/clips\/(\d+)\/notes/;
+
+
+function osc_message() {
+  var a = arrayfromargs(arguments);
+
+  var notesMatch = a[0].match(notesPattern);
+  if (notesMatch) {
+    syncClipNotes(notesMatch[1], notesMatch[2], a.slice(1));
+  }
+}
+
+
+/**
+ * Performs a diff of the current notes and new notes passed to the method by comparing note start times,
+ * MIDI note numbers and probabilities.
+ *
+ * @param {number} trackIndex 0-indexed track number
+ * @param {number} clipIndex 0-indexed clip number in the specified track
+ * @param {Array} newNotes the set of notes that should represent the clip's state
+ * @returns "Success" or "Failed" if the note count after this function runs matches the note count of newNotes
+ */
+function syncClipNotes(trackIndex, clipIndex, newNotes) {
+  var currentNotes = getClipNotes(trackIndex, clipIndex);
+
+  var removedNoteIds = new Array();
+  var addedNotes     = new Array();
+
+  var newNoteIdentifiers     = new Array();
+  var currentNoteIdentifiers = new Array();
+
+  for (var i = 0; i < newNotes.length; i += 5)
+    newNoteIdentifiers.push(
+      newNotes[i] + "::" +
+      newNotes[i + 1] + "::" +
+      newNotes[i + 2] + "::" +
+      newNotes[i + 3] + "::" +
+      newNotes[i + 4]
+    );
+
+  for (var i = 0; i < currentNotes.notes.length; i++)
+    currentNoteIdentifiers.push(
+      currentNotes.notes[i].pitch + "::" +
+      currentNotes.notes[i].start_time + "::" +
+      currentNotes.notes[i].duration + "::" +
+      currentNotes.notes[i].velocity + "::" +
+      currentNotes.notes[i].probability
+    );
+
+  for (var i = 0; i < currentNotes.notes.length; i++) {
+    if (newNoteIdentifiers.indexOf(
+        currentNotes.notes[i].pitch + "::" +
+        currentNotes.notes[i].start_time + "::" +
+        currentNotes.notes[i].duration + "::" +
+        currentNotes.notes[i].velocity + "::" +
+        currentNotes.notes[i].probability
+      ) == -1)
+      removedNoteIds.push(currentNotes.notes[i].note_id);
+  }
+
+  for (var i = 0; i < newNotes.length; i += 5) {
+    if (currentNoteIdentifiers.indexOf(
+        newNotes[i] + "::" +
+        newNotes[i + 1] + "::" +
+        newNotes[i + 2] + "::" +
+        newNotes[i + 3] + "::" +
+        newNotes[i + 4]
+      ) == -1) {
+      addedNotes.push(newNotes[i]);
+      addedNotes.push(newNotes[i + 1]);
+      addedNotes.push(newNotes[i + 2]);
+      addedNotes.push(newNotes[i + 3]);
+      addedNotes.push(newNotes[i + 4]);
+    }
+  }
+
+  removeClipNotes(trackIndex, clipIndex, removedNoteIds);
+  addClipNotes(trackIndex, clipIndex, addedNotes);
+
+  currentNotes = getClipNotes(trackIndex, clipIndex);
+  return (currentNotes.notes.length == newNotes.length / 5) ? "Success" : "Failed";
+}
+
+
+function removeClipNotes(trackIndex, clipIndex, noteIds) {
+  // There appears to be a bug in the Live API and multiple note IDs may not be sent despite what the documentation says
+  for (var i = 0; i < noteIds.length; i++)
+    new LiveAPI("live_set tracks " + trackIndex + " clip_slots " + clipIndex + " clip")
+          .call("remove_notes_by_id", noteIds[i]);
+}
+
+
+function addClipNotes(trackIndex, clipIndex, oscNoteData) {
+  var noteData   = { notes: new Array() };
+
+  for (var i = 0; i < oscNoteData.length; i += 5) {
+    noteData.notes.push({
+      pitch:       oscNoteData[i],
+      start_time:  oscNoteData[i + 1],
+      duration:    oscNoteData[i + 2],
+      velocity:    oscNoteData[i + 3],
+      probability: oscNoteData[i + 4]
+    });
+  }
+
+  new LiveAPI("live_set tracks " + trackIndex + " clip_slots " + clipIndex + " clip")
+        .call("add_new_notes", noteData);
+}
+
+
+function getClipNotes(trackIndex, clipIndex) {
+  var path = "live_set tracks " + trackIndex + " clip_slots " + clipIndex + " clip";
+  return JSON.parse(new LiveAPI(path).call("get_notes_extended", 0, 127, 0.0, 33.0));
+}
+```
