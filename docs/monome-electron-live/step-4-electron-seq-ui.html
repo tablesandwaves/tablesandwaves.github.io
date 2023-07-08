@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Step 4 | Grid+Electron+Live Tutorial | Tables &amp; Waves</title>
+  <link rel="stylesheet" href="../css/style.css" type="text/css">
+  <link rel="shortcut icon" type="image/x-icon" href="../images/favicon.ico">
+
+  <link rel="stylesheet" href="../css/atom-one-dark.min.css">
+  <script src="../js/highlight.min.js"></script>
+</head>
+<body>
+<div id="content">
+
+<h1>Tables &amp; Waves</h1>
+
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><span class="selected">Experiments</span></li>
+    <li><a href="../about">About</a></li>
+  </ul>
+</nav>
+
+<div id="grid-electron-live" class="main">
+
+<p class="breadcrumbs">
+  <a href="../">Tables &amp; Waves</a> &raquo;
+  <a href="../experiments">Experiments</a> &raquo;
+  <a href="./">Grid+Electron+Live Tutorial</a> &raquo;
+  Step 4
+</p>
+
+<h2 id="step-4-electron-sequencer-ui">Step 4: Electron Sequencer UI</h2>
+
+<p>Step 4 of the Grid+Electron+Live Tutorial is be a big one. There are a lot of changes to a lot of files, but it represents a major milestone in wiring up the three core components, the grid hardware, the Electron app’s UI and the clock signal from Live.</p>
+
+
+<ol start="0">
+  <li><a href="./">Overview &amp; Prerequisites</a></li>
+  <li><a href="step-1-app-setup.html">Stub Out the Initial Electron App</a></li>
+  <li><a href="step-2-connect-to-grid.html">Connect the Electron App to the monome grid</a></li>
+  <li><a href="step-3-connect-to-live.html">Connect the Electron App to the Ableton Live</a></li>
+  <li class="current">Electron Sequencer UI</li>
+  <li><a href="step-5-live-note-integration.html">Ableton Live Note Sequence Integration</a></li>
+  <li><a href="step-6-multitrack-and-melody.html">Multitrack Sequencer &amp; Melodies</a></li>
+  <li><a href="step-7-musical-algorithms.html">Musical Algorithms</a></li>
+  <li><a href="epilogue-architecture-assumptions.html">Epilogue: App Architecture Assumptions</a></li>
+</ol>
+
+</div>
+
+<div class="main">
+
+<h2 id="background-on-the-electron-security-model">Background on the Electron Security Model</h2>
+
+<p>An Electron app has two core components, a Node.js app and the web browser-based UI. These components are separated for security reasons, the details of which are beyond the scope of this tutorial. See the <a href="https://www.electronjs.org/docs/latest/tutorial/process-model">Electron Process Model</a> documentation for more details.</p>
+
+<p>However, the important thing we need to know is that the security model forces us to send communication from the Node.js side of things to the UI in a very specific manner. In our sequencer app, we will be receiving MIDI clock data from Live in the Node.js Electron process. However, we will then want to display the clock data in step sequencer style in both the Electron UI and on the grid.</p>
+
+<h2 id="implementing-step-sequencer-display-for-the-grid-and-ui">Implementing Step Sequencer Display for the grid and UI</h2>
+
+<p>In our app, the <code>AbletonLive</code> class receives clock data on a MIDI input port and is holding onto an instance of the <code>MonomeGrid</code> class as a data member (the <code>controller</code> variable). The <code>AbletonLive</code> class is also holding onto a reference to the Electron UI object as a data member (the <code>electronUi</code> variable). The <code>AbletonLive</code> class then needs to fire off messages to both the Electron UI and the grid hardware at the rate of every 16th note.</p>
+
+<p>The grid interaction is relatively simple. The top row of grid buttons will serve as the transport row. For each 16th note while the Live transport is running, the corresponding grid button should light up. The transport should loop.</p>
+
+<p>Due to the aforementioned security constraints in all Electron apps, the method for updating the sequencer UI in Electron is more complex. The <code>AbletonLive</code> class’s <code>electronUi</code> variable, which is set in the <code>main.js</code> script when the app first loads, is an instance of an Electron <code>BrowserWindow</code> object. This object has a reference to the browser UI via its <code>webContents</code> variable. This <code>webContents</code> variable has a <code>send()</code> method by which named messages can be passed to the UI.</p>
+
+<p>In this step of the tutorial, we configure a <code>transport</code> message that can be sent from the Node.js process to its UI in the <code>preload.js</code> script. Note that we have declared a <code>stepSequencer</code> object that can then be accessed in the UI’s own JavaScript file (<code>./app/view/js/ui.js</code>). By virtue of the configuration in the <code>preload.js</code> script, this <code>stepSequencer</code> object is attached to the Electron UI’s primary <code>window</code> object. The preload script then attaches named methods (<code>transport</code> in this example) to this <code>stepSequencer</code> object and data can be passed to the browser UI for acting upon. In this case, within the <code>AbletonLive</code> class’s <code>follow()</code> method, it sends a <code>transport</code> message containing the current 16th note step that should be updated:</p>
+
+<pre><code class="language-javascript">this.electronUi.webContents.send("transport", this.step % 16);</code></pre>
+
+<p>Another important part of the Electron security model is that updates in the UI should use CSS rules as much as possible. This means that the UI display works by updating the state of HTML elements’ <code>class</code> attributes. The CSS defines the active step as blue.</p>
+
+<p>Once all the code files below have been updated, launch the Electron app (<code>npm start</code>) and start Live’s transport. The grid hardware and the Electron UI should both display the current sequencer step.</p>
+
+<h2 id="other-notes">Other Notes</h2>
+
+<p>In order for the displays on the grid and the UI to be in sync with Live’s transport, you may need to Adjust the MIDI in timing in Live’s preferences. If the 16th note represented by Live’s transport line in a MIDI clip seems to be ahead of the steps displayed in the UI or on the grid, try adjusting the MIDI Clock Sync Delay by a negative number, such as -100ms.</p>
+
+<p>The <code>main.js</code> class also watches for the Electron window close event. When it occurs, it calls a method that resets the grid display by turning off all button lights.</p>
+
+<p>Since the Electron UI is a web browser, specifically an instance of Chromium, you have access to its developer tools. In order to utilize this development debugging resource, at this point in the tutorial, the <code>BrowserWindow</code> object width has been increased and the developer tools are opened on load:</p>
+
+<pre><code class="language-javascript">win.webContents.openDevTools();</code></pre>
+
+<p>This means that you now have an additional way to utilize JavaScript’s <code>console.log()</code> for quick debugging. Up to this point, we have been calling <code>console.log()</code> from the Node.js process of the Electron app, such as when we log grid key presses in the <code>MonomeGrid</code> class or log the transport Bars, Beats and 16th notes in the <code>AbletonLive</code> class.</p>
+
+<p>Now any <code>console.log()</code> statements that are called in the file <code>./app/view/js/ui.js</code> will be logged in the Chromium developer tools console. This can be very helpful when debugging exactly what kind of data is being sent to the Electron UI process from the Electron Node.js process.</p>
+
+<p><img width="100%" src="./images/seq-transport-sync.png" alt="Screenshot of the Live running in sync with Electron app" /></p>
+
+<h2 id="code-updates-for-step-4">Code Updates for Step 4</h2>
+
+<h3 id="appmodelabletonlivejs"><code>./app/model/ableton_live.js</code></h3>
+
+<pre><code>const easymidi   = require("easymidi");
+const MonomeGrid = require("./monome_grid");
+
+
+class AbletonLive {
+  // this instance variable is set to an Electron BrowserWindow object and provides the communication channel
+  // for updating the UI
+  electronUi = undefined;
+  // this instance variable is set to a MonomeGrid object and provides the communication channel to the hardware
+  controller = undefined;
+  // For a sequencer with a 16th note pulse, 4 measures will be one "super measure" to enable a 64 step sequence
+  superMeasure = 4;  // 16n step count
+  step = 0;
+
+
+  constructor() {
+    this.controller = new MonomeGrid(this);
+    this.midiIn     = new easymidi.Input("monome in", true);
+  }
+
+
+  async connectToGrid() {
+    const msg = await this.controller.connect();
+    return msg;
+  }
+
+
+  async follow() {
+    this.midiIn.on("clock", () => {
+      this.ticks++;
+      // 6 MIDI clock ticks equals a 16th note.
+      if (this.ticks % 6 != 0) return;
+
+      this.electronUi.webContents.send("transport", this.step % 16);
+      this.controller.displayTransport(this.step % 16);
+      this.step = this.step == this.superMeasure * 16 - 1 ? 0 : this.step + 1;
+    });
+
+    this.midiIn.on("start", () => {
+    });
+
+    this.midiIn.on("position", (data) => {
+      if (data.value != 0) return;
+
+      this.ticks = 0;
+      this.step  = 0;
+    });
+  }
+}
+
+
+module.exports = AbletonLive;
+</code></pre>
+
+<h3 id="appmodelmonomegridjs"><code>./app/model/monome_grid.js</code></h3>
+
+<pre><code>const fs        = require("fs");
+const path      = require("path");
+const yaml      = require("js-yaml");
+const serialosc = require("serialosc");
+
+
+const CONFIG_DIRECTORY = path.resolve(__dirname, "../../config");
+const blank16x1Row = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+
+class MonomeGrid {
+  device = undefined;
+  daw = undefined;
+
+  constructor(abletonLive) {
+    this.daw = abletonLive;
+  }
+
+
+  /**
+    * This is fundamentally the same code as the monome website's grid studies.
+    */
+  async connect() {
+    const config = yaml.load(
+      fs.readFileSync(
+        path.resolve(CONFIG_DIRECTORY, "grid.yml"),
+        "utf8"
+      )
+    );
+
+    return new Promise((resolve, reject) => {
+      let addEvent = config.serial + ":add";
+
+      serialosc.start({ startDevices: false });
+
+      serialosc.on(addEvent, (device) => {
+        if (this.device)           return;
+        if (device.type != 'grid') return;
+
+        this.device = device;
+        this.device.on('initialized', () => this.device.on('key', (press) => this.keyPress(press)));
+        this.device.start();
+
+        resolve(`Connected to ${this.device.model} ${this.device.id} on ${this.device.deviceHost}:${this.device.devicePort}`);
+      });
+    });
+  }
+
+
+  keyPress(press) {
+    console.log(press);
+  }
+
+
+  clearGridDisplay(rowCount = 7) {
+    for (let y = 0; y < rowCount; y++) {
+      this.levelRow(0, y, blank16x1Row.slice(0, 8));
+      this.levelRow(8, y, blank16x1Row.slice(8, 16));
+    }
+  }
+
+
+  displayTransport(highlightIndex) {
+    let row = new Array(16).fill(0);
+    if (highlightIndex != undefined) row[highlightIndex] = 15;
+
+    this.levelRow(0, 0, row.slice(0, 8));
+    this.levelRow(8, 0, row.slice(8, 16));
+  }
+
+
+  levelRow(xOffset, y, row) {
+    this.device.levelRow(xOffset, y, row);
+  }
+}
+
+
+module.exports = MonomeGrid;
+</code></pre>
+
+<h3 id="appviewcssstylescss"><code>./app/view/css/styles.css</code></h3>
+
+<pre><code>body {
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  position: relative;
+  margin: 10px;
+}
+
+
+div.wrapper {
+  position: relative;
+  float: left;
+}
+
+
+div#sequencer-steps {
+  width: 800px;
+  margin: auto 10px;
+}
+
+
+div#sequencer-steps div {
+  width: 40px;
+  height: 40px;
+  margin: 2px;
+  background-color: #fff;  /* dark gray: background color for inactive step */
+  border: 1px solid #333;  /* medium gray: border color for active step */
+}
+
+
+div#sequencer-steps div.active {
+  background-color: #fff;  /* medium gray: background color for active step */
+  border: 1px solid #555;  /* medium-light gray: border color for active step */
+}
+
+
+div#sequencer-steps div.current {
+  background-color: #31a1ce; /* green: highlight background color for current transport step */
+}
+</code></pre>
+
+<h3 id="appviewindexhtml"><code>./app/view/index.html</code></h3>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP --&gt;
+  &lt;meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'"&gt;
+  &lt;title&gt;Monome Grid + Electron + Live&lt;/title&gt;
+  &lt;link rel="stylesheet" href="css/styles.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;h1&gt;Monome Grid + Electron + Live&lt;/h1&gt;
+
+&lt;div id="sequencer-steps" class="wrapper"&gt;
+  &lt;div class="active wrapper step-0"&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="active wrapper step-1"&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="active wrapper step-2"&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="active wrapper step-3"&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="active wrapper step-4"&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="active wrapper step-5"&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="active wrapper step-6"&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="active wrapper step-7"&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="active wrapper step-8"&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="active wrapper step-9"&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="active wrapper step-10"&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="active wrapper step-11"&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="active wrapper step-12"&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="active wrapper step-13"&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="active wrapper step-14"&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="active wrapper step-15"&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script src="js/ui.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<h3 id="appviewjsuijs"><code>./app/view/js/ui.js</code></h3>
+
+<pre><code>let previousStep = 15;
+
+
+window.stepSequencer.transport((event, currentStep) => updateTransport(currentStep));
+
+
+const updateTransport = (currentStep) => {
+  document.querySelector(`#sequencer-steps .step-${previousStep}`).classList.remove("current");
+  document.querySelector(`#sequencer-steps .step-${currentStep}`).classList.add("current");
+  previousStep = currentStep;
+}
+</code></pre>
+
+<h3 id="mainjs"><code>./main.js</code></h3>
+
+<pre><code>const { app, BrowserWindow } = require('electron');
+const path = require('path');
+const AbletonLive = require('./app/model/ableton_live');
+
+
+const daw = new AbletonLive();
+
+
+function createWindow () {
+  const win = new BrowserWindow({
+    width: 1500,
+    height: 600,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js')
+    }
+  });
+
+  daw.electronUi = win;
+
+  win.loadFile('app/view/index.html');
+  win.webContents.openDevTools();
+
+  win.on("closed", () => {
+    daw.controller.clearGridDisplay(8);
+  });
+}
+
+app.whenReady().then(() => {
+
+  daw.connectToGrid().then((msg) => {
+    console.log(msg);
+    daw.follow();
+  });
+
+}).then(() => {
+  createWindow();
+
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
+  });
+})
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
+</code></pre>
+
+<h3 id="preloadjs"><code>./preload.js</code></h3>
+
+<pre><code>const { contextBridge, ipcRenderer } = require("electron");
+
+
+contextBridge.exposeInMainWorld("stepSequencer", {
+  transport: (callback) => ipcRenderer.on("transport", callback),
+});
+</code></pre>
+
+</div>
+<script>hljs.highlightAll();</script>
+</body>
+</html>
