@@ -17,7 +17,7 @@ To get everything prepared on the Live side of things, we need to add a few more
 
 The reason in step 4 of this tutorial we created the `AbletonTrack` class was so it could be reused. Here we are going to create an instance of this class for each of the four tracks, Kick, Snare, HiHat and Bass, in this sequencer. In step 4, for the sake of expediency when working out the OSC-like communication, we hard-coded a single `AbletonTrack` object as a property of the `AbletonLive` class.
 
-To start things off in this next version, the new code for step 5 instead has a property which is an array holding onto 4 `AbletonTrack` objects. In order to make it easy to know which track is *active* and currently being edited, the `AbletonLive` class also has a property `activeTrack`, which is a number between 0 and 3 that corresponds the index of the currently editable track in that array.
+To start things off in this next version, the new code for step 6 instead has a property which is an array holding onto 4 `AbletonTrack` objects. In order to make it easy to know which track is *active* and currently being edited, the `AbletonLive` class also has a property `activeTrack`, which is a number between 0 and 3 that corresponds the index of the currently editable track in that array.
 
 For the sake of convenience, the `AbletonTrack` class has also been updated so that it has a `name` property. This is useful if you need to debug things (`console.log(track)`) and important for displaying the active track in the Electron UI.
 
