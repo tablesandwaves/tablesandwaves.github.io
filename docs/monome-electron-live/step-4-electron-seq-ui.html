@@ -33,8 +33,7 @@
 
 <h2 id="step-4-electron-sequencer-ui">Step 4: Electron Sequencer UI</h2>
 
-<p>Step 4 of the Grid+Electron+Live Tutorial is be a big one. There are a lot of changes to a lot of files, but it represents a major milestone in wiring up the three core components, the grid hardware, the Electron app’s UI and the clock signal from Live.</p>
-
+<p>Step 4 of the Grid+Electron+Live Tutorial is be a big one. There are a lot of changes to a lot of files, but it represents a major milestone in wiring up the three core components, the grid hardware, the Electron app's UI and the clock signal from Live.</p>
 
 <ol start="0">
   <li><a href="./">Overview &amp; Prerequisites</a></li>
@@ -64,19 +63,19 @@
 
 <p>The grid interaction is relatively simple. The top row of grid buttons will serve as the transport row. For each 16th note while the Live transport is running, the corresponding grid button should light up. The transport should loop.</p>
 
-<p>Due to the aforementioned security constraints in all Electron apps, the method for updating the sequencer UI in Electron is more complex. The <code>AbletonLive</code> class’s <code>electronUi</code> variable, which is set in the <code>main.js</code> script when the app first loads, is an instance of an Electron <code>BrowserWindow</code> object. This object has a reference to the browser UI via its <code>webContents</code> variable. This <code>webContents</code> variable has a <code>send()</code> method by which named messages can be passed to the UI.</p>
+<p>Due to the aforementioned security constraints in all Electron apps, the method for updating the sequencer UI in Electron is more complex. The <code>AbletonLive</code> class's <code>electronUi</code> variable, which is set in the <code>main.js</code> script when the app first loads, is an instance of an Electron <code>BrowserWindow</code> object. This object has a reference to the browser UI via its <code>webContents</code> variable. This <code>webContents</code> variable has a <code>send()</code> method by which named messages can be passed to the UI.</p>
 
-<p>In this step of the tutorial, we configure a <code>transport</code> message that can be sent from the Node.js process to its UI in the <code>preload.js</code> script. Note that we have declared a <code>stepSequencer</code> object that can then be accessed in the UI’s own JavaScript file (<code>./app/view/js/ui.js</code>). By virtue of the configuration in the <code>preload.js</code> script, this <code>stepSequencer</code> object is attached to the Electron UI’s primary <code>window</code> object. The preload script then attaches named methods (<code>transport</code> in this example) to this <code>stepSequencer</code> object and data can be passed to the browser UI for acting upon. In this case, within the <code>AbletonLive</code> class’s <code>follow()</code> method, it sends a <code>transport</code> message containing the current 16th note step that should be updated:</p>
+<p>In this step of the tutorial, we configure a <code>transport</code> message that can be sent from the Node.js process to its UI in the <code>preload.js</code> script. Note that we have declared a <code>stepSequencer</code> object that can then be accessed in the UI's own JavaScript file (<code>./app/view/js/ui.js</code>). By virtue of the configuration in the <code>preload.js</code> script, this <code>stepSequencer</code> object is attached to the Electron UI's primary <code>window</code> object. The preload script then attaches named methods (<code>transport</code> in this example) to this <code>stepSequencer</code> object and data can be passed to the browser UI for acting upon. In this case, within the <code>AbletonLive</code> class's <code>follow()</code> method, it sends a <code>transport</code> message containing the current 16th note step that should be updated:</p>
 
 <pre><code class="language-javascript">this.electronUi.webContents.send("transport", this.step % 16);</code></pre>
 
-<p>Another important part of the Electron security model is that updates in the UI should use CSS rules as much as possible. This means that the UI display works by updating the state of HTML elements’ <code>class</code> attributes. The CSS defines the active step as blue.</p>
+<p>Another important part of the Electron security model is that updates in the UI should use CSS rules as much as possible. This means that the UI display works by updating the state of HTML elements' <code>class</code> attributes. The CSS defines the active step as blue.</p>
 
-<p>Once all the code files below have been updated, launch the Electron app (<code>npm start</code>) and start Live’s transport. The grid hardware and the Electron UI should both display the current sequencer step.</p>
+<p>Once all the code files below have been updated, launch the Electron app (<code>npm start</code>) and start Live's transport. The grid hardware and the Electron UI should both display the current sequencer step.</p>
 
 <h2 id="other-notes">Other Notes</h2>
 
-<p>In order for the displays on the grid and the UI to be in sync with Live’s transport, you may need to Adjust the MIDI in timing in Live’s preferences. If the 16th note represented by Live’s transport line in a MIDI clip seems to be ahead of the steps displayed in the UI or on the grid, try adjusting the MIDI Clock Sync Delay by a negative number, such as -100ms.</p>
+<p>In order for the displays on the grid and the UI to be in sync with Live's transport, you may need to Adjust the MIDI in timing in Live's preferences. If the 16th note represented by Live's transport line in a MIDI clip seems to be ahead of the steps displayed in the UI or on the grid, try adjusting the MIDI Clock Sync Delay by a negative number, such as -100ms.</p>
 
 <p>The <code>main.js</code> class also watches for the Electron window close event. When it occurs, it calls a method that resets the grid display by turning off all button lights.</p>
 
@@ -84,7 +83,7 @@
 
 <pre><code class="language-javascript">win.webContents.openDevTools();</code></pre>
 
-<p>This means that you now have an additional way to utilize JavaScript’s <code>console.log()</code> for quick debugging. Up to this point, we have been calling <code>console.log()</code> from the Node.js process of the Electron app, such as when we log grid key presses in the <code>MonomeGrid</code> class or log the transport Bars, Beats and 16th notes in the <code>AbletonLive</code> class.</p>
+<p>This means that you now have an additional way to utilize JavaScript's <code>console.log()</code> for quick debugging. Up to this point, we have been calling <code>console.log()</code> from the Node.js process of the Electron app, such as when we log grid key presses in the <code>MonomeGrid</code> class or log the transport Bars, Beats and 16th notes in the <code>AbletonLive</code> class.</p>
 
 <p>Now any <code>console.log()</code> statements that are called in the file <code>./app/view/js/ui.js</code> will be logged in the Chromium developer tools console. This can be very helpful when debugging exactly what kind of data is being sent to the Electron UI process from the Electron Node.js process.</p>
 
