@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Step 1 | Grid+Electron+Live Tutorial | Tables &amp; Waves</title>
+  <link rel="stylesheet" href="../css/style.css" type="text/css">
+  <link rel="shortcut icon" type="image/x-icon" href="../images/favicon.ico">
+
+  <link rel="stylesheet" href="../css/atom-one-dark.min.css">
+  <script src="../js/highlight.min.js"></script>
+</head>
+<body>
+<div id="content">
+
+<h1>Tables &amp; Waves</h1>
+
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><span class="selected">Experiments</span></li>
+    <li><a href="../about">About</a></li>
+  </ul>
+</nav>
+
+<div id="grid-electron-live" class="main">
+
+<p class="breadcrumbs">
+  <a href="../">Tables &amp; Waves</a> &raquo;
+  <a href="../experiments">Experiments</a> &raquo;
+  <a href="./">Grid+Electron+Live Tutorial</a> &raquo;
+  Step 2
+</p>
+
+<h2 id="step-2-connect-the-electron-app-to-the-monome-grid">Step 2: Connect the Electron App to the monome grid</h2>
+
+<p>
+  This is step 1 of the Grid+Electron+Live Tutorial.
+</p>
+
+<ol start="0">
+  <li><a href="./">Overview &amp; Prerequisites</a></li>
+  <li><a href="step-1-app-setup.html">Stub Out the Initial Electron App</a></li>
+  <li class="current">Connect the Electron App to the monome grid</li>
+  <li><a href="step-3-connect-to-live.html">Connect the Electron App to the Ableton Live</a></li>
+  <li><a href="step-4-electron-seq-ui.html">Electron Sequencer UI</a></li>
+  <li><a href="step-5-live-note-integration.html">Ableton Live Note Sequence Integration</a></li>
+  <li><a href="step-6-multitrack-and-melody.html">Multitrack Sequencer &amp; Melodies</a></li>
+  <li><a href="step-7-musical-algorithms.html">Musical Algorithms</a></li>
+  <li><a href="epilogue-architecture-assumptions.html">Epilogue: App Architecture Assumptions</a></li>
+</ol>
+
+</div>
+
+<div class="main">
+
+<h3>New Files &amp; Dependencies</h3>
+
+<p>Let's create a few more files and folders:</p>
+
+<pre><code>$ mkdir config
+$ touch config/grid.yml
+$ touch app/model/ableton_live.js
+$ touch app/model/monome_grid.js
+</code></pre>
+
+<p>Next, let's add a few NPM package dependencies:</p>
+
+<pre><code>$ npm install serialosc
+$ npm install js-yaml
+</code></pre>
+
+<p>Update the three code files referenced below. Note that two are newly created in this tutorial step and the third, <code>main.js</code>, already exists from step 1.</p>
+
+<p>Now add the serial number for your grid to the configuration file:</p>
+
+<pre><code>$ more config/grid.yml
+serial: m123456789
+</code></pre>
+
+<h3 id="update-the-files--run">Update the Files &amp; Run</h3>
+
+<p>As in step 1, update each of the files listed in <strong>Code Updates for Step 2</strong> with the code below. The <code>main.js</code> file was created in step 1, but now its coded needs to be updated so it looks like the version below.</p>
+
+<p>Now when you run <code>npm start</code> in your terminal, the Electron UI will launch again. However, if things are working correctly, you should see a message indicating that the app has established communication with your grid. Additionally, if you press buttons on the grid, you should see “press” objects logging to the terminal window:</p>
+
+<pre><code>$ npm start</code></pre>
+
+<p><img width="100%" src="./images/electron-app-connect-to-grid.png" alt="Screenshot of the Electron app running in with key press events logging to the console" /></p>
+
+<h3 id="code-updates-for-step-2">Code Updates for Step 2</h3>
+
+<h4 id="appmodelmonomegridjs"><code>./app/model/monome_grid.js</code></h4>
+
+<p>The <code>MonomeGrid</code> class will be used to communicate with the grid hardware.</p>
+
+<pre><code>const fs        = require("fs");
+const path      = require("path");
+const yaml      = require("js-yaml");
+const serialosc = require("serialosc");
+
+
+const CONFIG_DIRECTORY = path.resolve(__dirname, "../../config");
+
+
+class MonomeGrid {
+  device = undefined;
+  daw = undefined;
+
+  constructor(abletonLive) {
+    this.daw = abletonLive;
+  }
+
+
+  /**
+    * This is fundamentally the same code as the monome website's grid studies.
+    */
+  async connect() {
+    const config = yaml.load(
+      fs.readFileSync(
+        path.resolve(CONFIG_DIRECTORY, "grid.yml"),
+        "utf8"
+      )
+    );
+
+    return new Promise((resolve, reject) => {
+      let addEvent = config.serial + ":add";
+
+      serialosc.start({ startDevices: false });
+
+      serialosc.on(addEvent, (device) => {
+        if (this.device)           return;
+        if (device.type != 'grid') return;
+
+        this.device = device;
+        this.device.on('initialized', () => this.device.on('key', (press) => this.keyPress(press)));
+        this.device.start();
+
+        resolve(`Connected to ${this.device.model} ${this.device.id} on ${this.device.deviceHost}:${this.device.devicePort}`);
+      });
+    });
+  }
+
+
+  keyPress(press) {
+    console.log(press);
+  }
+}
+
+
+module.exports = MonomeGrid;
+</code></pre>
+
+<h4 id="appmodelabletonlivejs"><code>./app/model/ableton_live.js</code></h4>
+
+<p>The <code>AbletonLive</code> class will be used to coordinate communication between the Electron app and Live. It will also serve as an intermediary between Live and the grid hardware. At this point in the tutorial, it is only connecting to the grid.</p>
+
+<pre><code>const MonomeGrid = require("./monome_grid");
+
+
+class AbletonLive {
+  constructor() {
+    this.controller = new MonomeGrid(this);
+  }
+
+
+  async connectToGrid() {
+    const msg = await this.controller.connect();
+    return msg;
+  }
+}
+
+
+module.exports = AbletonLive;
+</code></pre>
+
+<h4 id="mainjs"><code>./main.js</code></h4>
+
+<p>This code was created in Step 1 of this tutorial. The additions in Step 2 include:</p>
+
+<ul>
+  <li>Requiring the AbletonLive class and creating an instance of it as the variable <code>daw</code></li>
+  <li>Inserting a new <code>.then()</code> handler so the Electron app connects to the grid prior to loading its window</li>
+</ul>
+
+<pre><code>const { app, BrowserWindow } = require('electron');
+const path = require('path');
+const AbletonLive = require('./app/model/ableton_live');
+
+
+const daw = new AbletonLive();
+
+
+function createWindow () {
+  const win = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js')
+    }
+  });
+
+  win.loadFile('app/view/index.html');
+}
+
+app.whenReady().then(() => {
+
+  daw.connectToGrid().then((msg) => {
+    console.log(msg);
+  });
+
+}).then(() => {
+  createWindow();
+
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
+  });
+})
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
+</code></pre>
+
+</div>
+<script>hljs.highlightAll();</script>
+</body>
+</html>
+
+

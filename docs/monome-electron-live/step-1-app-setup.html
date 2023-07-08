@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Step 1 | Grid+Electron+Live Tutorial | Tables &amp; Waves</title>
+  <link rel="stylesheet" href="../css/style.css" type="text/css">
+  <link rel="shortcut icon" type="image/x-icon" href="../images/favicon.ico">
+
+  <link rel="stylesheet" href="../css/atom-one-dark.min.css">
+  <script src="../js/highlight.min.js"></script>
+</head>
+<body>
+<div id="content">
+
+<h1>Tables &amp; Waves</h1>
+
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><span class="selected">Experiments</span></li>
+    <li><a href="../about">About</a></li>
+  </ul>
+</nav>
+
+<div id="grid-electron-live" class="main">
+
+<p class="breadcrumbs">
+  <a href="../">Tables &amp; Waves</a> &raquo;
+  <a href="../experiments">Experiments</a> &raquo;
+  <a href="./">Grid+Electron+Live Tutorial</a> &raquo;
+  Step 1
+</p>
+
+<h2 id="step-1-stub-out-the-initial-electron-app">Step 1: Stub Out the Initial Electron App</h2>
+
+<p>
+  This is step 1 of the Grid+Electron+Live Tutorial.
+</p>
+
+<ol start="0">
+  <li><a href="./">Overview &amp; Prerequisites</a></li>
+  <li class="current">Stub Out the Initial Electron App</li>
+  <li><a href="step-2-connect-to-grid.html">Connect the Electron App to the monome grid</a></li>
+  <li><a href="step-3-connect-to-live.html">Connect the Electron App to the Ableton Live</a></li>
+  <li><a href="step-4-electron-seq-ui.html">Electron Sequencer UI</a></li>
+  <li><a href="step-5-live-note-integration.html">Ableton Live Note Sequence Integration</a></li>
+  <li><a href="step-6-multitrack-and-melody.html">Multitrack Sequencer &amp; Melodies</a></li>
+  <li><a href="step-7-musical-algorithms.html">Musical Algorithms</a></li>
+  <li><a href="epilogue-architecture-assumptions.html">Epilogue: App Architecture Assumptions</a></li>
+</ol>
+
+</div>
+
+<div class="main">
+
+<h3 id="installing-electron-node-packages">Installing Electron Node Packages</h3>
+
+<p>To get started, we are going to set up an Electron app by following the Electron Quick Start instructions:</p>
+
+<p><a href="https://www.electronjs.org/docs/latest/tutorial/quick-start">https://www.electronjs.org/docs/latest/tutorial/quick-start</a></p>
+
+<p>Fill in the entries below when the interactive prompt starts (though probably choose your own author name).</p>
+
+<pre><code class="language-bash">$ mkdir monome-electron-live
+$ cd monome-electron-live
+$ npm init
+...
+package name: (monome-electron-live)
+version: (1.0.0) 0.1.0
+description: A reference implementation app that connects a monome grid to Ableton Live
+entry point: (index.js) main.js
+test command:
+git repository:
+keywords: monome grid electron ableton live
+author: Tables &amp; Waves
+license: (ISC)
+...
+</code></pre>
+
+<p>Some of the interactive terminal output above has been replaced with “…” to save space here. Note that, per Electron Quick Start instructions, the default script should <code>main.js</code>. After this step, you should have a file named <code>package.json</code> in your directory.</p>
+
+<p>Next install the Electron dependencies:</p>
+
+<pre><code>$ npm install --save-dev electron
+</code></pre>
+
+<p>This will create a <code>node_modules</code> directory and install a lot of node packages underneath it. It will also add the following entry to your <code>package.json</code> file:</p>
+
+<pre><code>"devDependencies": {
+  "electron": "^25.2.0"
+}
+</code></pre>
+
+<p>If you get a warning about vulnerabilities related to the <code>semver</code> node package, add an <code>overrides</code> entry to your <code>package.json</code> file:</p>
+
+<pre><code>"overrides": {
+  "semver": "^7.5.3"
+}
+</code></pre>
+
+<p>And then run the command <code>npm i</code> to update the version.</p>
+
+<p>Getting back to the quick start guide, now you want to add a new “start” entry to <code>package.json</code> in the “scripts” section. It should look like this:</p>
+
+<pre><code>"scripts": {
+  "test": "echo \"Error: no test specified\" &amp;&amp; exit 1",
+  "start": "electron ."
+},
+</code></pre>
+
+<h3 id="set-up-an-app-directoryfile-structure">Set up an App Directory/File Structure</h3>
+
+<p>I'm a sucker for a little MVC style organization, so I am going to organize my files a bit. First set up some directories:</p>
+
+<pre><code>$ mkdir app
+$ mkdir app/model
+$ mkdir app/view
+$ mkdir app/view/css
+$ mkdir app/view/js
+</code></pre>
+
+<p>Then create the core files we will use:</p>
+
+<pre><code>$ touch app/view/index.html
+$ touch app/view/css/styles.css
+$ touch app/view/js/ui.js
+$ touch main.js
+$ touch preload.js
+</code></pre>
+
+<h3 id="step-13-test-run">Test Run</h3>
+
+<p>For the newly created files listed below in <strong>Code Updates for Step 1</strong> (we'll get to <code>preload.js</code> and <code>ui.js</code> in later steps), add the HTML, CSS and JS code to the files just created.</p>
+
+<p>Once that is done, you should be able to start the Electron app. It won't do anything besides launch a GUI in development mode, but it is your first check-point to see if all of this necessary but annoying plumbing is correctly setup:</p>
+
+<pre><code>$ npm start
+</code></pre>
+
+<p><img width="100%" src="./images/electron-app-1.png" alt="Screenshot of the Electron app running in development mode" /></p>
+
+<p>If you are seeing something similar to the screenshot above, step 1 is complete.</p>
+
+<h3 id="code-updates-for-step-1">Code Updates for Step 1</h3>
+
+<h3 id="appviewindexhtml"><code>./app/view/index.html</code></h3>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8" /&gt;
+  &lt;!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP --&gt;
+  &lt;meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" /&gt;
+  &lt;title&gt;Monome Electron Live&lt;/title&gt;
+  &lt;link rel="stylesheet" href="css/styles.css" /&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;h1&gt;Monome Grid + Electron + Live&lt;/h1&gt;
+
+&lt;script src="js/ui.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<h3 id="appviewcssstylescss"><code>./app/view/css/styles.css</code></h3>
+
+<pre><code>body {
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  position: relative;
+  margin: 10px;
+}
+</code></pre>
+
+<h3 id="mainjs"><code>./main.js</code></h3>
+
+<p>This is mostly the same content as the Electron Quick Start guide, with the exception that the paths have been updated for this custom directory structure.</p>
+
+<pre><code>const { app, BrowserWindow } = require('electron');
+const path = require('path');
+
+function createWindow () {
+  const win = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js')
+    }
+  });
+
+win.loadFile('app/view/index.html')
+}
+
+app.whenReady().then(() => {
+  createWindow();
+
+app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
+  });
+})
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
+</code></pre>
+
+</div>
+
+<script>hljs.highlightAll();</script>
+</body>
+</html>

@@ -107,12 +107,12 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
 
 #content .main {
   width: 1000px;
-  min-height: 400px;
+  min-height: 300px;
   margin-top: -1px;
-  margin-bottom: 200px;
+  margin-bottom: 150px;
   padding-left: 40px;
   padding-right: 40px;
-  padding-bottom: 80px;
+  padding-bottom: 40px;
   border-top: 1px solid #ccc;
   background: #fff;
   border-radius: 3px;
@@ -620,3 +620,8 @@ div.piano-roll, div.markov-piano-roll {
 }
 
 
+#grid-electron-live ol li.current {
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #555;
+}

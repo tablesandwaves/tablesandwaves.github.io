@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Grid+Electron+Live App Architecture &amp; Assumptions | Tables &amp; Waves</title>
+  <link rel="stylesheet" href="../css/style.css" type="text/css">
+  <link rel="shortcut icon" type="image/x-icon" href="../images/favicon.ico">
+</head>
+<body>
+<div id="content">
+
+<h1>Tables &amp; Waves</h1>
+
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><span class="selected">Experiments</span></li>
+    <li><a href="../about">About</a></li>
+  </ul>
+</nav>
+
+<div id="grid-electron-live" class="main">
+  <p class="breadcrumbs">
+    <a href="../">Tables &amp; Waves</a> &raquo;
+    <a href="../experiments">Experiments</a> &raquo;
+    Grid+Electron+Live Tutorial
+  </p>
+
+  <h2 id="monome-electron-live">Epilogue: App Architecture &amp; Assumptions</h2>
+
+  <ol start="0">
+    <li><a href="./">Overview &amp; Prerequisites</a></li>
+    <li><a href="step-1-app-setup.html">Stub Out the Initial Electron App</a></li>
+    <li><a href="step-2-connect-to-grid.html">Connect the Electron App to the monome grid</a></li>
+    <li><a href="step-3-connect-to-live.html">Connect the Electron App to the Ableton Live</a></li>
+    <li><a href="step-4-electron-seq-ui.html">Electron Sequencer UI</a></li>
+    <li><a href="step-5-live-note-integration.html">Ableton Live Note Sequence Integration</a></li>
+    <li><a href="step-6-multitrack-and-melody.html">Multitrack Sequencer &amp; Melodies</a></li>
+    <li><a href="step-7-musical-algorithms.html">Musical Algorithms</a></li>
+    <li>Epilogue: Application Architecture Assumptions</li>
+  </ol>
+
+  <p>This tutorial builds an Electron application from the ground up. The app is best described as triangulating the space somewhere between a step sequencer, a software UI/controller for computer music and a piece of middleware between the monome grid hardware and the Ableton Live digital audio workstation (DAW) software. Consequently, this software has intermediate complexity.</p>
+
+  <p>When software begins reaching a certain level of complexity, it is best if it starts to get a little opinionated and not try to be all things to all people. Here are some of those opinions and principles that impact its design:</p>
+
+  <h4 id="dont-reinvent-anything-ableton-does-well">1. Don't Reinvent Anything Ableton Does Well</h4>
+
+  <p>First and foremost, Ableton Live is a great piece of software. I will never do better than a fully professional piece of software at implementing many of the core features of a sequencer or DAW. To that end, the first big design decision is that Live itself does <strong>all</strong> of the heavy lifting. Namely, it is responsible for providing the sequencer clock and timing. The Electron app, to the extent that it provides a parallel display of the sequencer while it is running, is a follower.</p>
+
+  <p>This also means that because Live is a stable and exceptional piece of software, I am leaning hard into its idioms and data model and APIs:</p>
+
+  <ul>
+    <li>Utilize the Track + Clip Slot model</li>
+    <li>Utilize Max for Live and its Live Object Model (LOM) as the primary API</li>
+  </ul>
+
+  <p>Embracing rather than fighting the framework, and with Live here being the framework or platform, means that all the other kind of functionality that a DAW provides that we take for granted, such as effects or return tracks, is already implemented.</p>
+
+  <p>Additionally, this means that the way in which Live is already an abstraction is maintained. By using Live's own MIDI clips, this Electron app does not force you to use either software or hardware instruments. Data is written at the clip slot level and working with Live's device model is left alone.</p>
+
+  <h4 id="create-a-foundation-for-creative-coding">2. Create a Foundation for Creative Coding</h4>
+
+  <p>Given the embrace-the-tools-that-exist nature of #1, this means that the Electron app can hone in on creative programming tasks. In my particular case, this tutorial aims to highlight a path through the annoying side of application development: all that stupid digital plumbing involved in wiring different components together through code.</p>
+
+  <p>However, once this digital plumbing is in place, the hope is that you see that it provides a foundation to build bespoke and idiosyncratic algorithms for processing musical data. The tutorial will demonstrate a few things in this space, but the point is to get the architecture in place that can be extended by individual creative coders, each in a completely unique manner.</p>
+
+  <h4 id="javascript-is-rad">3. JavaScript is Rad</h4>
+
+  <p>One of the reasons this particular form of app development is not for everyone is because it is rooted in JavaScript. Contemporary JS development can be maddening to some. I get it. However, it is relatively easy to use. It is a traditional curly braces C-style programming language. The web is full of examples and documentation and communities where you can learn the language. That accessibility is worth <strong>a lot</strong>.</p>
+
+  <p>But also, given that it is the language used in the ubiquitous world of web browsers, there has been a lot of money thrown at it by major corporations and it is mature and phenomenally fast as a scripting language. While I don't personally believe in chasing optimization as the final arbiter of programming languages <em>for creative coding</em>, working in musical applications means you are working with time itself and reasonably good speed is nice to have. So let's bend the use of JS away from the capitalist coding of web consumerism and into creative spaces.</p>
+
+  <p>Additionally, in my opinion, JS has a lot of really great functional programming idioms (<code>.map()</code>, <code>.reduce()</code>, etc.) that are built into the language (i.e., supported) and embraced by the community (i.e., there's lots of examples). To the extent that I am writing code to process musical data, I nearly always find myself working with lists/collections/arrays of data and doing transformations and selections and mappings on those data structures. It's peanut butter + chocolate for me personally.</p>
+
+  <p>Finally, I get down with text-based code. I have been using other programming environments like Max/MSP, but I just like text-based code and the entire ecosystem around it. I like version control (at the statement level). I like testing frameworks. I can think in this type of code in ways I am not simply as fluent in visual idioms. That is just one perspective and not universal, but if you are comfortable with object-oriented computer code, check this tutorial out…</p>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>
