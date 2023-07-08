@@ -44,7 +44,7 @@
   <li><a href="step-5-live-note-integration.html">Ableton Live Note Sequence Integration</a></li>
   <li><a href="step-6-multitrack-and-melody.html">Multitrack Sequencer &amp; Melodies</a></li>
   <li class="current">Musical Algorithms</li>
-  <li><a href="epilogue-architecture-assumptions.html">Epilogue: App Architecture Assumptions</a></li>
+  <li><a href="epilogue-what-next.html">Epilogue: What Next &amp; Parting Thoughts</a></li>
 </ol>
 
 </div>
@@ -84,11 +84,7 @@ $ touch app/helpers/algorithms.js
 
 <p>At this point this tutorial series is concluded. The goal of the tutorial is to demonstrate how to create a bridge between the monome grid hardware and use it as an algorithmic step sequencer/controller for Ableton Live. There's a bit of glue code to wrap your head around, but from this point forward, the plumbing is in place and you can focus your attention on the kinds of things that computer code can do musically.</p>
 
-<p>JavaScript is a very accessible language due to its ubiquity on the web. It is also an extremely fast scripting language, which makes it a good fit for the timing-focused music tech environment. But there is another aspect of the design of this app that is worth pointing out now that you see a simple, but complete picture: notice that the Electron app is truly a controller here. Ableton Live is still the main clock source and we are primarily just sending data to it.</p>
-
-<p>We are even making use of its own data model of tracks and clips. This means that in terms of all the core timing dependent things you want in a computer music environment, no wheels have been reinvented. This little Monome + Electron + Live application architecture is designed to leave a lot of the heavy lifting of the DAW to Live and simply provide a space for you to direct your creative coding in the service of composition and performance.</p>
-
-<p>Happy hacking.</p>
+<p>For ideas on how to extend this further, or to read a few notes on the design goals of this particular app architecture, see the <a href="epilogue-what-next.html">parting thoughts</a>. Happy Hacking.</p>
 
 <h3 id="code-updates-for-step-7">Code Updates for Step 7</h3>
 

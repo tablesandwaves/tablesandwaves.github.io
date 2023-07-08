@@ -26,7 +26,7 @@
     Grid+Electron+Live Tutorial
   </p>
 
-  <h2 id="monome-electron-live">Epilogue: App Architecture &amp; Assumptions</h2>
+  <h2 id="monome-electron-live">Epilogue: What Next &amp; Parting Thoughts</h2>
 
   <p>
     A few closing thoughts on the software built in this tutorial.
@@ -41,13 +41,39 @@
     <li><a href="step-5-live-note-integration.html">Ableton Live Note Sequence Integration</a></li>
     <li><a href="step-6-multitrack-and-melody.html">Multitrack Sequencer &amp; Melodies</a></li>
     <li><a href="step-7-musical-algorithms.html">Musical Algorithms</a></li>
-    <li class="current">Epilogue: App Architecture Assumptions</li>
+    <li class="current">Epilogue: What Next &amp; Parting Thoughts</li>
   </ol>
 </div>
 
 <div class="main">
 
-  <h3>What is Being Built?</h3>
+  <h3>Where to Go Next</h3>
+
+  <p>
+    The purpose of this tutorial is to get all the plumbing out of the way and build a foundation upon which you can do further <em>creative</em> coding. To that end, this tutorial is a distilled version of my own performance tool.
+  </p>
+
+  <img src="images/tblswvs-app.png" alt="Screenshot of tblswvs.app" width="100%">
+
+  <p>
+    Feel free to poke around the repository for this codebase, <a href="https://github.com/tablesandwaves/tblswvs.app">tblswvs.app</a>. It is steadily accruing features like:
+  </p>
+
+  <ul>
+    <li>Key/scale settings</li>
+    <li>Note probabilities</li>
+    <li>Ratcheting/fills</li>
+    <li><a href="../vectors">Vector melodies</a> (shifting sequence notes by scale degrees)</li>
+    <li>Melodic evolution/improvisation algorithms</li>
+    <li>Swapping out the grid's button definitions by category (e.g., melodies vs. rhythm)</li>
+    <li>"Pagination" within differnt grid interface functionality clusters</li>
+  </ul>
+
+  <p>
+    This version will look a little bit different since it is written in Typescript and has to be transpiled to JavaScript when the app build, but Typescript will still look close enough to plain old JavaScript that, if you can follow the tutorial code here, nothing should be too opaque.
+  </p>
+
+  <h3>Design Assumptions</h3>
 
   <p>This tutorial builds an Electron application from the ground up. The app is best described as triangulating the space somewhere between a step sequencer, a software UI/controller for computer music and a piece of middleware between the monome grid hardware and the Ableton Live digital audio workstation (DAW) software. Consequently, this software has intermediate complexity.</p>
 
@@ -74,7 +100,7 @@
 
   <p>However, once this digital plumbing is in place, the hope is that you see that it provides a foundation to build bespoke and idiosyncratic algorithms for processing musical data. The tutorial will demonstrate a few things in this space, but the point is to get the architecture in place that can be extended by individual creative coders, each in a completely unique manner.</p>
 
-  <h4 id="javascript-is-rad">3. JavaScript is Rad</h4>
+  <h4 id="notes-on-javascript">3. Notes on JavaScript</h4>
 
   <p>One of the reasons this particular form of app development is not for everyone is because it is rooted in JavaScript. Contemporary JS development can be maddening to some. I get it. However, it is relatively easy to use. It is a traditional curly braces C-style programming language. The web is full of examples and documentation and communities where you can learn the language. That accessibility is worth <strong>a lot</strong>.</p>
 
@@ -83,6 +109,20 @@
   <p>Additionally, in my opinion, JS has a lot of really great functional programming idioms (<code>.map()</code>, <code>.reduce()</code>, etc.) that are built into the language (i.e., supported) and embraced by the community (i.e., there's lots of examples). To the extent that I am writing code to process musical data, I nearly always find myself working with lists/collections/arrays of data and doing transformations and selections and mappings on those data structures. It's peanut butter + chocolate for me personally.</p>
 
   <p>Finally, I get down with text-based code. I have been using other programming environments like Max/MSP, but I just like text-based code and the entire ecosystem around it. I like version control (at the statement level). I like testing frameworks. I can think in this type of code in ways I am not simply as fluent in visual idioms. That is just one perspective and not universal, but if you are comfortable with object-oriented computer code, check this tutorial out…</p>
+
+  <h3>Acknowledgments &amp; Inspiration</h3>
+
+  <p>
+    Nothing is built in a vacuum. I would like to express my gratitude and appreciation for a lot of prior work by generous people who have shared open source software and insights into their own work.
+  </p>
+
+  <p>
+    <a href="https://monome.org/docs/grid/studies/nodejs/">Monome Node.js Grid Studies</a>: the Monome Team and Tom Dinchak and Tom Armitage. Thanks for a truly excellent introduction to programming for the grid with JavaScript and the <a href="https://www.npmjs.com/package/serialosc">node-serialosc</a> package.
+  </p>
+
+  <p>
+    <a href="https://williamfields.com/">William Fields</a>: I can't recommend enough that you listen to the interviews posted from his web page. His FieldsOS system using Lemur, Chromium and Reaper directly inspired this architecture using a monome grid, Electron and Ableton Live. I am also deeply indebted to Fields for sharing his thoughts on how to think about a long term relationship to one's own self-designed system.
+  </p>
 
 </div>
 <script src="../js/main.js"></script>
