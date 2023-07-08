@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Step 3 | Grid+Electron+Live Tutorial | Tables &amp; Waves</title>
+  <link rel="stylesheet" href="../css/style.css" type="text/css">
+  <link rel="shortcut icon" type="image/x-icon" href="../images/favicon.ico">
+
+  <link rel="stylesheet" href="../css/atom-one-dark.min.css">
+  <script src="../js/highlight.min.js"></script>
+</head>
+<body>
+<div id="content">
+
+<h1>Tables &amp; Waves</h1>
+
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><span class="selected">Experiments</span></li>
+    <li><a href="../about">About</a></li>
+  </ul>
+</nav>
+
+<div id="grid-electron-live" class="main">
+
+<p class="breadcrumbs">
+  <a href="../">Tables &amp; Waves</a> &raquo;
+  <a href="../experiments">Experiments</a> &raquo;
+  <a href="./">Grid+Electron+Live Tutorial</a> &raquo;
+  Step 3
+</p>
+
+<h2 id="step-3-connect-the-electron-app-to-the-ableton-live">Step 3: Connect the Electron App to the Ableton Live</h2>
+
+<p>
+  This is step 3 of the Grid+Electron+Live Tutorial.
+</p>
+
+<ol start="0">
+  <li><a href="./">Overview &amp; Prerequisites</a></li>
+  <li><a href="step-1-app-setup.html">Stub Out the Initial Electron App</a></li>
+  <li><a href="step-2-connect-to-grid.html">Connect the Electron App to the monome grid</a></li>
+  <li class="current">Connect the Electron App to the Ableton Live</li>
+  <li><a href="step-4-electron-seq-ui.html">Electron Sequencer UI</a></li>
+  <li><a href="step-5-live-note-integration.html">Ableton Live Note Sequence Integration</a></li>
+  <li><a href="step-6-multitrack-and-melody.html">Multitrack Sequencer &amp; Melodies</a></li>
+  <li><a href="step-7-musical-algorithms.html">Musical Algorithms</a></li>
+  <li><a href="epilogue-architecture-assumptions.html">Epilogue: App Architecture Assumptions</a></li>
+</ol>
+
+</div>
+
+<div class="main">
+
+<h3>Install Dependencies &amp; Configure Live MIDI Preferences</h3>
+
+<p>In step 3, the next piece of plumbing will involve establishing the first connection between the Electron app and Ableton Live, specifically receiving a MIDI clock signal from Live. To do this we will need to install a MIDI package:</p>
+
+<p><code>
+$ npm install easymidi
+</code></p>
+
+<p>This involves a onetime configuration of the MIDI port that will be establsihed. Do the following steps in order:</p>
+
+<ol>
+  <li>Update the code for the <code>AbletonLive</code> class and the <code>main.js</code> file to the versions below.</li>
+  <li>Start the Electron app with <code>npm start</code></li>
+  <li>Launch Live and open its MIDI preferences</li>
+  <li>Find the entry named “monome in” that is established in the code below, check its box for Sync</li>
+</ol>
+
+<p>Now, while the Electron app is running in development mode via <code>npm start</code> you should see the current transport state logging to your terminal console:</p>
+
+<p><code>
+$ npm start
+</code></p>
+
+<p><img width="100%" src="./images/log-live-clock-to-terminal.png" alt="Screenshot of the Live running in with Bar/Beat/16th notes logging to the console" /></p>
+
+<h2 id="code-updates-for-step-3">Code Updates for Step 3</h2>
+
+<h3 id="mainjs"><code>./main.js</code></h3>
+
+<p>There is only a single line addition. Add the <code>daw.follow();</code> statement below to the post-grid connection handler.</p>
+
+<pre><code>
+daw.connectToGrid().then((msg) => {
+  console.log(msg);
+  daw.follow();
+});
+</code></pre>
+
+<h3 id="appmodelabletonlivejs"><code>./app/model/ableton_live.js</code></h3>
+
+<p>This allows Live to send a MIDI clock to the Electron app. In the code below, the MIDI connection is established in the <code>AbletonLive</code> class’s constructor. The <code>follow()</code> method will then process MIDI clock ticks.</p>
+
+<p>The sequencer controller will have a 16th note resolution, therefore it only needs to process every 6th MIDI tick.</p>
+
+<pre><code>const easymidi   = require("easymidi");
+const MonomeGrid = require("./monome_grid");
+
+
+class AbletonLive {
+  // For a sequencer with a 16th note pulse, 4 measures will be one "super measure" to enable a 64 step sequence
+  superMeasure = 4;
+  // 16n step count
+  step = 0;
+
+
+  constructor() {
+    this.controller = new MonomeGrid(this);
+    this.midiIn     = new easymidi.Input("monome in", true);
+  }
+
+
+  async connectToGrid() {
+    const msg = await this.controller.connect();
+    return msg;
+  }
+
+
+  async follow() {
+    this.midiIn.on("clock", () => {
+      this.ticks++;
+      // 6 MIDI clock ticks equals a 16th note.
+      if (this.ticks % 6 != 0) return;
+
+      console.log(
+        "Bar: " + (Math.floor(this.step / 16) + 1) +
+        " Beat: " + (Math.floor(this.step / 4) % 4 + 1) +
+        " 16th Note: " + (this.step % this.superMeasure + 1)
+      );
+
+      this.step = this.step == this.superMeasure * 16 - 1 ? 0 : this.step + 1;
+    });
+
+    this.midiIn.on("start", () => {
+    });
+
+    this.midiIn.on("position", (data) => {
+      if (data.value != 0) return;
+
+      this.ticks = 0;
+      this.step  = 0;
+    });
+  }
+}
+
+
+module.exports = AbletonLive;
+</code></pre>
+
+</div>
+<script>hljs.highlightAll();</script>
+</body>
+</html>
+
+
