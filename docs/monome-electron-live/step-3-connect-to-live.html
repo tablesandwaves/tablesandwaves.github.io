@@ -57,9 +57,7 @@
 
 <p>In step 3, the next piece of plumbing will involve establishing the first connection between the Electron app and Ableton Live, specifically receiving a MIDI clock signal from Live. To do this we will need to install a MIDI package:</p>
 
-<p><code>
-$ npm install easymidi
-</code></p>
+<pre><code>$ npm install easymidi</code></pre>
 
 <p>This involves a onetime configuration of the MIDI port that will be establsihed. Do the following steps in order:</p>
 
@@ -68,13 +66,12 @@ $ npm install easymidi
   <li>Start the Electron app with <code>npm start</code></li>
   <li>Launch Live and open its MIDI preferences</li>
   <li>Find the entry named “monome in” that is established in the code below, check its box for Sync</li>
+  <li>Quit the Electron app and restart it (<code>npm start</code>)</li>
 </ol>
 
 <p>Now, while the Electron app is running in development mode via <code>npm start</code> you should see the current transport state logging to your terminal console:</p>
 
-<p><code>
-$ npm start
-</code></p>
+<pre><code>$ npm start</code></pre>
 
 <p><img width="100%" src="./images/log-live-clock-to-terminal.png" alt="Screenshot of the Live running in with Bar/Beat/16th notes logging to the console" /></p>
 
@@ -84,8 +81,7 @@ $ npm start
 
 <p>There is only a single line addition. Add the <code>daw.follow();</code> statement below to the post-grid connection handler.</p>
 
-<pre><code>
-daw.connectToGrid().then((msg) => {
+<pre><code>daw.connectToGrid().then((msg) => {
   console.log(msg);
   daw.follow();
 });

@@ -59,10 +59,9 @@
 
 <p>In the codebase for this Electron app, we will create a file for storing this algorithm (and where you could place other algorithms):</p>
 
-<p><code>
-$ mkdir app/helpers
+<pre><code>$ mkdir app/helpers
 $ touch app/helpers/algorithms.js
-</code></p>
+</code></pre>
 
 <h3 id="implementing-the-grid-interface">Implementing the grid Interface</h3>
 
@@ -72,9 +71,8 @@ $ touch app/helpers/algorithms.js
 
 <p>Whenever this is on, the <code>AbletonTrack</code> class will then check if it needs to generate a self-replicating melody within its <code>abletonNotes()</code> method:</p>
 
-<p><code>js
-const melody = this.selfReplicatingMelody ? algorithms.selfReplicate(this.melody) : this.melody;
-</code></p>
+<pre><code>const melody = this.selfReplicatingMelody ? algorithms.selfReplicate(this.melody) : this.melody;
+</code></pre>
 
 <p>The result will write the self-similar version of the melody into the Ableton Live MIDI clip:</p>
 

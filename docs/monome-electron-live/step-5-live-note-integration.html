@@ -67,17 +67,17 @@
 
 <p>On track 2, add a Max for Live MIDI device. The device should just have three objects as in the screenshot:</p>
 
-<p><code>
+<pre>
 [udpreceive 44444] =&gt; [prepend osc_message] =&gt; [js electron_msg_processor.js]
-</code></p>
+</pre>
 
 <p><img width="100%" src="./images/ableton-live-step-5-m4l-device.png" alt="Screenshot of electron-udp-channel.amxd Max for Live device" /></p>
 
 <p>You can use a different port number than 44444, but be sure to update it in the code as well (in the <code>AbletonLive</code> constructor). The <code>[js]</code> object will need access to a JavaScript file. It is strongly recomended that you save the M4L device (I named it <code>electron-udp-channel.amxd</code>) in a folder and save the JavaScript file <code>electron_msg_processor.js</code> in the same folder. The Max for Live device should not be saved with the Electron app, instead just save it within the normal Max for Live path. On my Mac, I have saved the device and its JS file at the path:</p>
 
-<p><code>
+<pre>
 ~/Music/Ableton/User Library/Presets/MIDI Effects/Max MIDI Effect/Monome Electron Live
-</code></p>
+</pre>
 
 <h4 id="udp-as-osc-like-communication">UDP as OSC-like Communication</h4>
 
@@ -87,9 +87,9 @@
 
 <p>Once data has found its way over the internal networking inside your computer, it is passed from the Max <code>[udpreceive]</code> object to the <code>[js]</code> object for processing. The <code>electron_msg_processor.js</code> script that receives note data then identifies the track index and clip index (both 0-based indexing per the LOM) based on an OSC-style message path. For example, when updating the first clip in the first track, the Electron app sends a message like the following:</p>
 
-<p><code>
+<pre>
 /tracks/0/clips/0/notes {n groups of 5 numbers representing each note}
-</code></p>
+</pre>
 
 <p>The track and clip indices are parsed out of the first entry in the message. The rest of the UDP message is made up of 1 or more groups of 5 numbers. Each number represents a different property of a note in Ableton Live:</p>
 
@@ -107,10 +107,9 @@
 
 <p>This step in the tutorial introduces a few new classes to our data model:</p>
 
-<p><code>
-$ touch app/model/ableton_note.js
+<pre><code>$ touch app/model/ableton_note.js
 $ touch app/model/ableton_track.js
-</code></p>
+</code></pre>
 
 <ul>
   <li><code>AbletonTrack</code>: an object that will store state for a track's rhythm (and more data in the future)</li>
