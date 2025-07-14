@@ -1,0 +1,288 @@
+:root {
+  --orange: hsla(32, 100%, 50%, 1);
+  --yellow: hsla(49, 99%, 50%, 1);
+  --lime: hsla(82, 90%, 45%, 1);
+  --green: hsla(127, 81%, 41%, 1);
+  --red: hsla(342, 93%, 53%, 1);
+  --pink: hsla(314, 85%, 45%, 1);
+  --blue: hsla(211, 92%, 52%, 1);
+  --purple: hsla(283, 92%, 44%, 1);
+  --cyan: hsla(195, 98%, 55%, 1);
+  --white: hsla(0, 0%, 95%, 1);
+  --black: hsla(0, 0%, 10%, 1);
+  --gray: hsla(0, 0%, 60%, 1);
+  --lightGray: hsla(0, 0%, 80%, 1);
+
+  /* abstract our colours */
+  --boxMain: var(--pink);
+  --boxSecond: var(--purple);
+  --boxHighlightEnabled: var(--yellow);
+  --boxHighlightDisabled: var(--lightGray);
+  --border: 3px solid var(--black);
+  --disabledBorder: 3px solid var(--gray);
+  --enabledBorder: 3px solid var(--black);
+  --borderRad: 4px;
+}
+
+html, body {
+    font-family: Helvetica;
+    margin: 0;
+    padding: 0;
+}
+
+#wrapper, #keyboard, #scale-degree-keyboard {
+    margin: auto;
+    width: 720px;
+}
+
+#keyboard h2 {
+    width: 50%;
+    float: left;
+    margin-top: 0;
+}
+
+#keyboard #voice-selector {
+    width: 50%;
+    float: right;
+    margin-top: 0.5em;
+    text-align: right;
+}
+
+#scale-degree-keyboard {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 1em auto;
+}
+
+.scale-button {
+    margin: 2px;
+    border: solid black 1px;
+    min-height: 50px;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.scale-button.clicked {
+    background: #222222;
+    color: #dddddd;
+}
+
+#synths {
+    width: 100%;
+}
+
+.synth {
+    width: 350px;
+    float: left;
+}
+
+#synth-0 {
+    margin-right: 10px;
+}
+
+#synth-1 {
+    margin-left: 10px;
+}
+
+h2, em {
+    width: 100%;
+}
+
+.rnbo-parameter-sliders {
+    display: flex;
+    flex-direction: column;
+}
+
+.rnbo-parameter-sliders > div {
+    display: flex;
+}
+
+.rnbo-parameter-sliders > div > input:first-of-type {
+    flex-grow: 1;
+}
+
+.rnbo-parameter-sliders input[type="text"] {
+    width: 30px;
+}
+
+.rnbo-parameter-sliders input[type="range"] {
+    width: 380px;
+    margin: auto 10px;
+}
+
+.rnbo-parameter-sliders label {
+    width: 100px;
+    text-align: right;
+    font-size: 0.8em;
+}
+
+/* Step Sequencer */
+
+#sequencer {
+    display: block;
+    float: left;
+    width: 100%;
+    margin: 0 auto 2em;
+}
+
+#sequencer section {
+    width: 720px;
+    margin: 1em auto;
+    clear: left;
+}
+
+#sequencer #transport {
+    text-align: left;
+    margin-bottom: 2em;
+    display: flex;
+}
+
+#sequencer #transport #playback {
+    float: left;
+    width: 20%;
+}
+
+#sequencer #transport #parameters {
+    float: left;
+    width: 40%;
+}
+
+#sequencer #transport #scales {
+    float: left;
+    width: 40%;
+    text-align: right;
+}
+
+#sequencer #transport #scales label,
+#sequencer #transport #scales select {
+    width: 50%;
+    margin-top: 0.5em;
+}
+
+#playBtn:checked {
+    align-self: stretch;
+    border: var(--border);
+    border-radius: var(--borderRad);
+    background-color: var(--boxSecond);
+    cursor: pointer;
+}
+
+#playBtn {
+    appearance: none;
+    width: 90px;
+    height: 60px;
+    margin: 0;
+    padding: 0;
+    border: var(--border);
+    border-radius: var(--borderRad);
+    background: var(--white)
+        url('data:image/svg+xml;charset=utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z" fill="black" /></svg>')
+        no-repeat center center;
+    background-size: 60% 60%;
+    cursor: pointer;
+}
+
+#play-button-label {
+    display: none;
+}
+
+#playBtn:hover,
+#playBtn:checked:hover {
+    background-color: var(--lime);
+}
+
+#playBtn:checked {
+    background: var(--green)
+        url('data:image/svg+xml;charset=utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48z" fill="black" /></svg>')
+        no-repeat center center;
+    background-size: 60% 60%;
+}
+
+#sequencer #transport #parameters {
+    width: 75%;
+    display: block;
+    float: left;
+}
+
+#sequencer #transport #parameters label,
+#sequencer #transport #parameters input,
+#sequencer #transport #parameters span {
+    display: block;
+    float: left;
+    margin: 5px auto;
+}
+
+#sequencer #transport #parameters label {
+    width: 14%;
+    margin-right: 1%;
+    text-align: right;
+}
+
+#sequencer #transport #parameters input {
+    width: 70%;
+}
+
+#sequencer #transport #parameters span {
+    width: 13%;
+    text-align: right;
+    padding-right: 1%;
+}
+
+#bpm {
+    width: 270px;
+    vertical-align: middle;
+}
+
+.voice-steps {
+    display: flex;
+    justify-content: space-between;
+}
+
+.voice-steps input {
+    appearance: none;
+    width: 36px;
+    height: 36px;
+    margin: 0;
+    padding: 0;
+    background-color: var(--white);
+    border: var(--disabledBorder);
+    border-radius: var(--borderRad);
+}
+
+.voice-steps input.enabled {
+    border: var(--enabledBorder);
+}
+
+.voice-steps input.enabled:checked {
+    background-color: var(--boxHighlightEnabled);
+}
+
+.voice-steps input:checked {
+    background-color: var(--boxHighlightDisabled);
+}
+
+.voice-steps label {
+    display: none;
+}
+
+#step-markers {
+    display: flex;
+    justify-content: space-between;
+}
+
+#step-markers span {
+    width: 36px;
+    height: 5px;
+    background-color: var(--gray);
+}
+
+#step-markers span.enabled {
+    background-color: var(--green);
+}
+
+#step-markers span.active {
+    background-color: var(--yellow);
+}
