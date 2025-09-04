@@ -71,7 +71,8 @@ html, body {
 }
 
 #synths {
-    width: 100%;
+    margin: auto auto 300px;
+    width: 720px;
 }
 
 .synth {

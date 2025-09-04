@@ -5,11 +5,11 @@ body {
   margin: .5em auto;
   float: left;
   width: 100%;
-  background: #010D23 url("../images/intone.jpg") no-repeat fixed center;
+  /* background: #010D23; */
 }
 
 
-h1 { font-size: 2em;   margin: 1em auto .5em; color: #EFE491; }
+h1 { font-size: 2em;   margin: 1em auto .5em; color: #333; }
 h2, h3, h4, h5 { color: #2a4273; }
 h2 { font-size: 1.6em; margin: 1em auto 1em; }
 h3 { font-size: 1.4em; margin: 1em auto .5em; }
@@ -113,7 +113,7 @@ h5 { font-size: 1.1em; margin: 1em auto .5em; }
   padding-left: 40px;
   padding-right: 40px;
   padding-bottom: 40px;
-  border-top: 1px solid #ccc;
+  border: 1px solid #ccc;
   background: #fff;
   border-radius: 3px;
 }
