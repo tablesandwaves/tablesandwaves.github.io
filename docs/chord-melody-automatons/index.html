@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="../css/style.css" type="text/css">
+  <link rel="shortcut icon" type="image/x-icon" href="../images/favicon.ico">
+  <title>Automata Study: Chord / Melody Interaction</title>
+  <style>
+    #quick-details {
+      list-style: none;
+      padding-left: 0;
+    }
+  </style>
+</head>
+<body>
+<div id="content">
+
+<h1>Tables &amp; Waves</h1>
+
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><span class="selected">Experiments</span></li>
+    <li><a href="../about">About</a></li>
+  </ul>
+</nav>
+
+<div id="wrapper" class="main">
+  <p class="breadcrumbs">
+    <a href="../">Tables &amp; Waves</a> &raquo;
+    <a href="../experiments">Experiments</a> &raquo;
+    Chord / Melody Automatons
+  </p>
+
+  <h2>Automata Study: Chord / Melody Interaction</h2>
+
+  <ul id="quick-details">
+    <li>
+      <strong>Published:</strong> September 4, 2025
+    </li>
+    <li>
+      <strong>Keywords:</strong> automata, MIDI, JavaScript, generative music, sketches
+    </li>
+    <li>
+      <strong>Code:</strong> <a href="https://github.com/tablesandwaves/automata-studies/tree/main/chord-melody-interaction">Chord / Melody Interaction</a> sub-project from my Automata Studies repository.
+    </li>
+  </ul>
+
+  <p>
+    I am interested in generative music and have been exploring automated musical processes that will create musical data in real time. Lately I have been thinking about rule based systems that are comprised of independent components that can employ simple random processes <strong>and also interact with each other</strong>. In other words, I am interested in <strong>musical automatons</strong>.
+  </p>
+
+  <p>
+    In this experiment I have set up a generative system in which two different musical voices interact with each other by passing messages back and forth to influence what the other one does. Here is an example of the process running:
+  </p>
+
+  <iframe width="1000" height="562" src="https://www.youtube.com/embed/wvQcP1nguGk?si=pfbRUXzDZAkPhOSl"
+    title="YouTube video player" frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+  <h3>Basic Overview</h3>
+
+  <p>
+    What is going on in this example? There is a passive instance of <a href="https://www.ableton.com/en/live/">Ableton Live</a> running. I am calling it passive simply because it is not instigating any sound generation. It is responsible for receiving and responding to MIDI note data. Additionally, its transport is not even running. In this case there are three tracks:
+  </p>
+
+  <ol>
+    <li>
+      <strong>Chords/Pad:</strong> a software synth that plays chords (track 1),
+    </li>
+    <li>
+      <strong>Melody/Lead:</strong> a software synth that plays individual notes (track 2),
+    </li>
+    <li>
+      <strong>Rhythm/Drum Kit:</strong> a software drum machine that plays percussive sounds (track 3);
+    </li>
+  </ol>
+
+  <p>
+    plus Live's default reverb and delay sends.
+  </p>
+
+  <p>
+    In the upper right portion of the screen recording is a command line terminal. This little program that <em>plays</em> Live is JavaScript code that runs at the command line using <a href="https://nodejs.org/">Node.js</a>. The program started when I typed <code>node main.js</code> then the <code>return</code> key into the terminal prompt. Instantly it prints out its musical configuration details and then after waiting 2 seconds for Live to recognize the virtual MIDI port it will use for communication, it starts sending note data to the three tracks. With each batch of data set to Live it will log an iteration event to the terminal so you can follow what is happening. After 100 iterations, it stops and the command line prompt returns.
+  </p>
+
+  <h3>Musical Description</h3>
+
+  <p>
+    Embedded in this little program is another JavaScript library I wrote called <code><a href="https://github.com/tablesandwaves/tblswvs.js">tblswvs.js</a></code>. This library is used for managing musical keys and scales. The key data can be changed by supplying an alternative to its default configuration file, which is a YAML data file within the code base (see the codebase README for details).
+  </p>
+
+  <p>
+    This program generates MIDI data for three voices, a chord voice, a melodic voice and a drum voice. The chord notes are used to constrain which melodic note is selected per iteration/event. And subsequently, the next chord root note will be based on the previous melodic accompaniment note that was played. If no melodic note was played during a given iteration event, a random scale note wil be selected as a chord root. The rhythm is a simple combination of a kick drum that accompanies each chord and optionally another snare or hihat/perc hit within the current iteration duration if the duration is long enough.
+  </p>
+
+  <p>
+    This sketch is intended to work out a minimal amount of interaction between two automaton voices. It is a trivially simple harmonic/melodic interaction in which each of the corresponding voices influences the other from one iteration to the next.
+  </p>
+
+  <h3>Notes on Code</h3>
+
+  <p>
+    These interactive automatons are implemented using Node.js's <code>MessageChannel</code> system from the <code><a href="https://nodejs.org/api/worker_threads.html">node:worker_threads</a></code> module. Each voice passes a message to the other one to share data about what it did as a way of influencing the other voice's subsequent action. By creating an instance of the <code>MessageChannel</code> and supplying its ports with <code>"message"</code> events, the Node process is held open and the script does not terminate until the ports' <code>close()</code> method is called.
+  </p>
+
+  <p>
+    Musical event sequencing is accomplished by simply using the JavaScript <code>setTimeout()</code> function. The musical configuration data file described above provides a list of musical timings to choose choose from for each iteration. The default configuration uses simple millisecond divisions of a 120 BPM note lengths. For example, a quarter note at 120 BPM is 500 milliseconds.
+  </p>
+</div>
+
+</div>
+</body>
+</html>
