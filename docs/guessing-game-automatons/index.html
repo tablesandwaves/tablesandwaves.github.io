@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="../css/style.css" type="text/css">
+  <link rel="shortcut icon" type="image/x-icon" href="../images/favicon.ico">
+  <title>Automata Study: Guessing Game</title>
+</head>
+<body>
+<div id="content">
+
+<h1>Tables &amp; Waves</h1>
+
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><span class="selected">Experiments</span></li>
+    <li><a href="../about">About</a></li>
+  </ul>
+</nav>
+
+<div id="wrapper" class="main">
+  <p class="breadcrumbs">
+    <a href="../">Tables &amp; Waves</a> &raquo;
+    <a href="../experiments">Experiments</a> &raquo;
+    Guessing Game Automatons
+  </p>
+
+  <h2>Automata Study: Guessing Game</h2>
+
+  <ul id="quick-details">
+    <li>
+      <strong>Published:</strong> September 5, 2025
+    </li>
+    <li>
+      <strong>Keywords:</strong> automata, MIDI, JavaScript, generative music, sketches
+    </li>
+    <li>
+      <strong>Code:</strong> <a href="https://github.com/tablesandwaves/automata-studies/tree/main/guessing-game">Guessing Game</a> sub-project from the Automata Studies repository.
+    </li>
+  </ul>
+
+  <p>
+    This is <a href="../chord-melody-automatons">another</a> exploration of automated musical processes that will create musical data in real time, rule based systems that are comprised of independent components that can employ simple random processes and interact with each other. This is a little <strong>musical automata</strong> system.
+  </p>
+
+  <p>
+    In this experiment I have set up a generative system in which two different musical voices interact with each other by playing a guessing game. Here is an example of the process running:
+  </p>
+
+  <iframe width="1000" height="562" src="https://www.youtube.com/embed/QlJ-_gi5aMo?si=IcOHp0K0X4HNe48G"
+    title="YouTube video player" frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+  <h3>Basic Overview</h3>
+
+  <p>
+    What is going on in this example? <a href="https://www.ableton.com/en/live/">Ableton Live</a> sends timing info to a little JavaScript program, which then responds with MIDI note data for two voices. In this case there are two tracks:
+  </p>
+
+  <ol>
+    <li>
+      <strong>Leader:</strong> a software synth that plays a rhythmically stable melody (track 1),
+    </li>
+    <li>
+      <strong>Follower</strong> (accompaniment): a software synth builds an accompanying melody in real time in coordination with the leader (track 2).
+  </ol>
+
+  <p>
+    On the left side of the screen recording is a command line terminal logging events as they occur. This little program that plays the two FM synths in Live is JavaScript code that runs at the command line using <a href="https://nodejs.org/">Node.js</a>. The program started when I typed <code>node main.js</code> then the <code>return</code> key into the terminal prompt
+  </p>
+
+  <p>
+    When the program starts the lead voice loads its initial state and the accompaniment voice prepares its first melodic accompaniment note guess. Then it waits for 16th note clock ticks/pulses from Live. Once Live's transport is started, a Max for Live device sends those clock ticks to the JavaScript program, which responds by sending MIDI note data for specific steps of the 1 bar, 16th note sequence. The JavaScript program stops sending note data when the transport is stopped, but does not shut down. The simple JavaScript program stops running when <code>Ctrl+C</code> is typed in the terminal program.
+  </p>
+
+  <h3>Musical Description</h3>
+
+  <p>
+    This program uses the following time scales in order from smallest to largest:
+  </p>
+
+  <ol>
+    <li>
+      <strong>Step:</strong> a single sequencer step, a 16th note of Live's current BPM;
+    </li>
+    <li>
+      <strong>Bar:</strong> 1 4/4 bar of exactly 16 steps, the cycle in which the follower makes individual guesses;
+    </li>
+    <li>
+      <strong>Single Guess Cycle:</strong> a variable number of Bars that it takes for the follower voice to correctly guess one step;
+    </li>
+    <li>
+      <strong>Sequence Guess Cycle:</strong> a variable amount of time it takes for the follower to correctly guess all steps the leader makes available for accompaniment.
+    </li>
+  </ol>
+
+  <p>
+    The Bar and Cycle events produce logged entries in the video above. At the level of a Bar there will always be one log entry for each follower guess and one for checking the guess against what the leader voice is seeking. When the leader voice logs a message that it is evolving the sequence, a Single Guess Cycle has completed. At approximately the 1:03 and 1:52 marks in the video above, the complete Sequence Guess Cycle completes. The video runs through two complete Sequence Guess Cycles and then stops shortly after the third one begins.
+  </p>
+
+  <p>
+    Over the course of a complete Sequence Guess Cycle this program builds up its complexity by adding notes to the follower's sequence. Once it has made correct guesses for all sequence steps, the complexity collapses and returns to its simplest starting state.
+  </p>
+
+  <h3>Code Description</h3>
+
+  <p>
+    The main script is responsible for receiving clock ticks/pulses from Ableton Live. This is implemented using Open Sound Control (OSC) style messages over the internal localhost network of the computer. A Max for Live device uses the Live API to observe Live's transport timings and sends pulses at the 16th note divisions of the bar as the integers 0-15 using the Max <code>[udpsend]</code> object. Once the main script receives a sequencer step number, it forwards it on to the leader voice.
+  </p>
+
+  <p>
+    The voices are implemented as JavaScript classes that respond to individual clock ticks and communicate with each other via function calls. The relationship between the leader and follower is loosely based on an <a href="https://medium.com/@artemkhrenov/the-observer-pattern-in-modern-javascript-building-reactive-systems-9337d6a27ee7">Observer Pattern</a> in which the follower "subscribes" to the leader. Modeling the classes in this way will make it relatively easy to modify this example for multiple follower voices. In that case, multiple voices coulde make guessing attempts.
+  </p>
+
+  <p>
+    Coordinating timing alongside the sequence state management is the biggest technical concern. The data structure for managing each voice's sequence is a simple array of numbers. The leader's sequence array is initialized based on a <code>STARTING_STEPS</code> array:
+  </p>
+
+  <pre>[ 1, -1, 0, 0,  1, -1, 0, -1,  0, 0, 1, -1,  1, -1, 0, 0 ]</pre>
+
+  <p>
+    This initialization happens when the program first starts and after a full Sequence Guess Cycle has completed. During initialization, the <code>STARTING_STEPS</code>' values are interpreted in the following way:
+  </p>
+
+  <ul>
+    <li>
+      <code>1</code>: a value of one is considered a note event; during initialization it is converted to the MIDI note number for the root/tonic note of the musical scale the program uses (hard coded to a C minor pentatonic scale)
+    </li>
+    <li>
+      <code>0</code>: a value of zero is considered a slot in the sequence for the follower to guess; during initialization a zero value is appended to the leader's internal sequence
+    </li>
+    <li>
+      <code>-1</code>: a value of negative one is ignored, meaning it will not be used by leader's sequence and will not be a candidate slot for the follower to guess; during initialization a negative one value is appended to the leader's internal sequence
+    </li>
+  </ul>
+
+  <p>
+    For the <code>STARTING_STEPS</code> array above and a scale of C pentatonic minor with the root set to MIDI note 60, the leader's sequence array will be:
+  </p>
+
+  <pre>[ <strong>60</strong>, -1, 0, 0,  <strong>60</strong>, -1, 0, -1,  0, 0, <strong>60</strong>, -1,  <strong>60</strong>, -1, 0, 0 ]</pre>
+
+  <p>
+    During initialization, the follower's sequence array begins with a value of all zeros:
+  </p>
+
+  <pre>[ 0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0 ]</pre>
+
+  <p>
+    While Live's transport is running, the main script passes the current 16th note index to the leader voice. The leader forwards the step index to the follower voice. Both voices then check whether the value at the current step index in their own internal sequences is greater than <code>0</code>. If yes, the JavaScript program sends a MIDI note message to the voice's corresponding MIDI channel. In addition to the internal sequence steps, the follower voice will also check whether the current step corresponds to its current guess. If it does match its current guess step index, it will also play the guessed note.
+  </p>
+
+  <p>
+    When the guessing game starts, the leader voice chooses one of its <code>0</code> valued sequence slots and chooses a random scale note for it. The follower then asks the leader for a list of available sequence index slots to guess and the leader provides an array of the indices for which the leader sequence currently still has a <code>0</code> value. Then the Single Guess Cycle proceeds with the follower making a guess once for each bar. When the correct guess has been made the leader will place a value of <code>-1</code> at the corresponding index slot of its own sequence and the follower will add the correctly guessed MIDI note number at the correctly guessed sequence index to its own sequence. When a Single Guess Cycle repeats, the leader also selects random scale notes instead of the scale root/tonic as it does on the first cycle.
+  </p>
+
+  <p>
+    Continuing with the example arrays above, if the leader selected index 3 and MIDI note number 67 for the first Single Guess Cycle, after the correct guess was made and both voices had updated their internal sequence arrays, the leader's sequence would look like the following:
+  </p>
+
+  <pre>[ 60, -1, 0, <strong>-1</strong>,  60, -1, 0, -1,  0, 0, 60, -1,  60, -1, 0, 0 ]</pre>
+
+  <p>
+    where array index 3 has replaced its previous value of <code>0</code> with the value <code>-1</code> so it is no longer available as a guessing slot until the full Sequence Guess Cycle has completed. And the follower sequence would then look like the following:
+  </p>
+
+  <pre>[ 0, 0, 0, <strong>67</strong>,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0 ]</pre>
+
+  <p>
+    where array index 3 has had its previous value of <code>0</code> replaced with the MIDI note number <code>67</code>.
+  </p>
+
+  <p>
+    At this point the process repeats the Single Guess Cycle until there are no more <code>0</code> values in the leader sequence. When that happens, the leader sequence is reinitialized from the <code>STARTING_STEPS</code> array as described above and the follower sequence is reinitialized to all zeros, thereby restarting the macro time loop for the entire Sequence Guess Cycle.
+  </p>
+</div>
+
+</div>
+</body>
+</html>

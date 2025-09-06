@@ -625,3 +625,9 @@ div.piano-roll, div.markov-piano-roll {
   font-size: 1.1em;
   color: #555;
 }
+
+
+#quick-details {
+  list-style: none;
+  padding-left: 0;
+}
