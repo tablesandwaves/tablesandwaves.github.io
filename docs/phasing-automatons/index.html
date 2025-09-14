@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="../css/style.css" type="text/css">
+  <link rel="shortcut icon" type="image/x-icon" href="../images/favicon.ico">
+  <title>Automata Study: Phasing Voices</title>
+</head>
+<body>
+<div id="content">
+
+<h1>Tables &amp; Waves</h1>
+
+<nav>
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><span class="selected">Experiments</span></li>
+    <li><a href="../about">About</a></li>
+  </ul>
+</nav>
+
+<div id="wrapper" class="main">
+  <p class="breadcrumbs">
+    <a href="../">Tables &amp; Waves</a> &raquo;
+    <a href="../experiments">Experiments</a> &raquo;
+    Phasing Voice Autamata
+  </p>
+
+  <h2>Automata Study: Phasing Voices</h2>
+
+  <ul id="quick-details">
+    <li>
+      <strong>Published:</strong> September 14, 2025
+    </li>
+    <li>
+      <strong>Keywords:</strong> automata, MIDI, JavaScript, generative music, sketches
+    </li>
+    <li>
+      <strong>Code:</strong> <a href="https://github.com/tablesandwaves/automata-studies/tree/main/phasing">Phasing Voices</a> sub-project from the Automata Studies repository.
+    </li>
+  </ul>
+
+  <p>
+    This exploration of automated musical processes creates musical data in real time. It is another little <strong>musical automata</strong> system. As with all experiments posted in this series, the final musical results are not intended to be a finished piece, rather simple sketches with a high degree of interpretability. As such, it includes a minimal amount of sound design and overall composition in the hope that this will let the algorithm and/or code be comprehensible.
+  </p>
+
+  <p>
+    In this experiment I have set up a generative system in which two musical voices play phasing melodic lines. Here is an example of the process running:
+  </p>
+
+  <iframe width="1000" height="562" src="https://www.youtube.com/embed/CWUE7L6OxOU?si=ttvGJNXQwZfCw_KA"
+    title="YouTube video player" frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+  <h3>Basic Overview</h3>
+
+  <p>
+    <a href="https://www.ableton.com/en/live/">Ableton Live</a> (the application on the right side) sends timing info to a little JavaScript program, which then responds with MIDI note data for three voices. Live is using four tracks:
+  </p>
+
+  <ol>
+    <li>
+      <strong>Melodic Lines 1 and 2:</strong> (tracks 2 and 3) software synths that play fixed melodies using <a href="https://en.wikipedia.org/wiki/Euclidean_rhythm">Euclidean rhythms</a> that change over time
+    </li>
+    <li>
+      <strong>Rhythm/Drum Kit:</strong> (track 1) a software drum machine that plays a partial fixed rhythm (kick voice) and variable rhythms based on what the melodic lines are playing (snare and hihat voices)
+    </li>
+    <li>
+      <strong>Max for Live Timing Track:</strong> (track 4) a kind of "dummy" track that hosts a <a href="https://www.ableton.com/en/live/max-for-live/">Max for Live</a> device that communicates transport timing information to a JavaScript program
+    </li>
+  </ol>
+
+  <p>
+    On the left side of the screen recording is a command line terminal logging macro events as they occur. This little program that plays the two FM synths and the drum machine in Live is JavaScript code that runs at the command line using <a href="https://nodejs.org/">Node.js</a>. The program started when I typed <code>node main.js phasing</code> then the <code>return</code> key into the terminal prompt.
+  </p>
+
+  <p>
+    When the program starts the melodic voices print out a description of their sequences. See the code repository's README linked above for details. The melodic voices use Euclidean rhythms that will usually have different sequence lengths and Euclidean step divisors. The program will let the melodic lines phase against each other until they resync their first sequence steps. At that point the sequences's macro event referenced above has completed and the program resets its state by randomizing the melodic seqeunces and the process starts over.
+  </p>
+
+  <p>
+    The melodic voices also report back to a sequencer object that coordinates their activity. This sequencer will use info from the melodic voices to play the drum voice.
+  </p>
+
+  <h3>Musical Description</h3>
+
+  <p>
+    This is a very basic example of phasing melodic lines, a common compositional strategy that was popularized by composers like Steve Reich in works like <em>Music for 18 Musicians</em>. Two sequences that have different lengths play against each other. Each sequence remains the same until they both line up with each other and start their first notes at the same time. At this point the sequences are changed.
+  </p>
+
+  <p>
+    When the sequence lengths are different, the shorter melodic line will restart before the other one. When one melody restarts before the other melody, they are out of phase until they reach their least common multiple (based on each sequence step length) and become realigned with each other. The effect is a mixture of stability and instability where the former comes from stable individual lines while the latter comes from the interplay between two sequences as a composite sequence.
+  </p>
+
+  <p>
+    In this implementation I have chosen to reset/randomize the rhythmic component for each melodic line at the moment the two voices realign. These events can be seen in the video above when new sequence information prints to the terminal screen.
+  </p>
+
+  <h3>Code Description</h3>
+
+  <p>
+    A coordinating sequencer object is responsible for managing the three voices. It holdes onto the voice objects and passes timing ticks/steps to the melodic voices, which in turn check to see whether the current step should play a note. The melodic voices also report information back to the sequencer object, such as whether or not the current global sequence step is the last step in a cycle of their own sequences. This is the mechanism that is used to keep track of whether or not the melodic lines' phases are back in sync.
+  </p>
+
+  <p>
+    Additionally, the melodic voices will report to the main sequencer when they have played a note. This information is then be used to determine whether or not to play rhythmic drum hits on certain steps.
+  </p>
+
+  <p>
+    In this simple automata study, the voices do not communicate directly with each other, only with the coordinating sequencer.
+  </p>
+</div>
+
+</div>
+</body>
+</html>
