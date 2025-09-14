@@ -72,6 +72,10 @@
   </p>
 
   <p>
+    <strong>NOTE:</strong> since the video was made, the repository has updated how this program is run. It should now be run at the command line from Automata Studies repository root directory using: <code>node main.js guessing-game</code>.
+  </p>
+
+  <p>
     When the program starts the lead voice loads its initial state and the accompaniment voice prepares its first melodic accompaniment note guess. Then it waits for 16th note clock ticks/pulses from Live. Once Live's transport is started, a Max for Live device sends those clock ticks to the JavaScript program, which responds by sending MIDI note data for specific steps of the 1 bar, 16th note sequence. The JavaScript program stops sending note data when the transport is stopped, but does not shut down. The simple JavaScript program stops running when <code>Ctrl+C</code> is typed in the terminal program.
   </p>
 

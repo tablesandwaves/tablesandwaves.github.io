@@ -78,6 +78,10 @@
     In the upper right portion of the screen recording is a command line terminal. This little program that <em>plays</em> Live is JavaScript code that runs at the command line using <a href="https://nodejs.org/">Node.js</a>. The program started when I typed <code>node main.js</code> then the <code>return</code> key into the terminal prompt. Instantly it prints out its musical configuration details and then after waiting 2 seconds for Live to recognize the virtual MIDI port it will use for communication, it starts sending note data to the three tracks. With each batch of data set to Live it will log an iteration event to the terminal so you can follow what is happening. After 100 iterations, it stops and the command line prompt returns.
   </p>
 
+  <p>
+    <strong>NOTE:</strong> since the video was made, the repository has updated how this program is run. It should now be run at the command line from Automata Studies repository root directory using: <code>node main.js chord-melody-interaction</code>.
+  </p>
+
   <h3>Musical Description</h3>
 
   <p>
